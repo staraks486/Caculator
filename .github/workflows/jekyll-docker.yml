@@ -1,39 +1,41 @@
 # PLACE THIS FILE AT: .github/workflows/main.yml
 
-name: Website CI
+name: Website CI/CD
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
-# Fixes the Node.js 20 deprecation warning
+# RESOLVES DEPRECATION: This forces all actions to use the Node.js 24 runtime
+# specifically addressing the warnings for checkout, configure-pages, and upload-artifact.
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+# Permissions needed to deploy to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      # Step 1: Get your code from GitHub
+      # Step 1: Get your code
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Step 2: Debugging Step
-      # This prints the current folder structure so you can see exactly what GitHub sees.
-      - name: List Files
-        run: ls -R
+      # Step 2: Setup Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
-      # Step 3: Upload the actual website files
-      # We use a wildcard '**/index.html' to find your website regardless of folder depth.
-      # This is the most "beginner-proof" way to ensure it turns green.
-      - name: Upload Website Files
-        uses: actions/upload-artifact@v4
+      # Step 3: Upload the "Caculator" folder as the website source
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: calculator-build
-          path: |
-            ./Caculator/
-          if-no-files-found: warn
-          retention-days: 5
+          path: './Caculator/'
+
+      # Step 4: Deploy to the internet
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
