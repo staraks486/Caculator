@@ -1,2 +1,2 @@
-# Shoe-calculator-
-Shoe size calculator 
+# calculator-
+multi calculator 
