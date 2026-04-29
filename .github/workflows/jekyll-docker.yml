@@ -43,9 +43,13 @@ jobs:
         run: npm run build --if-present
 
       # Step 4: Upload Artifacts
-      # Adjusted path to '*' or a common folder if index.html is missing
+      # Using a more specific path to avoid uploading hidden system folders (like .git)
+      # which often causes exit code 254.
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-output
-          path: .
+          path: |
+            ./*
+            !./.git
+            !./node_modules
