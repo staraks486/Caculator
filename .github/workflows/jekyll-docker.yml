@@ -1,0 +1,44 @@
+# PLACE THIS FILE AT: .github/workflows/main.yml
+# GitHub will only run workflows if they are in the .github/workflows folder.
+
+name: CI Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# Use top-level env to ensure every step in every job inherits the Node 24 requirement
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js for your application logic
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # You can keep your app on 20, or update to 24
+          cache: 'npm'
+
+      # Step 3: Application build steps
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Build
+        run: npm run build --if-present
+
+      # Step 4: Test that actions/upload-artifact@v4 works with Node 24
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: index.html
