@@ -1,1165 +1,334 @@
-
-</html>
 <!DOCTYPE html>
-<html lang="en" class="theme-indigo">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniCalc Pro - Next-Gen Computational Utility</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
-        
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            background: #090d16;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Precision Step Fit Pro | Arvind Kumar Shukla</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+        
+        :root {
+            --brand-primary: #2563eb;
+            --bg-dark: #0b1120;
+        }
 
-        /* Custom Scrollbar */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
+        body { 
+            background-color: var(--bg-dark); 
+            font-family: 'Outfit', sans-serif; 
+            color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
 
-        /* Smooth glass cards */
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-        }
+        .glass-card { 
+            background: rgba(30, 41, 59, 0.6); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+        }
 
-        /* Tactile buttons */
-        .calc-btn {
-            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .calc-btn:active {
-            transform: scale(0.92);
-        }
+        .active-tab { 
+            background-color: var(--brand-primary); 
+            color: white; 
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); 
+        }
 
-        /* Smooth transitions for slide-out scientific drawer */
-        .scientific-drawer {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .voice-pulse { 
+            animation: pulse 1.5s infinite; 
+        }
 
-        /* Toast animation */
-        @keyframes slideInUp {
-            from { transform: translate(-50%, 20px); opacity: 0; }
-            to { transform: translate(-50%, 0); opacity: 1; }
-        }
-        .animate-toast {
-            animation: slideInUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
-        }
+        @keyframes pulse { 
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6); } 
+            70% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); } 
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } 
+        }
 
-        /* Multi-Theme CSS Variable Mappings */
-        .theme-indigo {
-            --primary-rgb: 99, 102, 241;
-            --primary-accent: #6366f1;
-            --primary-hover: #4f46e5;
-            --primary-glow: rgba(99, 102, 241, 0.15);
-        }
-        .theme-rose {
-            --primary-rgb: 244, 63, 94;
-            --primary-accent: #f43f5e;
-            --primary-hover: #e11d48;
-            --primary-glow: rgba(244, 63, 94, 0.15);
-        }
-        .theme-emerald {
-            --primary-rgb: 16, 185, 129;
-            --primary-accent: #10b981;
-            --primary-hover: #059669;
-            --primary-glow: rgba(16, 185, 129, 0.15);
-        }
-        .theme-amber {
-            --primary-rgb: 245, 158, 11;
-            --primary-accent: #f59e0b;
-            --primary-hover: #d97706;
-            --primary-glow: rgba(245, 158, 11, 0.15);
-        }
-        .theme-cyan {
-            --primary-rgb: 6, 182, 212;
-            --primary-accent: #06b6d4;
-            --primary-hover: #0891b2;
-            --primary-glow: rgba(6, 182, 212, 0.15);
-        }
+        .input-container {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
 
-        .dynamic-text-accent {
-            color: var(--primary-accent);
-        }
-        .dynamic-bg-accent {
-            background-color: var(--primary-accent);
-        }
-        .dynamic-bg-hover:hover {
-            background-color: var(--primary-hover);
-        }
-        .dynamic-bg-glow {
-            background-color: var(--primary-glow);
-        }
-        .dynamic-border-accent {
-            border-color: var(--primary-accent);
-        }
-        .dynamic-border-glow {
-            border-color: var(--primary-glow);
-        }
-    </style>
+        .input-container:focus-within {
+            border-color: var(--brand-primary);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        /* Hide scrollbars */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Floating FAB */
+        .voice-fab {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 100;
+        }
+
+        .status-toast {
+            position: fixed;
+            bottom: 6rem;
+            right: 1.5rem;
+            background: #1e293b;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            border: 1px solid #334155;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .status-toast.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </div>
+    </style>
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500/30">
-
-    <!-- Custom Toast Overlay -->
-    <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] animate-toast">
-        <div class="bg-slate-900/95 text-slate-100 border border-slate-700/50 backdrop-blur-md px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
-            <div id="toast-icon-wrapper" class="p-1 rounded-lg dynamic-bg-glow dynamic-text-accent">
-                <i data-lucide="info" class="w-4 h-4" id="toast-icon"></i>
-            </div>
-            <span id="toast-msg" class="text-xs font-semibold tracking-wide">Notification activated</span>
-        </div>
-    </div>
-
-    <!-- Header -->
-    <header class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
-        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row gap-3 justify-between sm:items-center">
-            
-            <div class="flex items-center gap-3 justify-between sm:justify-start">
-                <div class="flex items-center gap-3">
-                    <div class="dynamic-bg-accent p-2.5 rounded-2xl text-white shadow-lg transition-colors duration-300">
-                        <i data-lucide="calculator" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-lg font-black tracking-tight text-white leading-none">OmniCalc <span class="dynamic-text-accent transition-colors duration-300">Pro</span></h1>
-                        <span class="text-[10px] text-slate-400 font-bold tracking-widest uppercase">Widget Integration Platform</span>
-                    </div>
-                </div>
-                
-                <!-- Theme Customizer for host matching -->
-                <div class="flex items-center gap-1.5 bg-slate-900/90 border border-slate-800/80 p-1.5 rounded-xl ml-4">
-                    <span class="text-[9px] text-slate-500 uppercase font-black px-1 tracking-wider hidden md:inline">Match Host UI:</span>
-                    <button onclick="changeTheme('indigo')" class="w-4.5 h-4.5 rounded-full bg-indigo-500 border border-white/20 transition-transform hover:scale-110" title="Indigo Theme"></button>
-                    <button onclick="changeTheme('rose')" class="w-4.5 h-4.5 rounded-full bg-rose-500 border border-white/20 transition-transform hover:scale-110" title="Rose Theme"></button>
-                    <button onclick="changeTheme('emerald')" class="w-4.5 h-4.5 rounded-full bg-emerald-500 border border-white/20 transition-transform hover:scale-110" title="Emerald Theme"></button>
-                    <button onclick="changeTheme('amber')" class="w-4.5 h-4.5 rounded-full bg-amber-500 border border-white/20 transition-transform hover:scale-110" title="Amber Theme"></button>
-                    <button onclick="changeTheme('cyan')" class="w-4.5 h-4.5 rounded-full bg-cyan-500 border border-white/20 transition-transform hover:scale-110" title="Cyan Theme"></button>
-                </div>
-            </div>
-            
-            <div class="flex items-center justify-between sm:justify-end gap-3 border-t border-slate-800/60 pt-3 sm:border-0 sm:pt-0">
-                <!-- Microphone indicator -->
-                <div id="mic-status" class="hidden flex items-center gap-2 px-3 py-1 bg-rose-500/10 rounded-full border border-rose-500/20">
-                    <div class="w-2 h-2 bg-rose-500 rounded-full animate-pulse"></div>
-                    <span class="text-[10px] font-extrabold text-rose-400 uppercase tracking-widest">Listening</span>
-                </div>
-                <!-- History toggler -->
-                <button onclick="toggleHistory(true)" class="p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl transition-colors relative" title="View Logs">
-                    <i data-lucide="history" class="w-4 h-4 text-slate-300"></i>
-                    <div id="history-dot" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-indigo-500 rounded-full border-2 border-slate-900"></div>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Mobile View-Switcher Bar (Only visible on mobile portrait screens) -->
-    <div class="lg:hidden bg-slate-950 border-b border-slate-850 p-2.5 flex gap-2.5 sticky top-[61px] sm:top-[69px] z-40">
-        <button id="view-toggle-calc" onclick="switchMobileView('calc')" class="flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider text-center transition-all bg-indigo-600 dynamic-bg-accent text-white shadow-lg">
-            Standard Calc
-        </button>
-        <button id="view-toggle-suite" onclick="switchMobileView('suite')" class="flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider text-center transition-all bg-slate-900 text-slate-400">
-            Specialty Suite
-        </button>
-    </div>
-
-    <!-- Main Workspace Container -->
-    <main class="max-w-6xl w-full mx-auto px-4 py-6 md:py-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
-        <!-- LEFT COLUMN: Calculator Module (Interactive pane) -->
-        <div id="calc-pane" class="lg:col-span-5 space-y-4">
-            <div class="glass-panel p-5 rounded-[2rem] shadow-2xl relative overflow-hidden">
-                <!-- Calculator display -->
-                <div class="bg-slate-950/90 border border-slate-800/80 rounded-2xl p-5 mb-5 shadow-inner">
-                    <div id="calc-buffer" class="dynamic-text-accent font-mono text-xs md:text-sm h-5 text-right opacity-80 tracking-wide truncate transition-colors duration-300"></div>
-                    <div id="calc-display" class="text-white text-4xl md:text-5xl font-extrabold text-right tracking-tight font-mono truncate mt-1">0</div>
-                </div>
-
-                <div class="flex gap-2">
-                    <!-- Standard grid layout -->
-                    <div class="grid grid-cols-4 gap-2.5 flex-1">
-                        <button onclick="handleClear()" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800/70 hover:bg-slate-800 text-slate-300 col-span-2 text-sm border border-slate-700/30">AC</button>
-                        <button onclick="handleOp('/')" class="calc-btn h-14 rounded-2xl font-black dynamic-bg-glow text-slate-200 hover:bg-white/5 text-lg border dynamic-border-glow transition-colors duration-300">÷</button>
-                        <button onclick="handleOp('*')" class="calc-btn h-14 rounded-2xl font-black dynamic-bg-glow text-slate-200 hover:bg-white/5 text-lg border dynamic-border-glow transition-colors duration-300">×</button>
-                        
-                        <button onclick="handleNum('7')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">7</button>
-                        <button onclick="handleNum('8')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">8</button>
-                        <button onclick="handleNum('9')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">9</button>
-                        <button onclick="handleOp('-')" class="calc-btn h-14 rounded-2xl font-black dynamic-bg-glow text-slate-200 hover:bg-white/5 text-lg border dynamic-border-glow transition-colors duration-300">−</button>
-                        
-                        <button onclick="handleNum('4')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">4</button>
-                        <button onclick="handleNum('5')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">5</button>
-                        <button onclick="handleNum('6')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">6</button>
-                        <button onclick="handleOp('+')" class="calc-btn h-14 rounded-2xl font-black dynamic-bg-glow text-slate-200 hover:bg-white/5 text-lg border dynamic-border-glow transition-colors duration-300">+</button>
-                        
-                        <button onclick="handleNum('1')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">1</button>
-                        <button onclick="handleNum('2')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">2</button>
-                        <button onclick="handleNum('3')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">3</button>
-                        <button onclick="handleEqual()" class="calc-btn h-30 rounded-2xl font-black dynamic-bg-accent hover:opacity-90 text-white shadow-lg row-span-2 flex items-center justify-center border border-white/10 transition-all duration-300">
-                            <i data-lucide="equal" class="w-6 h-6"></i>
-                        </button>
-                        
-                        <button onclick="handleNum('0')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg col-span-2">0</button>
-                        <button onclick="handleNum('.')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">.</button>
-                    </div>
-
-                    <!-- Slide-out Scientific Mode Drawer -->
-                    <div id="sci-panel" class="scientific-drawer w-0 overflow-hidden flex flex-col gap-2.5">
-                        <button onclick="handleSciOp('sin')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700/40 text-xs px-2">SIN</button>
-                        <button onclick="handleSciOp('cos')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700/40 text-xs px-2">COS</button>
-                        <button onclick="handleSciOp('tan')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700/40 text-xs px-2">TAN</button>
-                        <button onclick="handleSciOp('sqrt')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700/40 text-xs px-2">√</button>
-                        <button onclick="handleSciOp('pow')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700/40 text-xs px-2">x²</button>
-                    </div>
-                </div>
-
-                <!-- Expander bar for scientific keys -->
-                <button onclick="toggleScientificMode()" class="w-full mt-4 py-2 border-t border-slate-800/80 text-xs text-slate-400 font-extrabold tracking-widest flex items-center justify-center gap-1.5 hover:text-slate-300 transition-colors uppercase">
-                    <span id="sci-toggle-text">Scientific Drawer</span>
-                    <i data-lucide="chevron-right" id="sci-toggle-arrow" class="w-3.5 h-3.5 transition-transform duration-300"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- RIGHT COLUMN: Multi-Engine Dashboard (Specialty Suite) -->
-        <div id="suite-pane" class="hidden lg:col-span-7 space-y-6 lg:block">
-            
-            <div class="flex p-1.5 bg-slate-900 border border-slate-800 rounded-full shadow-inner overflow-x-auto no-scrollbar">
-                <button onclick="switchTab('finance')" id="tab-finance" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm">
-                    <i data-lucide="shopping-cart" class="w-4 h-4"></i> Shopping & Finance
-                </button>
-                <button onclick="switchTab('health')" id="tab-health" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm">
-                    <i data-lucide="heart-pulse" class="w-4 h-4"></i> Health
-                </button>
-                <button onclick="switchTab('math')" id="tab-math" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm">
-                    <i data-lucide="zap" class="w-4 h-4"></i> Science
-                </button>
-                <button onclick="switchTab('unit')" id="tab-unit" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm">
-                    <i data-lucide="arrow-right-left" class="w-4 h-4"></i> Convert
-                </button>
-                <button onclick="switchTab('utility')" id="tab-utility" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm">
-                    <i data-lucide="briefcase" class="w-4 h-4"></i> More
-                </button>
-            </div>
-
-            <!-- Modular content wrappers (Switches dynamically using hidden attributes to preserve input state) -->
-            <div id="tab-content-container" class="space-y-6">
-
-                <!-- 1. Finance & Shopping Tab -->
-                <div id="panel-finance" class="tab-panel animate-fadeIn space-y-6">
-                    <div class="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
-                        <div class="p-6 md:p-8 border-b border-slate-800/80 flex justify-between items-center bg-slate-950/40">
-                            <div>
-                                <h2 class="text-xl md:text-2xl font-black tracking-tight text-white">Discount Engine</h2>
-                                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mt-0.5">Shopping Analysis Profile</p>
-                            </div>
-                            <button onclick="toggleVoice()" id="mic-trigger" class="h-12 w-12 rounded-2xl flex items-center justify-center transition-all shadow-lg border border-slate-700/40 bg-slate-800 hover:bg-slate-700" title="Voice Input">
-                                <i data-lucide="mic-off" class="w-5 h-5 dynamic-text-accent" id="mic-icon"></i>
-                            </button>
-                        </div>
-                        <div class="p-6 md:p-8 space-y-6">
-                            <!-- Visual Output Badge -->
-                            <div class="bg-slate-950/80 border border-slate-800/85 rounded-3xl p-8 text-center shadow-inner relative">
-                                <p id="shop-label" class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Estimated Final Price</p>
-                                <div class="text-5xl md:text-6xl font-extrabold text-white mb-2 flex items-center justify-center gap-1">
-                                    <span id="shop-currency" class="text-2xl text-slate-500 mt-1 font-light">₹</span>
-                                    <span id="shop-res-main" class="tabular-nums">0</span>
-                                </div>
-                                <span id="shop-res-sub" class="inline-block px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full font-bold text-xs">Ready for parameters</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div class="flex bg-slate-950 p-1 rounded-2xl sm:col-span-2 border border-slate-800">
-                                    <button onclick="setShopMode('price')" id="btn-mode-price" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-indigo-600 dynamic-bg-accent text-white shadow-md">FIND FINAL PRICE</button>
-                                    <button onclick="setShopMode('percent')" id="btn-mode-percent" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400">FIND DISCOUNT %</button>
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Market Price (₹)</label>
-                                    <input type="number" id="shop-orig" oninput="updateShop()" class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:bg-slate-900 p-4 rounded-2xl text-lg font-bold transition-all outline-none text-white" placeholder="0">
-                                </div>
-                                <div class="space-y-2">
-                                    <label id="shop-input-label" class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Discount (%)</label>
-                                    <div class="relative">
-                                        <input type="number" id="shop-value" oninput="updateShop()" class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:bg-slate-900 p-4 rounded-2xl text-lg font-bold transition-all outline-none text-white" placeholder="0">
-                                        <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">
-                                            <i data-lucide="percent" class="w-4 h-4" id="shop-icon-input"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tax & VAT Calculator Component -->
-                    <div class="glass-panel rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-5">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2.5 dynamic-bg-glow dynamic-text-accent rounded-2xl border dynamic-border-glow transition-all duration-300">
-                                <i data-lucide="landmark" class="w-5 h-5"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-black text-white leading-none">Tax & VAT Processor</h3>
-                                <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Value-Added Calculation Node</p>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Base Amount (₹)</label>
-                                <input type="number" id="tax-base" oninput="calculateTax()" class="w-full bg-slate-950 border border-slate-800/80 p-3.5 rounded-xl text-base font-bold text-white focus:outline-none focus:border-indigo-500" placeholder="1000">
-                            </div>
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Tax Rate (%)</label>
-                                <input type="number" id="tax-rate" oninput="calculateTax()" class="w-full bg-slate-950 border border-slate-800/80 p-3.5 rounded-xl text-base font-bold text-white focus:outline-none focus:border-indigo-500" value="18">
-                            </div>
-                        </div>
-
-                        <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
-                            <button onclick="setTaxMode('add')" id="tax-btn-add" class="flex-1 py-2 rounded-lg text-xs font-bold transition-all bg-indigo-600 dynamic-bg-accent text-white">ADD TAX (INC)</button>
-                            <button onclick="setTaxMode('remove')" id="tax-btn-remove" class="flex-1 py-2 rounded-lg text-xs font-bold transition-all text-slate-400">REMOVE TAX (EXC)</button>
-                        </div>
-
-                        <!-- Computed Tax values display -->
-                        <div class="bg-slate-950 border border-slate-850 rounded-2xl p-5 grid grid-cols-2 gap-4">
-                            <div class="text-center border-r border-slate-800">
-                                <p class="text-[10px] font-bold text-slate-500 uppercase">Calculated Tax Amount</p>
-                                <span id="tax-res-calculated" class="text-lg font-black text-white">₹180</span>
-                            </div>
-                            <div class="text-center">
-                                <p class="text-[10px] font-bold text-slate-500 uppercase">Total Resulting Value</p>
-                                <span id="tax-res-total" class="text-lg font-black dynamic-text-accent transition-colors duration-300">₹1180</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. Health & Wellness Tab -->
-                <div id="panel-health" class="tab-panel hidden animate-fadeIn max-w-xl mx-auto bg-slate-900/40 border border-slate-800 rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-6">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 bg-rose-500/10 text-rose-400 rounded-2xl border border-rose-500/20">
-                            <i data-lucide="heart-pulse" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-xl font-black text-white">Body Mass Index</h2>
-                            <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Medical Assessment Tool</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Weight (kg)</label>
-                            <input type="number" id="bmi-w" class="w-full bg-slate-950 p-4 border border-slate-800 focus:border-rose-500/40 focus:bg-slate-900 rounded-2xl text-lg font-bold text-white outline-none transition-all" placeholder="70">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Height (cm)</label>
-                            <input type="number" id="bmi-h" class="w-full bg-slate-950 p-4 border border-slate-800 focus:border-rose-500/40 focus:bg-slate-900 rounded-2xl text-lg font-bold text-white outline-none transition-all" placeholder="175">
-                        </div>
-                    </div>
-
-                    <button onclick="handleBMICalc()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-black py-4 rounded-[1.5rem] shadow-xl shadow-rose-600/15 transition-all text-sm uppercase tracking-wider">
-                        CALCULATE BMI
-                    </button>
-
-                    <!-- Advanced interactive visual gauge -->
-                    <div id="bmi-res-box" class="hidden bg-slate-950 border border-slate-800 p-6 rounded-3xl text-center space-y-4 animate-fadeIn">
-                        <div>
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Your BMI index</p>
-                            <div id="bmi-res-val" class="text-5xl font-extrabold tracking-tight text-rose-500 tabular-nums">0</div>
-                            <div id="bmi-status" class="inline-block mt-2 text-xs font-black uppercase tracking-wider px-3.5 py-1 rounded-full">Optimal</div>
-                        </div>
-                        
-                        <!-- Visual scale progress bar -->
-                        <div class="space-y-1">
-                            <div class="relative w-full h-3 bg-slate-900 rounded-full overflow-hidden flex">
-                                <div class="h-full bg-blue-500/70" style="width: 25%"></div>
-                                <div class="h-full bg-emerald-500/70" style="width: 30%"></div>
-                                <div class="h-full bg-amber-500/70" style="width: 25%"></div>
-                                <div class="h-full bg-rose-500/70" style="width: 20%"></div>
-                                <!-- Indicator marker pin -->
-                                <div id="bmi-pin" class="absolute top-0 bottom-0 w-1.5 bg-white shadow-lg transition-all duration-500" style="left: 0%"></div>
-                            </div>
-                            <div class="flex justify-between text-[9px] text-slate-500 font-bold uppercase tracking-wider px-1">
-                                <span>Under</span>
-                                <span>Healthy</span>
-                                <span>Over</span>
-                                <span>Obese</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 3. Science Trigonometry & Pythagoras Tab -->
-                <div id="panel-math" class="tab-panel hidden animate-fadeIn max-w-xl mx-auto bg-slate-900/40 border border-slate-800 rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-6">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 bg-blue-500/10 text-blue-400 rounded-2xl border border-blue-500/20">
-                            <i data-lucide="triangle" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-xl font-black text-white">Pythagorean Geometry</h2>
-                            <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Spatial Triangulation Engine</p>
-                        </div>
-                    </div>
-
-                    <!-- Decorative Geometric Graphic -->
-                    <div class="relative h-32 bg-slate-950/60 border border-slate-800/80 rounded-2xl flex items-center justify-center overflow-hidden">
-                        <!-- Dynamic vector triangle layout -->
-                        <svg class="w-48 h-24 text-indigo-500/20" viewBox="0 0 100 50">
-                            <polygon points="10,45 80,45 80,5" fill="none" stroke="currentColor" stroke-width="2" />
-                            <text x="45" y="49" class="text-[7px] fill-slate-500 font-extrabold font-sans">Side A</text>
-                            <text x="83" y="25" class="text-[7px] fill-slate-500 font-extrabold font-sans">Side B</text>
-                            <text x="35" y="20" class="text-[7px] fill-indigo-400 font-extrabold font-sans">Hypotenuse C</text>
-                        </svg>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-1.5">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Side A</label>
-                            <input type="number" id="pyth-a" placeholder="Length" class="p-4 w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl font-bold text-center text-white outline-none transition-all">
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Side B</label>
-                            <input type="number" id="pyth-b" placeholder="Length" class="p-4 w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl font-bold text-center text-white outline-none transition-all">
-                        </div>
-                    </div>
-
-                    <button onclick="handlePythCalc()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-[1.5rem] shadow-xl shadow-blue-600/15 transition-all text-sm uppercase tracking-wider">
-                        FIND HYPOTENUSE (SIDE C)
-                    </button>
-                    
-                    <div id="pyth-res-box" class="hidden bg-slate-950 border border-slate-800 p-5 rounded-2xl text-center animate-fadeIn">
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Resulting Hypotenuse</p>
-                        <div class="text-3xl font-extrabold text-blue-400 tracking-tight">C = <span id="pyth-res-val">0</span></div>
-                    </div>
-                </div>
-
-                <!-- 4. Converters Tab -->
-                <div id="panel-unit" class="tab-panel hidden animate-fadeIn max-w-xl mx-auto bg-slate-900/40 border border-slate-800 rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-6">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-2xl border border-indigo-500/20">
-                            <i data-lucide="arrow-right-left" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-xl font-black text-white">Dimensional Bridge</h2>
-                            <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Cross-System Unit Converter</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <select id="unit-type" onchange="handleUnitConvert()" class="w-full p-4 bg-slate-950 border border-slate-800 hover:border-slate-700 rounded-2xl font-bold text-slate-200 outline-none transition-all cursor-pointer">
-                            <option value="kg-lb">Weight: Kilogram (kg) → Pound (lb)</option>
-                            <option value="lb-kg">Weight: Pound (lb) → Kilogram (kg)</option>
-                            <option value="km-mi">Distance: Kilometer (km) → Mile (mi)</option>
-                            <option value="mi-km">Distance: Mile (mi) → Kilometer (km)</option>
-                            <option value="c-f">Temperature: Celsius (°C) → Fahrenheit (°F)</option>
-                            <option value="f-c">Temperature: Fahrenheit (°F) → Celsius (°C)</option>
-                        </select>
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Input Value</label>
-                            <input type="number" id="unit-input" oninput="handleUnitConvert()" class="w-full bg-slate-950 p-4 border border-slate-800 focus:border-indigo-500 focus:bg-slate-900 rounded-2xl text-xl font-bold text-white outline-none transition-all" placeholder="Enter value">
-                        </div>
-                    </div>
-
-                    <div id="unit-res-box" class="hidden bg-indigo-500/10 p-5 rounded-2xl border border-indigo-500/20 text-center animate-fadeIn">
-                        <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Converted Balance</p>
-                        <div id="unit-res-val" class="text-3xl font-extrabold text-white">0</div>
-                    </div>
-                </div>
-
-                <!-- 5. Tip & Split Tab -->
-                <div id="panel-utility" class="tab-panel hidden animate-fadeIn max-w-xl mx-auto bg-slate-900/40 border border-slate-800 rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-6">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 bg-amber-500/10 text-amber-400 rounded-2xl border border-amber-500/20">
-                            <i data-lucide="dollar-sign" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-xl font-black text-white">Tip & Split Engine</h2>
-                            <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Hospitality Expense Allocator</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Total Bill (₹)</label>
-                                <input type="number" id="tip-bill" oninput="handleTipCalc()" class="w-full bg-slate-950 p-4 border border-slate-800 rounded-xl font-bold text-white outline-none focus:border-amber-500/40" placeholder="1000">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Tip Percent (%)</label>
-                                <input type="number" id="tip-pct" oninput="handleTipCalc()" class="w-full bg-slate-950 p-4 border border-slate-800 rounded-xl font-bold text-white outline-none focus:border-amber-500/40" value="10">
-                            </div>
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Split Group Count</label>
-                            <input type="number" id="tip-people" oninput="handleTipCalc()" class="w-full bg-slate-950 p-4 border border-slate-800 rounded-xl font-bold text-white outline-none focus:border-amber-500/40" value="2">
-                        </div>
-                    </div>
-
-                    <!-- Multi-tier display grid -->
-                    <div class="bg-amber-500/10 border border-amber-500/20 rounded-3xl p-6 grid grid-cols-2 gap-4">
-                        <div class="text-center border-r border-amber-500/20">
-                            <p class="text-[10px] font-black text-amber-400 uppercase tracking-wider mb-1">Total Tip Allocated</p>
-                            <div id="tip-res-amt" class="text-2xl font-black text-white">₹0</div>
-                        </div>
-                        <div class="text-center">
-                            <p class="text-[10px] font-black text-amber-400 uppercase tracking-wider mb-1">Per Person Allocation</p>
-                            <div id="tip-res-split" class="text-2xl font-black text-white">₹0</div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </main>
-
-    <!-- History Sidebar -->
-    <div id="history-sidebar" class="hidden fixed inset-0 z-[60] flex justify-end">
-        <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onclick="toggleHistory(false)"></div>
-        <div class="relative w-full max-w-sm bg-slate-900 border-l border-slate-800/80 h-full shadow-2xl p-6 flex flex-col justify-between">
-            <div>
-                <div class="flex justify-between items-center mb-8">
-                    <h3 class="text-xl font-black text-slate-100 flex items-center gap-2">
-                        <i data-lucide="history" class="w-5 h-5 text-indigo-400"></i> History Logs
-                    </h3>
-                    <button onclick="toggleHistory(false)" class="p-2 hover:bg-slate-800 rounded-full text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
-                </div>
-                
-                <div id="history-list" class="space-y-3 max-h-[60vh] overflow-y-auto no-scrollbar">
-                    <div class="text-center py-20 text-slate-500 italic font-medium">Empty calculations</div>
-                </div>
-            </div>
-            
-            <button id="clear-history-btn" onclick="clearHistory()" class="hidden w-full py-4 bg-slate-950 hover:bg-rose-950/40 border border-slate-800 text-slate-400 hover:text-rose-400 font-bold text-xs uppercase tracking-widest rounded-2xl transition-all flex items-center justify-center gap-2">
-                <i data-lucide="trash-2" class="w-4 h-4"></i> Clear History
-            </button>
-        </div>
-    </div>
-
-    <!-- Footer Area -->
-    <footer class="bg-slate-950 border-t border-slate-900 py-4 text-center text-xs text-slate-500">
-        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-            <span>© 2026 OmniCalc Pro Widget System. All mathematical calculations execute locally.</span>
-            <div class="flex items-center gap-3">
-                <span class="hover:text-indigo-400 cursor-pointer transition-colors" onclick="showToast('Local state security protocol active.', 'shield-check')">Security Verified</span>
-                <span class="w-1 h-1 bg-slate-800 rounded-full"></span>
-                <span class="hover:text-indigo-400 cursor-pointer transition-colors" onclick="showToast('Designed for frictionless widget embeds.', 'terminal')">API Widget Mode</span>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Interactive Execution Logic Scripts -->
-    <script>
-        // --- State Management ---
-        let history = [];
-        let activeTabId = 'finance';
-        let currentMobileView = 'calc'; // or 'suite'
-        
-        // Calculator Core Memory Arrays
-        let calcDisplay = '0';
-        let calcPrevValue = null;
-        let lastOp = null;
-        let shouldReset = false;
-        let calcBuffer = '';
-        let scientificMode = false;
-
-        // Custom Variables for Specialty Tools
-        let shopMode = 'price';
-        let isListening = false;
-        let recognition = null;
-        let taxMode = 'add'; // or 'remove'
-
-        // Initialize elements on load
-        window.onload = () => {
-            initSpeech();
-            switchTab('finance');
-            setupKeyboardListeners();
-            calculateTax();
-        };
-
-        // --- Live Theme Customizer for 3rd Party Matching ---
-        function changeTheme(themeName) {
-            const documentElement = document.documentElement;
-            // Clean active classes
-            documentElement.className = '';
-            documentElement.classList.add(`theme-${themeName}`);
-            
-            showToast(`Widget matched to ${themeName.toUpperCase()} theme`, "palette", false);
-        }
-
-        // --- Custom Toast Alert Override ---
-        function showToast(message, iconName = "info", isAlert = false) {
-            const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toast-msg');
-            const toastIcon = document.getElementById('toast-icon');
-            const iconWrapper = document.getElementById('toast-icon-wrapper');
-
-            if (!toast || !toastMsg) return;
-
-            toastMsg.innerText = message;
-            if (toastIcon) {
-                toastIcon.setAttribute('data-lucide', iconName);
-            }
-            if (iconWrapper) {
-                iconWrapper.className = isAlert 
-                    ? "p-1 rounded-lg bg-rose-500/10 text-rose-400" 
-                    : "p-1 rounded-lg dynamic-bg-glow dynamic-text-accent transition-all duration-300";
-            }
-            lucide.createIcons();
-
-            toast.classList.remove('hidden');
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 3500);
-        }
-
-        // --- Mobile Specific Split-Pane Handling ---
-        function switchMobileView(view) {
-            currentMobileView = view;
-            const btnCalc = document.getElementById('view-toggle-calc');
-            const btnSuite = document.getElementById('view-toggle-suite');
-            const paneCalc = document.getElementById('calc-pane');
-            const paneSuite = document.getElementById('suite-pane');
-
-            if (view === 'calc') {
-                btnCalc.className = "flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider text-center transition-all bg-indigo-600 dynamic-bg-accent text-white shadow-lg";
-                btnSuite.className = "flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider text-center transition-all bg-slate-900 text-slate-400";
-                paneCalc.classList.remove('hidden');
-                paneSuite.classList.add('hidden');
-                paneSuite.classList.remove('lg:block');
-            } else {
-                btnSuite.className = "flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider text-center transition-all bg-indigo-600 dynamic-bg-accent text-white shadow-lg";
-                btnCalc.className = "flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider text-center transition-all bg-slate-900 text-slate-400";
-                paneSuite.classList.remove('hidden');
-                paneSuite.classList.add('lg:block');
-                paneCalc.classList.add('hidden');
-            }
-        }
-
-        // --- Multi-Engine Dynamic Switcher ---
-        function switchTab(tabId) {
-            activeTabId = tabId;
-
-            // Hide all tab panels
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
-
-            // Show selected panel
-            const targetPanel = document.getElementById(`panel-${tabId}`);
-            if (targetPanel) {
-                targetPanel.classList.remove('hidden');
-            }
-
-            // Clean active classes on nav headers
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = "tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-500 hover:text-slate-300";
-            });
-
-            // Activate target menu button
-            const activeBtn = document.getElementById(`tab-${tabId}`);
-            if (activeBtn) {
-                activeBtn.className = "tab-btn active-tab flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm bg-indigo-600 dynamic-bg-accent text-white shadow-lg shadow-indigo-500/10";
-            }
-
-            // Sync visual attributes if tab matches specific submodules
-            if (tabId === 'finance') {
-                setShopMode(shopMode);
-            }
-
-            lucide.createIcons();
-        }
-
-        // --- Keyboard Entry Listeners ---
-        function setupKeyboardListeners() {
-            window.addEventListener('keydown', (e) => {
-                const targetTagName = e.target.tagName.toLowerCase();
-                if (targetTagName === 'input' || targetTagName === 'select') return; // Bypass if typing in forms
-
-                if (e.key >= '0' && e.key <= '9') handleNum(e.key);
-                else if (e.key === '.') handleNum('.');
-                else if (e.key === '+') handleOp('+');
-                else if (e.key === '-') handleOp('-');
-                else if (e.key === '*') handleOp('*');
-                else if (e.key === '/') handleOp('/');
-                else if (e.key === 'Enter' || e.key === '=') handleEqual();
-                else if (e.key === 'Escape') handleClear();
-            });
-        }
-
-        // --- Standard & Scientific Computational Logic Engine ---
-        function toggleScientificMode() {
-            scientificMode = !scientificMode;
-            const sciPanel = document.getElementById('sci-panel');
-            const arrow = document.getElementById('sci-toggle-arrow');
-            
-            if (scientificMode) {
-                sciPanel.classList.remove('w-0');
-                sciPanel.classList.add('w-14', 'ml-3');
-                arrow.style.transform = 'rotate(180deg)';
-            } else {
-                sciPanel.classList.add('w-0');
-                sciPanel.classList.remove('w-14', 'ml-3');
-                arrow.style.transform = 'rotate(0deg)';
-            }
-        }
-
-        function handleNum(num) {
-            if ((calcDisplay === '0' && num !== '.') || shouldReset) {
-                calcDisplay = num;
-                shouldReset = false;
-            } else {
-                if (num === '.' && calcDisplay.includes('.')) return;
-                calcDisplay += num;
-            }
-            updateCalcUI();
-        }
-
-        function handleOp(op) {
-            const current = parseFloat(calcDisplay);
-            if (lastOp && !shouldReset) {
-                executeCalculation();
-            } else {
-                calcPrevValue = current;
-            }
-            lastOp = op;
-            calcBuffer = `${calcPrevValue} ${getOpSymbol(op)}`;
-            shouldReset = true;
-            updateCalcUI();
-        }
-
-        function handleSciOp(type) {
-            const current = parseFloat(calcDisplay);
-            let result = 0;
-            let label = '';
-            
-            switch(type) {
-                case 'sin':
-                    result = Math.sin(current * Math.PI / 180);
-                    label = `sin(${current})`;
-                    break;
-                case 'cos':
-                    result = Math.cos(current * Math.PI / 180);
-                    label = `cos(${current})`;
-                    break;
-                case 'tan':
-                    result = Math.tan(current * Math.PI / 180);
-                    label = `tan(${current})`;
-                    break;
-                case 'sqrt':
-                    if (current < 0) {
-                        showToast("Invalid Input: Root of Negative Number", "alert-triangle", true);
-                        return;
-                    }
-                    result = Math.sqrt(current);
-                    label = `√(${current})`;
-                    break;
-                case 'pow':
-                    result = Math.pow(current, 2);
-                    label = `(${current})²`;
-                    break;
-            }
-
-            const formattedResult = Math.round(result * 1000000) / 1000000 + '';
-            addToHistory(label, formattedResult);
-            calcDisplay = formattedResult;
-            shouldReset = true;
-            updateCalcUI();
-        }
-
-        function handleEqual() {
-            if (!lastOp || shouldReset) return;
-            const current = parseFloat(calcDisplay);
-            const equationText = `${calcBuffer} ${current} =`;
-            executeCalculation();
-            calcBuffer = '';
-            lastOp = null;
-            shouldReset = true;
-            updateCalcUI();
-            addToHistory(equationText, calcDisplay);
-        }
-
-        function executeCalculation() {
-            const current = parseFloat(calcDisplay);
-            let result = 0;
-            switch(lastOp) {
-                case '+': result = calcPrevValue + current; break;
-                case '-': result = calcPrevValue - current; break;
-                case '*': result = calcPrevValue * current; break;
-                case '/': result = current !== 0 ? calcPrevValue / current : 'Error'; break;
-            }
-            calcDisplay = typeof result === 'number' ? Math.round(result * 1000000) / 1000000 + '' : result;
-            calcPrevValue = typeof result === 'number' ? result : null;
-        }
-
-        // General AC function
-        function handleClear() {
-            calcDisplay = '0';
-            calcPrevValue = null;
-            lastOp = null;
-            calcBuffer = '';
-            shouldReset = false;
-            updateCalcUI();
-        }
-
-        function updateCalcUI() {
-            document.getElementById('calc-display').innerText = calcDisplay;
-            document.getElementById('calc-buffer').innerText = calcBuffer;
-        }
-
-        function getOpSymbol(op) {
-            if (op === '/') return '÷';
-            if (op === '*') return '×';
-            return op;
-        }
-
-        // --- Core History Handling ---
-        function addToHistory(name, result) {
-            const entry = {
-                id: Date.now(),
-                name,
-                result,
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            };
-            history.unshift(entry);
-            if (history.length > 15) history.pop();
-            renderHistory();
-            document.getElementById('history-dot').classList.remove('hidden');
-        }
-
-        function renderHistory() {
-            const list = document.getElementById('history-list');
-            const clearBtn = document.getElementById('clear-history-btn');
-            
-            if (history.length === 0) {
-                list.innerHTML = '<div class="text-center py-20 text-slate-500 italic font-medium">Empty calculations</div>';
-                clearBtn.classList.add('hidden');
-                document.getElementById('history-dot').classList.add('hidden');
-                return;
-            }
-
-            clearBtn.classList.remove('hidden');
-            list.innerHTML = history.map(item => `
-                <div class="p-4 bg-slate-950 border border-slate-800 rounded-2xl flex justify-between items-center animate-fadeIn">
-                    <div class="flex flex-col">
-                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-0.5">${item.name}</span>
-                        <span class="text-base font-extrabold text-white">${item.result}</span>
-                    </div>
-                    <span class="text-[10px] font-bold text-slate-500">${item.time}</span>
-                </div>
-            `).join('');
-        }
-
-        function clearHistory() {
-            history = [];
-            renderHistory();
-            showToast("Calculation logs cleared.", "trash-2");
-        }
-
-        function toggleHistory(show) {
-            const el = document.getElementById('history-sidebar');
-            if (show) {
-                el.classList.remove('hidden');
-                document.getElementById('history-dot').classList.add('hidden');
-            } else {
-                el.classList.add('hidden');
-            }
-        }
-
-        // --- Discount & Shopping Engine Mechanics ---
-        function setShopMode(mode) {
-            shopMode = mode;
-            const btnPrice = document.getElementById('btn-mode-price');
-            const btnPercent = document.getElementById('btn-mode-percent');
-            const inputLabel = document.getElementById('shop-input-label');
-            const subLabel = document.getElementById('shop-label');
-            const currencySign = document.getElementById('shop-currency');
-
-            if (!btnPrice || !btnPercent || !inputLabel || !subLabel || !currencySign) return;
-
-            if (mode === 'price') {
-                btnPrice.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-indigo-600 dynamic-bg-accent text-white shadow-md";
-                btnPercent.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400";
-                inputLabel.innerText = "Discount (%)";
-                subLabel.innerText = "Estimated Final Price";
-                currencySign.style.display = "inline";
-            } else {
-                btnPercent.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-indigo-600 dynamic-bg-accent text-white shadow-md";
-                btnPrice.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400";
-                inputLabel.innerText = "Sale Price (₹)";
-                subLabel.innerText = "Calculated Markdown Percent";
-                currencySign.style.display = "none";
-            }
-            updateShop();
-        }
-
-        function updateShop() {
-            const origEl = document.getElementById('shop-orig');
-            const valEl = document.getElementById('shop-value');
-            const resMain = document.getElementById('shop-res-main');
-            const resSub = document.getElementById('shop-res-sub');
-
-            if (!origEl || !valEl || !resMain || !resSub) return;
-
-            const orig = parseFloat(origEl.value) || 0;
-            const val = parseFloat(valEl.value) || 0;
-
-            if (orig <= 0) {
-                resMain.innerText = "0";
-                resSub.innerText = "Ready for parameters";
-                return;
-            }
-
-            if (shopMode === 'price') {
-                const finalPrice = orig - (orig * (val / 100));
-                resMain.innerText = Math.max(0, Math.round(finalPrice * 100) / 100);
-                resSub.innerText = `You save ₹${Math.round((orig - finalPrice) * 100) / 100}`;
-            } else {
-                if (val > orig) {
-                    resMain.innerText = "0";
-                    resSub.innerText = "Sale value cannot exceed original market value";
-                    return;
-                }
-                const pctSaved = ((orig - val) / orig) * 100;
-                resMain.innerText = Math.round(pctSaved * 100) / 100 + "%";
-                resSub.innerText = `Discount absolute weight: ₹${Math.round((orig - val) * 100) / 100}`;
-            }
-        }
-
-        // --- Tax & VAT Computation Logic ---
-        function setTaxMode(mode) {
-            taxMode = mode;
-            const btnAdd = document.getElementById('tax-btn-add');
-            const btnRemove = document.getElementById('tax-btn-remove');
-
-            if (!btnAdd || !btnRemove) return;
-
-            if (mode === 'add') {
-                btnAdd.className = "flex-1 py-2 rounded-lg text-xs font-bold transition-all bg-indigo-600 dynamic-bg-accent text-white";
-                btnRemove.className = "flex-1 py-2 rounded-lg text-xs font-bold transition-all text-slate-400";
-            } else {
-                btnRemove.className = "flex-1 py-2 rounded-lg text-xs font-bold transition-all bg-indigo-600 dynamic-bg-accent text-white";
-                btnAdd.className = "flex-1 py-2 rounded-lg text-xs font-bold transition-all text-slate-400";
-            }
-            calculateTax();
-        }
-
-        function calculateTax() {
-            const baseVal = parseFloat(document.getElementById('tax-base').value) || 0;
-            const rateVal = parseFloat(document.getElementById('tax-rate').value) || 0;
-
-            const taxOutput = document.getElementById('tax-res-calculated');
-            const totalOutput = document.getElementById('tax-res-total');
-
-            if (!taxOutput || !totalOutput) return;
-
-            let taxAmount = 0;
-            let totalVal = 0;
-
-            if (taxMode === 'add') {
-                taxAmount = baseVal * (rateVal / 100);
-                totalVal = baseVal + taxAmount;
-            } else {
-                totalVal = baseVal / (1 + (rateVal / 100));
-                taxAmount = baseVal - totalVal;
-            }
-
-            taxOutput.innerText = `₹${Math.round(taxAmount * 100) / 100}`;
-            totalOutput.innerText = `₹${Math.round(totalVal * 100) / 100}`;
-        }
-
-        // --- Health & BMI Metrics Visual Logic ---
-        function handleBMICalc() {
-            const w = parseFloat(document.getElementById('bmi-w').value) || 0;
-            const h = parseFloat(document.getElementById('bmi-h').value) || 0;
-            const box = document.getElementById('bmi-res-box');
-            const valSpan = document.getElementById('bmi-res-val');
-            const statusDiv = document.getElementById('bmi-status');
-            const pin = document.getElementById('bmi-pin');
-
-            if (w <= 0 || h <= 0) {
-                showToast("Enter absolute height and weight dimensions.", "alert-triangle", true);
-                return;
-            }
-
-            const hm = h / 100;
-            const bmi = w / (hm * hm);
-            const score = Math.round(bmi * 10) / 10;
-
-            valSpan.innerText = score;
-
-            // Determine visual pin position and categorization boundaries
-            let positionPercentage = 0;
-            if (score < 18.5) {
-                statusDiv.innerText = "Underweight";
-                statusDiv.className = "inline-block mt-2 text-xs font-black uppercase tracking-wider px-3.5 py-1 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/20";
-                positionPercentage = (score / 18.5) * 25; // Scale to under-limit quadrant
-            } else if (score < 25) {
-                statusDiv.innerText = "Optimal Weight";
-                statusDiv.className = "inline-block mt-2 text-xs font-black uppercase tracking-wider px-3.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/20";
-                positionPercentage = 25 + ((score - 18.5) / 6.5) * 30; // Scale to healthy quadrant
-            } else if (score < 30) {
-                statusDiv.innerText = "Overweight";
-                statusDiv.className = "inline-block mt-2 text-xs font-black uppercase tracking-wider px-3.5 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20";
-                positionPercentage = 55 + ((score - 25) / 5) * 25; // Scale to over-limit quadrant
-            } else {
-                statusDiv.innerText = "Obese Condition";
-                statusDiv.className = "inline-block mt-2 text-xs font-black uppercase tracking-wider px-3.5 py-1 rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/20";
-                positionPercentage = 80 + Math.min(20, ((score - 30) / 10) * 20); // Scale to obese quadrant
-            }
-
-            if (pin) {
-                pin.style.left = `calc(${Math.min(98, Math.max(2, positionPercentage))}% - 3px)`;
-            }
-
-            box.classList.remove('hidden');
-            addToHistory(`BMI Evaluation (${w}kg / ${h}cm)`, `${score} (${statusDiv.innerText})`);
-        }
-
-        // --- Pythagorean Math Calculation ---
-        function handlePythCalc() {
-            const a = parseFloat(document.getElementById('pyth-a').value) || 0;
-            const b = parseFloat(document.getElementById('pyth-b').value) || 0;
-            const box = document.getElementById('pyth-res-box');
-            const valSpan = document.getElementById('pyth-res-val');
-
-            if (a <= 0 || b <= 0) {
-                showToast("Side bounds must represent valid physical measurements.", "alert-triangle", true);
-                return;
-            }
-
-            const c = Math.sqrt((a * a) + (b * b));
-            const formattedC = Math.round(c * 1000) / 1000;
-
-            valSpan.innerText = formattedC;
-            box.classList.remove('hidden');
-            addToHistory(`Pythagoras (Sides: ${a}, ${b})`, `C = ${formattedC}`);
-        }
-
-        // --- Cross-System Conversion Matrix ---
-        function handleUnitConvert() {
-            const type = document.getElementById('unit-type').value;
-            const val = parseFloat(document.getElementById('unit-input').value);
-            const box = document.getElementById('unit-res-box');
-            const valSpan = document.getElementById('unit-res-val');
-
-            if (isNaN(val)) {
-                box.classList.add('hidden');
-                return;
-            }
-
-            let result = 0;
-            let unitLabel = '';
-
-            switch(type) {
-                case 'kg-lb': result = val * 2.20462; unitLabel = ' lbs'; break;
-                case 'lb-kg': result = val / 2.20462; unitLabel = ' kg'; break;
-                case 'km-mi': result = val * 0.621371; unitLabel = ' mi'; break;
-                case 'mi-km': result = val / 0.621371; unitLabel = ' km'; break;
-                case 'c-f': result = (val * 9/5) + 32; unitLabel = ' °F'; break;
-                case 'f-c': result = (val - 32) * 5/9; unitLabel = ' °C'; break;
-            }
-
-            const parsedResult = Math.round(result * 100) / 100 + unitLabel;
-            valSpan.innerText = parsedResult;
-            box.classList.remove('hidden');
-        }
-
-        // --- Hospitality Tip Processing Engine ---
-        function handleTipCalc() {
-            const bill = parseFloat(document.getElementById('tip-bill').value) || 0;
-            const pct = parseFloat(document.getElementById('tip-pct').value) || 0;
-            const people = Math.max(1, parseInt(document.getElementById('tip-people').value) || 1);
-
-            const tipAmt = bill * (pct / 100);
-            const total = bill + tipAmt;
-
-            document.getElementById('tip-res-amt').innerText = `₹${Math.round(tipAmt * 10) / 10}`;
-            document.getElementById('tip-res-split').innerText = `₹${Math.round((total / people) * 10) / 10}`;
-        }
-
-        // --- Voice Parsing Infrastructure ---
-        function initSpeech() {
-            const SpeechContract = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechContract) return;
-
-            if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
-                console.warn("OmniCalc Secure Mode: Microphone functionality requires secure SSL hosting.");
-            }
-
-            recognition = new SpeechContract();
-            recognition.continuous = false;
-            recognition.lang = 'en-IN';
-            recognition.interimResults = false;
-
-            recognition.onstart = () => {
-                isListening = true;
-                const mStatus = document.getElementById('mic-status');
-                if (mStatus) mStatus.classList.remove('hidden');
-                
-                const trigger = document.getElementById('mic-trigger');
-                if (trigger) trigger.className = "h-12 w-12 rounded-2xl flex items-center justify-center transition-all shadow-lg border border-rose-500/20 bg-rose-500/10 text-white mic-active-pulse animate-pulse";
-                
-                const icon = document.getElementById('mic-icon');
-                if (icon) icon.setAttribute('data-lucide', 'mic');
-                lucide.createIcons();
-            };
-
-            recognition.onend = () => {
-                isListening = false;
-                const mStatus = document.getElementById('mic-status');
-                if (mStatus) mStatus.classList.add('hidden');
-                
-                const trigger = document.getElementById('mic-trigger');
-                if (trigger) trigger.className = "h-12 w-12 rounded-2xl flex items-center justify-center transition-all shadow-lg border border-slate-700/40 bg-slate-800 hover:bg-slate-700";
-                
-                const icon = document.getElementById('mic-icon');
-                if (icon) icon.setAttribute('data-lucide', 'mic-off');
-                lucide.createIcons();
-            };
-
-            recognition.onresult = (event) => {
-                const text = event.results[0][0].transcript.toLowerCase();
-                parseVoiceCommand(text);
-            };
-
-            recognition.onerror = () => {
-                showToast("Speech registration error. Check browser configuration.", "alert-triangle", true);
-            };
-        }
-
-        function toggleVoice() {
-            if (!recognition) {
-                showToast("Web speech parsing module unconfigured on this platform.", "alert-triangle", true);
-                return;
-            }
-            if (isListening) {
-                recognition.stop();
-            } else {
-                try {
-                    recognition.start();
-                } catch(e) {
-                    showToast("Speech capture device busy.", "alert-triangle", true);
-                }
-            }
-        }
-
-        function parseVoiceCommand(phrase) {
-            const metrics = phrase.match(/\d+/g);
-            if (!metrics) return;
-
-            if (metrics.length >= 2) {
-                const origInput = document.getElementById('shop-orig');
-                const valInput = document.getElementById('shop-value');
-                if (origInput && valInput) {
-                    origInput.value = metrics[0];
-                    valInput.value = metrics[1];
-                    updateShop();
-                    showToast(`Loaded: Base ${metrics[0]}, Scale ${metrics[1]}`, "check-circle");
-                }
-            }
-        }
-    </script>
+<body class="min-h-screen flex flex-col items-center p-4 md:p-8">
+
+    <!-- Floating Voice Controller -->
+    <div id="status-toast" class="status-toast">Listening...</div>
+    <div class="voice-fab">
+        <button id="mic-btn" onclick="startVoice()" class="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-2xl hover:bg-blue-500 transition-all active:scale-90">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4z"></path>
+                <path d="M4 8a1 1 0 011 1 5 5 0 0010 0 1 1 0 112 0 7 7 0 01-14 0 1 1 0 011-1zM10 13a1 1 0 011 1v2a1 1 0 11-2 0v-2a1 1 0 011-1z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <div class="w-full max-w-xl space-y-6">
+        <!-- Minimal Header -->
+        <header class="text-center space-y-1">
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tighter uppercase bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                Step Fit Pro
+            </h1>
+            <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em]">Retail Standard Calculator</p>
+        </header>
+
+        <!-- Main Conversion Card -->
+        <main class="glass-card rounded-[2rem] p-5 md:p-8 space-y-6">
+            <!-- Tabs -->
+            <div class="flex p-1 bg-slate-900/80 rounded-xl">
+                <button onclick="setType('men')" id="btn-men" class="flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all active-tab">Men</button>
+                <button onclick="setType('women')" id="btn-women" class="flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all text-slate-500">Women</button>
+                <button onclick="setType('kids')" id="btn-kids" class="flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all text-slate-500">Kids</button>
+            </div>
+
+            <!-- Inputs -->
+            <div class="grid grid-cols-1 gap-4">
+                <!-- Master CM -->
+                <div class="input-container rounded-2xl p-4 space-y-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Foot Length (CM)</span>
+                        <span id="range-hint" class="text-[8px] text-slate-600 font-bold">24.0-29.3</span>
+                    </div>
+                    <input type="number" step="0.1" id="size-cm" placeholder="0.0" 
+                        class="w-full bg-transparent text-4xl font-extrabold outline-none text-white placeholder:text-slate-800"
+                        oninput="lookup('cm', this.value)">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="input-container rounded-2xl p-3 space-y-1">
+                        <span class="text-[9px] font-bold text-orange-400 uppercase tracking-widest">India / UK</span>
+                        <input type="number" step="0.5" id="size-in" placeholder="0" 
+                            class="w-full bg-transparent text-xl font-bold outline-none text-white"
+                            oninput="lookup('in', this.value)">
+                    </div>
+                    <div class="input-container rounded-2xl p-3 space-y-1">
+                        <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">US / CA</span>
+                        <input type="number" step="0.5" id="size-us" placeholder="0" 
+                            class="w-full bg-transparent text-xl font-bold outline-none text-white"
+                            oninput="lookup('us', this.value)">
+                    </div>
+                </div>
+
+                <div class="input-container rounded-2xl p-3 space-y-1">
+                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Europe (EU)</span>
+                    <input type="number" step="1" id="size-eu" placeholder="0" 
+                        class="w-full bg-transparent text-xl font-bold outline-none text-white"
+                        oninput="lookup('eu', this.value)">
+                </div>
+            </div>
+
+            <!-- Clear Action -->
+            <button onclick="clearAll()" class="w-full py-3 rounded-xl bg-slate-800/40 border border-slate-700/50 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-white hover:bg-red-500/20 transition-all">
+                Reset All
+            </button>
+        </main>
+
+        <!-- Dynamic Reference (Collapsible for Clutter-free UI) -->
+        <section class="space-y-3">
+            <button onclick="toggleSection('ref-table')" class="w-full flex items-center justify-between px-4 py-3 bg-slate-900/40 rounded-xl border border-white/5 group">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-white transition-colors">Retail Reference Chart</span>
+                <svg id="arrow-ref" class="w-4 h-4 text-slate-600 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </button>
+            <div id="ref-table" class="hidden overflow-hidden transition-all duration-300">
+                <div class="glass-card rounded-2xl p-4">
+                    <div class="overflow-x-auto no-scrollbar">
+                        <table class="w-full text-[10px] text-left">
+                            <thead class="text-slate-500 border-b border-white/5 uppercase">
+                                <tr>
+                                    <th class="pb-2">CM</th>
+                                    <th class="pb-2">EU</th>
+                                    <th class="pb-2">US</th>
+                                    <th class="pb-2 text-orange-400">IN</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body" class="text-slate-400"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="toggleSection('standards')" class="w-full flex items-center justify-between px-4 py-3 bg-slate-900/40 rounded-xl border border-white/5 group">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-white transition-colors">International Standards</span>
+                <svg id="arrow-std" class="w-4 h-4 text-slate-600 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </button>
+            <div id="standards" class="hidden space-y-2 p-1">
+                <div class="grid grid-cols-2 gap-2 text-[9px] uppercase tracking-tighter">
+                    <div class="bg-slate-900/60 p-3 rounded-lg border border-white/5">
+                        <p class="text-blue-400 font-bold mb-1">MondoPoint</p>
+                        <p class="text-slate-500 leading-tight">Metric length in CM/MM.</p>
+                    </div>
+                    <div class="bg-slate-900/60 p-3 rounded-lg border border-white/5">
+                        <p class="text-orange-400 font-bold mb-1">Barleycorn</p>
+                        <p class="text-slate-500 leading-tight">UK/IN: 1 size = 1/3 inch.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Minimal Footer -->
+        <footer class="text-center pt-8 opacity-40 hover:opacity-100 transition-opacity">
+            <p class="text-[9px] font-bold uppercase tracking-[0.3em] mb-1">Arvind Kumar Shukla</p>
+            <a href="tel:9616417485" class="text-xs font-bold text-blue-500">9616417485</a>
+        </footer>
+    </div>
+
+    <script>
+        let currentType = 'men';
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = SpeechRecognition ? new SpeechRecognition() : null;
+
+        const masterData = {
+            men: [
+                {cm: 24.0, eu: 38, us: 5, in: 4}, {cm: 24.7, eu: 39, us: 6, in: 5},
+                {cm: 25.3, eu: 40, us: 7, in: 6}, {cm: 26.0, eu: 41, us: 8, in: 7},
+                {cm: 26.7, eu: 42, us: 9, in: 8}, {cm: 27.3, eu: 43, us: 10, in: 9},
+                {cm: 28.0, eu: 44, us: 11, in: 10}, {cm: 28.7, eu: 45, us: 12, in: 11},
+                {cm: 29.3, eu: 46, us: 13, in: 12}
+            ],
+            women: [
+                {cm: 22.0, eu: 35, us: 4, in: 2}, {cm: 22.7, eu: 36, us: 5, in: 3},
+                {cm: 23.3, eu: 37, us: 6, in: 4}, {cm: 24.0, eu: 38, us: 6, in: 5},
+                {cm: 24.7, eu: 39, us: 7, in: 6}, {cm: 25.3, eu: 40, us: 8, in: 7},
+                {cm: 26.0, eu: 41, us: 9, in: 8}, {cm: 26.7, eu: 42, us: 10, in: 9},
+                {cm: 27.3, eu: 43, us: 11, in: 10}
+            ],
+            kids: [
+                {cm: 14.0, eu: 23, us: 6, in: 5}, {cm: 14.7, eu: 24, us: 7, in: 6},
+                {cm: 15.3, eu: 25, us: 8, in: 7}, {cm: 16.0, eu: 26, us: 9, in: 8},
+                {cm: 16.7, eu: 27, us: 10, in: 9}, {cm: 17.3, eu: 28, us: 11, in: 10},
+                {cm: 18.0, eu: 29, us: 12, in: 11}, {cm: 18.7, eu: 30, us: 13, in: 12},
+                {cm: 19.3, eu: 31, us: 1, in: 13}, {cm: 20.0, eu: 32, us: 2, in: 1},
+                {cm: 20.7, eu: 33, us: 3, in: 2}, {cm: 21.3, eu: 34, us: 4, in: 3}
+            ]
+        };
+
+        function setType(t) {
+            currentType = t;
+            ['men', 'women', 'kids'].forEach(b => {
+                const el = document.getElementById('btn-'+b);
+                el.className = (b===t) ? 'flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all active-tab' : 'flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all text-slate-500';
+            });
+            const range = masterData[t];
+            document.getElementById('range-hint').innerText = `${range[0].cm}-${range[range.length-1].cm}`;
+            renderTable();
+            clearAll();
+        }
+
+        function renderTable() {
+            const body = document.getElementById('table-body');
+            body.innerHTML = masterData[currentType].map(row => `
+                <tr class="border-b border-white/5">
+                    <td class="py-2 text-blue-400 font-bold">${row.cm}</td>
+                    <td class="py-2">${row.eu}</td>
+                    <td class="py-2">${row.us}</td>
+                    <td class="py-2 text-orange-400 font-bold">${row.in}</td>
+                </tr>
+            `).join('');
+        }
+
+        function toggleSection(id) {
+            const el = document.getElementById(id);
+            const arrow = document.getElementById('arrow-' + (id.split('-')[0]));
+            el.classList.toggle('hidden');
+            if(arrow) arrow.classList.toggle('rotate-180');
+        }
+
+        function lookup(source, val) {
+            if(val === "") return;
+            const v = parseFloat(val);
+            const dataset = masterData[currentType];
+            let match;
+            if (source === 'cm') {
+                match = dataset.find(d => d.cm >= v) || dataset[dataset.length-1];
+            } else {
+                match = dataset.find(d => d[source] == v) || dataset.reduce((prev, curr) => Math.abs(curr[source] - v) < Math.abs(prev[source] - v) ? curr : prev);
+            }
+            if(match) updateFields(match);
+        }
+
+        function updateFields(data) {
+            const ids = ['cm', 'in', 'us', 'eu'];
+            ids.forEach(id => {
+                const el = document.getElementById('size-' + id);
+                if (document.activeElement !== el) el.value = data[id];
+            });
+        }
+
+        function clearAll() {
+            ['cm', 'in', 'us', 'eu'].forEach(id => document.getElementById('size-'+id).value = '');
+        }
+
+        function startVoice() {
+            if(!recognition) return alert("Mic not supported");
+            recognition.start();
+            recognition.onstart = () => {
+                document.getElementById('mic-btn').classList.add('voice-pulse');
+                document.getElementById('status-toast').innerText = "Listening...";
+                document.getElementById('status-toast').classList.add('active');
+            };
+            recognition.onresult = (e) => {
+                const transcript = e.results[0][0].transcript;
+                const num = transcript.match(/\d+(\.\d+)?/);
+                if(num) {
+                    const val = num[0];
+                    if (parseFloat(val) > 15) {
+                        document.getElementById('size-cm').value = val;
+                        lookup('cm', val);
+                    } else {
+                        document.getElementById('size-in').value = val;
+                        lookup('in', val);
+                    }
+                    document.getElementById('status-toast').innerText = "Found: " + val;
+                }
+            };
+            recognition.onend = () => {
+                document.getElementById('mic-btn').classList.remove('voice-pulse');
+                setTimeout(() => document.getElementById('status-toast').classList.remove('active'), 2000);
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', () => setType('men'));
+    </script>
 </body>
 </html>
+
+```
+ADD THIS CODE IN THIS APP
