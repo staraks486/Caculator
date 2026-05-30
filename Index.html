@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="theme-indigo">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniCalc Pro - All-in-One Utility</title>
+    <title>OmniCalc Pro - Next-Gen Computational Utility</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
@@ -12,262 +14,695 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-tap-highlight-color: transparent;
+            background: #090d16;
         }
 
+        /* Custom Scrollbar */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Smooth glass cards */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .animate-fadeIn {
-            animation: fadeIn 0.4s ease-out forwards;
+        /* Tactile buttons */
+        .calc-btn {
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .calc-btn:active {
+            transform: scale(0.92);
         }
 
-        .calc-btn-active {
-            transform: scale(0.95);
-            background-color: #e2e8f0;
+        /* Smooth transitions for slide-out scientific drawer */
+        .scientific-drawer {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .mic-active-pulse {
-            box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.7);
-            animation: pulse 1.5s infinite cubic-bezier(0.66, 0, 0, 1);
+        /* Toast animation */
+        @keyframes slideInUp {
+            from { transform: translate(-50%, 20px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        .animate-toast {
+            animation: slideInUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
         }
 
-        @keyframes pulse {
-            to { box-shadow: 0 0 0 15px rgba(244, 63, 94, 0); }
+        /* Multi-Theme CSS Variable Mappings */
+        .theme-indigo {
+            --primary-rgb: 99, 102, 241;
+            --primary-accent: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.15);
+        }
+        .theme-rose {
+            --primary-rgb: 244, 63, 94;
+            --primary-accent: #f43f5e;
+            --primary-hover: #e11d48;
+            --primary-glow: rgba(244, 63, 94, 0.15);
+        }
+        .theme-emerald {
+            --primary-rgb: 16, 185, 129;
+            --primary-accent: #10b981;
+            --primary-hover: #059669;
+            --primary-glow: rgba(16, 185, 129, 0.15);
+        }
+        .theme-amber {
+            --primary-rgb: 245, 158, 11;
+            --primary-accent: #f59e0b;
+            --primary-hover: #d97706;
+            --primary-glow: rgba(245, 158, 11, 0.15);
+        }
+        .theme-cyan {
+            --primary-rgb: 6, 182, 212;
+            --primary-accent: #06b6d4;
+            --primary-hover: #0891b2;
+            --primary-glow: rgba(6, 182, 212, 0.15);
+        }
+
+        .dynamic-text-accent {
+            color: var(--primary-accent);
+        }
+        .dynamic-bg-accent {
+            background-color: var(--primary-accent);
+        }
+        .dynamic-bg-hover:hover {
+            background-color: var(--primary-hover);
+        }
+        .dynamic-bg-glow {
+            background-color: var(--primary-glow);
+        }
+        .dynamic-border-accent {
+            border-color: var(--primary-accent);
+        }
+        .dynamic-border-glow {
+            border-color: var(--primary-glow);
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 selection:bg-indigo-100 min-h-screen flex flex-col justify-between">
+<body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500/30">
 
-    <!-- Toast Notification Container -->
-    <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] transform transition-all duration-300 -translate-y-20 opacity-0 pointer-events-none">
-        <div class="bg-slate-900 text-white px-6 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-800">
-            <i data-lucide="info" class="w-5 h-5 text-indigo-400" id="toast-icon"></i>
-            <span id="toast-msg" class="text-xs font-semibold tracking-wide">Notification message</span>
+    <!-- Custom Toast Overlay -->
+    <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] animate-toast">
+        <div class="bg-slate-900/95 text-slate-100 border border-slate-700/50 backdrop-blur-md px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
+            <div id="toast-icon-wrapper" class="p-1 rounded-lg dynamic-bg-glow dynamic-text-accent">
+                <i data-lucide="info" class="w-4 h-4" id="toast-icon"></i>
+            </div>
+            <span id="toast-msg" class="text-xs font-semibold tracking-wide">Notification activated</span>
         </div>
     </div>
 
     <!-- Header -->
-    <header class="bg-white/80 backdrop-blur-md border-b sticky top-0 z-50 px-4 py-3">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2.5">
-                <div class="bg-gradient-to-br from-indigo-600 to-indigo-700 p-2 rounded-xl text-white shadow-lg">
-                    <i data-lucide="calculator" class="w-5 h-5"></i>
+    <header class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row gap-3 justify-between sm:items-center">
+            
+            <div class="flex items-center gap-3 justify-between sm:justify-start">
+                <div class="flex items-center gap-3">
+                    <div class="dynamic-bg-accent p-2.5 rounded-2xl text-white shadow-lg transition-colors duration-300">
+                        <i data-lucide="calculator" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-black tracking-tight text-white leading-none">OmniCalc <span class="dynamic-text-accent transition-colors duration-300">Pro</span></h1>
+                        <span class="text-[10px] text-slate-400 font-bold tracking-widest uppercase">Widget Integration Platform</span>
+                    </div>
                 </div>
-                <h1 class="text-xl font-extrabold tracking-tight text-slate-800">OmniCalc <span class="text-indigo-600">Pro</span></h1>
+                
+                <!-- Theme Customizer for host matching -->
+                <div class="flex items-center gap-1.5 bg-slate-900/90 border border-slate-800/80 p-1.5 rounded-xl ml-4">
+                    <span class="text-[9px] text-slate-500 uppercase font-black px-1 tracking-wider hidden md:inline">Match Host UI:</span>
+                    <button onclick="changeTheme('indigo')" class="w-4.5 h-4.5 rounded-full bg-indigo-500 border border-white/20 transition-transform hover:scale-110" title="Indigo Theme"></button>
+                    <button onclick="changeTheme('rose')" class="w-4.5 h-4.5 rounded-full bg-rose-500 border border-white/20 transition-transform hover:scale-110" title="Rose Theme"></button>
+                    <button onclick="changeTheme('emerald')" class="w-4.5 h-4.5 rounded-full bg-emerald-500 border border-white/20 transition-transform hover:scale-110" title="Emerald Theme"></button>
+                    <button onclick="changeTheme('amber')" class="w-4.5 h-4.5 rounded-full bg-amber-500 border border-white/20 transition-transform hover:scale-110" title="Amber Theme"></button>
+                    <button onclick="changeTheme('cyan')" class="w-4.5 h-4.5 rounded-full bg-cyan-500 border border-white/20 transition-transform hover:scale-110" title="Cyan Theme"></button>
+                </div>
             </div>
             
-            <div class="flex items-center gap-3">
-                <div id="mic-status" class="hidden flex items-center gap-2 px-3 py-1 bg-rose-50 rounded-full border border-rose-100">
-                    <div class="w-2 h-2 bg-rose-500 rounded-full animate-ping"></div>
-                    <span class="text-[10px] font-bold text-rose-600 uppercase">Mic Active</span>
+            <div class="flex items-center justify-between sm:justify-end gap-3 border-t border-slate-800/60 pt-3 sm:border-0 sm:pt-0">
+                <!-- Microphone indicator -->
+                <div id="mic-status" class="hidden flex items-center gap-2 px-3 py-1 bg-rose-500/10 rounded-full border border-rose-500/20">
+                    <div class="w-2 h-2 bg-rose-500 rounded-full animate-pulse"></div>
+                    <span class="text-[10px] font-extrabold text-rose-400 uppercase tracking-widest">Listening</span>
                 </div>
-                <button onclick="toggleHistory(true)" class="p-2 hover:bg-slate-100 rounded-full transition-colors relative">
-                    <i data-lucide="history" class="w-5 h-5 text-slate-500"></i>
-                    <div id="history-dot" class="hidden absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-500 rounded-full border-2 border-white"></div>
+                <!-- History toggler -->
+                <button onclick="toggleHistory(true)" class="p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl transition-colors relative" title="View Logs">
+                    <i data-lucide="history" class="w-4 h-4 text-slate-300"></i>
+                    <div id="history-dot" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-indigo-500 rounded-full border-2 border-slate-900"></div>
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
-            <!-- LEFT: Standard Calculator -->
-            <div class="lg:col-span-5 space-y-6">
-                <div class="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/50">
-                    <div class="bg-slate-900 rounded-3xl p-6 mb-6 shadow-inner">
-                        <div id="calc-buffer" class="text-indigo-400 font-mono text-sm h-6 text-right opacity-60 transition-all truncate"></div>
-                        <div id="calc-display" class="text-white text-5xl font-black text-right tracking-tighter font-mono truncate">0</div>
-                    </div>
-                    
-                    <div class="grid grid-cols-4 gap-3">
-                        <button onclick="handleClear()" class="h-14 rounded-2xl font-black bg-slate-100 text-slate-500 hover:bg-slate-200 transition-all col-span-2">AC</button>
-                        <button onclick="handleOp('/')" class="h-14 rounded-2xl font-black bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-all">÷</button>
-                        <button onclick="handleOp('*')" class="h-14 rounded-2xl font-black bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-all">×</button>
+    <!-- Mobile View-Switcher Bar (Only visible on mobile portrait screens) -->
+    <div class="lg:hidden bg-slate-950 border-b border-slate-850 p-2.5 flex gap-2.5 sticky top-[61px] sm:top-[69px] z-40">
+        <button id="view-toggle-calc" onclick="switchMobileView('calc')" class="flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider text-center transition-all bg-indigo-600 dynamic-bg-accent text-white shadow-lg">
+            Standard Calc
+        </button>
+        <button id="view-toggle-suite" onclick="switchMobileView('suite')" class="flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider text-center transition-all bg-slate-900 text-slate-400">
+            Specialty Suite
+        </button>
+    </div>
+
+    <!-- Main Workspace Container -->
+    <main class="max-w-6xl w-full mx-auto px-4 py-6 md:py-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- LEFT COLUMN: Calculator Module (Interactive pane) -->
+        <div id="calc-pane" class="lg:col-span-5 space-y-4">
+            <div class="glass-panel p-5 rounded-[2rem] shadow-2xl relative overflow-hidden">
+                <!-- Calculator display -->
+                <div class="bg-slate-950/90 border border-slate-800/80 rounded-2xl p-5 mb-5 shadow-inner">
+                    <div id="calc-buffer" class="dynamic-text-accent font-mono text-xs md:text-sm h-5 text-right opacity-80 tracking-wide truncate transition-colors duration-300"></div>
+                    <div id="calc-display" class="text-white text-4xl md:text-5xl font-extrabold text-right tracking-tight font-mono truncate mt-1">0</div>
+                </div>
+
+                <div class="flex gap-2">
+                    <!-- Standard grid layout -->
+                    <div class="grid grid-cols-4 gap-2.5 flex-1">
+                        <button onclick="handleClear()" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800/70 hover:bg-slate-800 text-slate-300 col-span-2 text-sm border border-slate-700/30">AC</button>
+                        <button onclick="handleOp('/')" class="calc-btn h-14 rounded-2xl font-black dynamic-bg-glow text-slate-200 hover:bg-white/5 text-lg border dynamic-border-glow transition-colors duration-300">÷</button>
+                        <button onclick="handleOp('*')" class="calc-btn h-14 rounded-2xl font-black dynamic-bg-glow text-slate-200 hover:bg-white/5 text-lg border dynamic-border-glow transition-colors duration-300">×</button>
                         
-                        <button onclick="handleNum('7')" class="h-14 rounded-2xl font-bold bg-slate-50 text-slate-700 hover:bg-white hover:shadow-md border border-transparent hover:border-slate-100 transition-all text-xl">7</button>
-                        <button onclick="handleNum('8')" class="h-14 rounded-2xl font-bold bg-slate-50 text-slate-700 hover:bg-white hover:shadow-md border border-transparent hover:border-slate-100 transition-all text-xl">8</button>
-                        <button onclick="handleNum('9')" class="h-14 rounded-2xl font-bold bg-slate-50 text-slate-700 hover:bg-white hover:shadow-md border border-transparent hover:border-slate-100 transition-all text-xl">9</button>
-                        <button onclick="handleOp('-')" class="h-14 rounded-2xl font-black bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-all">−</button>
+                        <button onclick="handleNum('7')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">7</button>
+                        <button onclick="handleNum('8')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">8</button>
+                        <button onclick="handleNum('9')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">9</button>
+                        <button onclick="handleOp('-')" class="calc-btn h-14 rounded-2xl font-black dynamic-bg-glow text-slate-200 hover:bg-white/5 text-lg border dynamic-border-glow transition-colors duration-300">−</button>
                         
-                        <button onclick="handleNum('4')" class="h-14 rounded-2xl font-bold bg-slate-50 text-slate-700 hover:bg-white hover:shadow-md border border-transparent hover:border-slate-100 transition-all text-xl">4</button>
-                        <button onclick="handleNum('5')" class="h-14 rounded-2xl font-bold bg-slate-50 text-slate-700 hover:bg-white hover:shadow-md border border-transparent hover:border-slate-100 transition-all text-xl">5</button>
-                        <button onclick="handleNum('6')" class="h-14 rounded-2xl font-bold bg-slate-50 text-slate-700 hover:bg-white hover:shadow-md border border-transparent hover:border-slate-100 transition-all text-xl">6</button>
-                        <button onclick="handleOp('+')" class="h-14 rounded-2xl font-black bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-all">+</button>
+                        <button onclick="handleNum('4')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">4</button>
+                        <button onclick="handleNum('5')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">5</button>
+                        <button onclick="handleNum('6')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">6</button>
+                        <button onclick="handleOp('+')" class="calc-btn h-14 rounded-2xl font-black dynamic-bg-glow text-slate-200 hover:bg-white/5 text-lg border dynamic-border-glow transition-colors duration-300">+</button>
                         
-                        <button onclick="handleNum('1')" class="h-14 rounded-2xl font-bold bg-slate-50 text-slate-700 hover:bg-white hover:shadow-md border border-transparent hover:border-slate-100 transition-all text-xl">1</button>
-                        <button onclick="handleNum('2')" class="h-14 rounded-2xl font-bold bg-slate-50 text-slate-700 hover:bg-white hover:shadow-md border border-transparent hover:border-slate-100 transition-all text-xl">2</button>
-                        <button onclick="handleNum('3')" class="h-14 rounded-2xl font-bold bg-slate-50 text-slate-700 hover:bg-white hover:shadow-md border border-transparent hover:border-slate-100 transition-all text-xl">3</button>
-                        <button onclick="handleEqual()" class="h-32 rounded-2xl font-black bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg row-span-2 transition-all flex items-center justify-center">
-                            <i data-lucide="equal" class="w-7 h-7"></i>
+                        <button onclick="handleNum('1')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">1</button>
+                        <button onclick="handleNum('2')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">2</button>
+                        <button onclick="handleNum('3')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">3</button>
+                        <button onclick="handleEqual()" class="calc-btn h-30 rounded-2xl font-black dynamic-bg-accent hover:opacity-90 text-white shadow-lg row-span-2 flex items-center justify-center border border-white/10 transition-all duration-300">
+                            <i data-lucide="equal" class="w-6 h-6"></i>
                         </button>
                         
-                        <button onclick="handleNum('0')" class="h-14 rounded-2xl font-bold bg-slate-50 text-slate-700 hover:bg-white hover:shadow-md border border-transparent hover:border-slate-100 transition-all text-xl col-span-2">0</button>
-                        <button onclick="handleNum('.')" class="h-14 rounded-2xl font-bold bg-slate-50 text-slate-700 hover:bg-white hover:shadow-md border border-transparent hover:border-slate-100 transition-all text-xl">.</button>
+                        <button onclick="handleNum('0')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg col-span-2">0</button>
+                        <button onclick="handleNum('.')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">.</button>
+                    </div>
+
+                    <!-- Slide-out Scientific Mode Drawer -->
+                    <div id="sci-panel" class="scientific-drawer w-0 overflow-hidden flex flex-col gap-2.5">
+                        <button onclick="handleSciOp('sin')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700/40 text-xs px-2">SIN</button>
+                        <button onclick="handleSciOp('cos')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700/40 text-xs px-2">COS</button>
+                        <button onclick="handleSciOp('tan')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700/40 text-xs px-2">TAN</button>
+                        <button onclick="handleSciOp('sqrt')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700/40 text-xs px-2">√</button>
+                        <button onclick="handleSciOp('pow')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700/40 text-xs px-2">x²</button>
                     </div>
                 </div>
+
+                <!-- Expander bar for scientific keys -->
+                <button onclick="toggleScientificMode()" class="w-full mt-4 py-2 border-t border-slate-800/80 text-xs text-slate-400 font-extrabold tracking-widest flex items-center justify-center gap-1.5 hover:text-slate-300 transition-colors uppercase">
+                    <span id="sci-toggle-text">Scientific Drawer</span>
+                    <i data-lucide="chevron-right" id="sci-toggle-arrow" class="w-3.5 h-3.5 transition-transform duration-300"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Multi-Engine Dashboard (Specialty Suite) -->
+        <div id="suite-pane" class="hidden lg:col-span-7 space-y-6 lg:block">
+            
+            <div class="flex p-1.5 bg-slate-900 border border-slate-800 rounded-full shadow-inner overflow-x-auto no-scrollbar">
+                <button onclick="switchTab('finance')" id="tab-finance" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm">
+                    <i data-lucide="shopping-cart" class="w-4 h-4"></i> Shopping & Finance
+                </button>
+                <button onclick="switchTab('health')" id="tab-health" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm">
+                    <i data-lucide="heart-pulse" class="w-4 h-4"></i> Health
+                </button>
+                <button onclick="switchTab('math')" id="tab-math" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm">
+                    <i data-lucide="zap" class="w-4 h-4"></i> Science
+                </button>
+                <button onclick="switchTab('unit')" id="tab-unit" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm">
+                    <i data-lucide="arrow-right-left" class="w-4 h-4"></i> Convert
+                </button>
+                <button onclick="switchTab('utility')" id="tab-utility" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm">
+                    <i data-lucide="briefcase" class="w-4 h-4"></i> More
+                </button>
             </div>
 
-            <!-- RIGHT: Tabbed Field Calculators -->
-            <div class="lg:col-span-7 space-y-6">
-                <div class="flex p-1.5 bg-white border border-slate-200 rounded-full shadow-sm overflow-x-auto no-scrollbar">
-                    <button onclick="switchTab('finance')" id="tab-finance" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm bg-indigo-600 text-white shadow-md">
-                        <i data-lucide="shopping-cart" class="w-4 h-4"></i> Shopping & Finance
-                    </button>
-                    <button onclick="switchTab('health')" id="tab-health" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-500 hover:text-slate-800">
-                        <i data-lucide="heart-pulse" class="w-4 h-4"></i> Health
-                    </button>
-                    <button onclick="switchTab('math')" id="tab-math" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-500 hover:text-slate-800">
-                        <i data-lucide="zap" class="w-4 h-4"></i> Science
-                    </button>
-                    <button onclick="switchTab('unit')" id="tab-unit" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-500 hover:text-slate-800">
-                        <i data-lucide="arrow-right-left" class="w-4 h-4"></i> Convert
-                    </button>
-                    <button onclick="switchTab('utility')" id="tab-utility" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-500 hover:text-slate-800">
-                        <i data-lucide="briefcase" class="w-4 h-4"></i> More
-                    </button>
+            <!-- Modular content wrappers (Switches dynamically using hidden attributes to preserve input state) -->
+            <div id="tab-content-container" class="space-y-6">
+
+                <!-- 1. Finance & Shopping Tab -->
+                <div id="panel-finance" class="tab-panel animate-fadeIn space-y-6">
+                    <div class="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
+                        <div class="p-6 md:p-8 border-b border-slate-800/80 flex justify-between items-center bg-slate-950/40">
+                            <div>
+                                <h2 class="text-xl md:text-2xl font-black tracking-tight text-white">Discount Engine</h2>
+                                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mt-0.5">Shopping Analysis Profile</p>
+                            </div>
+                            <button onclick="toggleVoice()" id="mic-trigger" class="h-12 w-12 rounded-2xl flex items-center justify-center transition-all shadow-lg border border-slate-700/40 bg-slate-800 hover:bg-slate-700" title="Voice Input">
+                                <i data-lucide="mic-off" class="w-5 h-5 dynamic-text-accent" id="mic-icon"></i>
+                            </button>
+                        </div>
+                        <div class="p-6 md:p-8 space-y-6">
+                            <!-- Visual Output Badge -->
+                            <div class="bg-slate-950/80 border border-slate-800/85 rounded-3xl p-8 text-center shadow-inner relative">
+                                <p id="shop-label" class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Estimated Final Price</p>
+                                <div class="text-5xl md:text-6xl font-extrabold text-white mb-2 flex items-center justify-center gap-1">
+                                    <span id="shop-currency" class="text-2xl text-slate-500 mt-1 font-light">₹</span>
+                                    <span id="shop-res-main" class="tabular-nums">0</span>
+                                </div>
+                                <span id="shop-res-sub" class="inline-block px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full font-bold text-xs">Ready for parameters</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div class="flex bg-slate-950 p-1 rounded-2xl sm:col-span-2 border border-slate-800">
+                                    <button onclick="setShopMode('price')" id="btn-mode-price" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-indigo-600 dynamic-bg-accent text-white shadow-md">FIND FINAL PRICE</button>
+                                    <button onclick="setShopMode('percent')" id="btn-mode-percent" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400">FIND DISCOUNT %</button>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Market Price (₹)</label>
+                                    <input type="number" id="shop-orig" oninput="updateShop()" class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:bg-slate-900 p-4 rounded-2xl text-lg font-bold transition-all outline-none text-white" placeholder="0">
+                                </div>
+                                <div class="space-y-2">
+                                    <label id="shop-input-label" class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Discount (%)</label>
+                                    <div class="relative">
+                                        <input type="number" id="shop-value" oninput="updateShop()" class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:bg-slate-900 p-4 rounded-2xl text-lg font-bold transition-all outline-none text-white" placeholder="0">
+                                        <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">
+                                            <i data-lucide="percent" class="w-4 h-4" id="shop-icon-input"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tax & VAT Calculator Component -->
+                    <div class="glass-panel rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-5">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2.5 dynamic-bg-glow dynamic-text-accent rounded-2xl border dynamic-border-glow transition-all duration-300">
+                                <i data-lucide="landmark" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-black text-white leading-none">Tax & VAT Processor</h3>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Value-Added Calculation Node</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Base Amount (₹)</label>
+                                <input type="number" id="tax-base" oninput="calculateTax()" class="w-full bg-slate-950 border border-slate-800/80 p-3.5 rounded-xl text-base font-bold text-white focus:outline-none focus:border-indigo-500" placeholder="1000">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Tax Rate (%)</label>
+                                <input type="number" id="tax-rate" oninput="calculateTax()" class="w-full bg-slate-950 border border-slate-800/80 p-3.5 rounded-xl text-base font-bold text-white focus:outline-none focus:border-indigo-500" value="18">
+                            </div>
+                        </div>
+
+                        <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
+                            <button onclick="setTaxMode('add')" id="tax-btn-add" class="flex-1 py-2 rounded-lg text-xs font-bold transition-all bg-indigo-600 dynamic-bg-accent text-white">ADD TAX (INC)</button>
+                            <button onclick="setTaxMode('remove')" id="tax-btn-remove" class="flex-1 py-2 rounded-lg text-xs font-bold transition-all text-slate-400">REMOVE TAX (EXC)</button>
+                        </div>
+
+                        <!-- Computed Tax values display -->
+                        <div class="bg-slate-950 border border-slate-850 rounded-2xl p-5 grid grid-cols-2 gap-4">
+                            <div class="text-center border-r border-slate-800">
+                                <p class="text-[10px] font-bold text-slate-500 uppercase">Calculated Tax Amount</p>
+                                <span id="tax-res-calculated" class="text-lg font-black text-white">₹180</span>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-[10px] font-bold text-slate-500 uppercase">Total Resulting Value</p>
+                                <span id="tax-res-total" class="text-lg font-black dynamic-text-accent transition-colors duration-300">₹1180</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div id="tab-content" class="min-h-[500px]">
-                    <!-- Hydrated dynamically by switchTab -->
+                <!-- 2. Health & Wellness Tab -->
+                <div id="panel-health" class="tab-panel hidden animate-fadeIn max-w-xl mx-auto bg-slate-900/40 border border-slate-800 rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 bg-rose-500/10 text-rose-400 rounded-2xl border border-rose-500/20">
+                            <i data-lucide="heart-pulse" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-black text-white">Body Mass Index</h2>
+                            <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Medical Assessment Tool</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Weight (kg)</label>
+                            <input type="number" id="bmi-w" class="w-full bg-slate-950 p-4 border border-slate-800 focus:border-rose-500/40 focus:bg-slate-900 rounded-2xl text-lg font-bold text-white outline-none transition-all" placeholder="70">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Height (cm)</label>
+                            <input type="number" id="bmi-h" class="w-full bg-slate-950 p-4 border border-slate-800 focus:border-rose-500/40 focus:bg-slate-900 rounded-2xl text-lg font-bold text-white outline-none transition-all" placeholder="175">
+                        </div>
+                    </div>
+
+                    <button onclick="handleBMICalc()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-black py-4 rounded-[1.5rem] shadow-xl shadow-rose-600/15 transition-all text-sm uppercase tracking-wider">
+                        CALCULATE BMI
+                    </button>
+
+                    <!-- Advanced interactive visual gauge -->
+                    <div id="bmi-res-box" class="hidden bg-slate-950 border border-slate-800 p-6 rounded-3xl text-center space-y-4 animate-fadeIn">
+                        <div>
+                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Your BMI index</p>
+                            <div id="bmi-res-val" class="text-5xl font-extrabold tracking-tight text-rose-500 tabular-nums">0</div>
+                            <div id="bmi-status" class="inline-block mt-2 text-xs font-black uppercase tracking-wider px-3.5 py-1 rounded-full">Optimal</div>
+                        </div>
+                        
+                        <!-- Visual scale progress bar -->
+                        <div class="space-y-1">
+                            <div class="relative w-full h-3 bg-slate-900 rounded-full overflow-hidden flex">
+                                <div class="h-full bg-blue-500/70" style="width: 25%"></div>
+                                <div class="h-full bg-emerald-500/70" style="width: 30%"></div>
+                                <div class="h-full bg-amber-500/70" style="width: 25%"></div>
+                                <div class="h-full bg-rose-500/70" style="width: 20%"></div>
+                                <!-- Indicator marker pin -->
+                                <div id="bmi-pin" class="absolute top-0 bottom-0 w-1.5 bg-white shadow-lg transition-all duration-500" style="left: 0%"></div>
+                            </div>
+                            <div class="flex justify-between text-[9px] text-slate-500 font-bold uppercase tracking-wider px-1">
+                                <span>Under</span>
+                                <span>Healthy</span>
+                                <span>Over</span>
+                                <span>Obese</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- 3. Science Trigonometry & Pythagoras Tab -->
+                <div id="panel-math" class="tab-panel hidden animate-fadeIn max-w-xl mx-auto bg-slate-900/40 border border-slate-800 rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 bg-blue-500/10 text-blue-400 rounded-2xl border border-blue-500/20">
+                            <i data-lucide="triangle" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-black text-white">Pythagorean Geometry</h2>
+                            <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Spatial Triangulation Engine</p>
+                        </div>
+                    </div>
+
+                    <!-- Decorative Geometric Graphic -->
+                    <div class="relative h-32 bg-slate-950/60 border border-slate-800/80 rounded-2xl flex items-center justify-center overflow-hidden">
+                        <!-- Dynamic vector triangle layout -->
+                        <svg class="w-48 h-24 text-indigo-500/20" viewBox="0 0 100 50">
+                            <polygon points="10,45 80,45 80,5" fill="none" stroke="currentColor" stroke-width="2" />
+                            <text x="45" y="49" class="text-[7px] fill-slate-500 font-extrabold font-sans">Side A</text>
+                            <text x="83" y="25" class="text-[7px] fill-slate-500 font-extrabold font-sans">Side B</text>
+                            <text x="35" y="20" class="text-[7px] fill-indigo-400 font-extrabold font-sans">Hypotenuse C</text>
+                        </svg>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Side A</label>
+                            <input type="number" id="pyth-a" placeholder="Length" class="p-4 w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl font-bold text-center text-white outline-none transition-all">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Side B</label>
+                            <input type="number" id="pyth-b" placeholder="Length" class="p-4 w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl font-bold text-center text-white outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <button onclick="handlePythCalc()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-[1.5rem] shadow-xl shadow-blue-600/15 transition-all text-sm uppercase tracking-wider">
+                        FIND HYPOTENUSE (SIDE C)
+                    </button>
+                    
+                    <div id="pyth-res-box" class="hidden bg-slate-950 border border-slate-800 p-5 rounded-2xl text-center animate-fadeIn">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Resulting Hypotenuse</p>
+                        <div class="text-3xl font-extrabold text-blue-400 tracking-tight">C = <span id="pyth-res-val">0</span></div>
+                    </div>
+                </div>
+
+                <!-- 4. Converters Tab -->
+                <div id="panel-unit" class="tab-panel hidden animate-fadeIn max-w-xl mx-auto bg-slate-900/40 border border-slate-800 rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-2xl border border-indigo-500/20">
+                            <i data-lucide="arrow-right-left" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-black text-white">Dimensional Bridge</h2>
+                            <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Cross-System Unit Converter</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <select id="unit-type" onchange="handleUnitConvert()" class="w-full p-4 bg-slate-950 border border-slate-800 hover:border-slate-700 rounded-2xl font-bold text-slate-200 outline-none transition-all cursor-pointer">
+                            <option value="kg-lb">Weight: Kilogram (kg) → Pound (lb)</option>
+                            <option value="lb-kg">Weight: Pound (lb) → Kilogram (kg)</option>
+                            <option value="km-mi">Distance: Kilometer (km) → Mile (mi)</option>
+                            <option value="mi-km">Distance: Mile (mi) → Kilometer (km)</option>
+                            <option value="c-f">Temperature: Celsius (°C) → Fahrenheit (°F)</option>
+                            <option value="f-c">Temperature: Fahrenheit (°F) → Celsius (°C)</option>
+                        </select>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Input Value</label>
+                            <input type="number" id="unit-input" oninput="handleUnitConvert()" class="w-full bg-slate-950 p-4 border border-slate-800 focus:border-indigo-500 focus:bg-slate-900 rounded-2xl text-xl font-bold text-white outline-none transition-all" placeholder="Enter value">
+                        </div>
+                    </div>
+
+                    <div id="unit-res-box" class="hidden bg-indigo-500/10 p-5 rounded-2xl border border-indigo-500/20 text-center animate-fadeIn">
+                        <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Converted Balance</p>
+                        <div id="unit-res-val" class="text-3xl font-extrabold text-white">0</div>
+                    </div>
+                </div>
+
+                <!-- 5. Tip & Split Tab -->
+                <div id="panel-utility" class="tab-panel hidden animate-fadeIn max-w-xl mx-auto bg-slate-900/40 border border-slate-800 rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 bg-amber-500/10 text-amber-400 rounded-2xl border border-amber-500/20">
+                            <i data-lucide="dollar-sign" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-black text-white">Tip & Split Engine</h2>
+                            <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Hospitality Expense Allocator</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Total Bill (₹)</label>
+                                <input type="number" id="tip-bill" oninput="handleTipCalc()" class="w-full bg-slate-950 p-4 border border-slate-800 rounded-xl font-bold text-white outline-none focus:border-amber-500/40" placeholder="1000">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Tip Percent (%)</label>
+                                <input type="number" id="tip-pct" oninput="handleTipCalc()" class="w-full bg-slate-950 p-4 border border-slate-800 rounded-xl font-bold text-white outline-none focus:border-amber-500/40" value="10">
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Split Group Count</label>
+                            <input type="number" id="tip-people" oninput="handleTipCalc()" class="w-full bg-slate-950 p-4 border border-slate-800 rounded-xl font-bold text-white outline-none focus:border-amber-500/40" value="2">
+                        </div>
+                    </div>
+
+                    <!-- Multi-tier display grid -->
+                    <div class="bg-amber-500/10 border border-amber-500/20 rounded-3xl p-6 grid grid-cols-2 gap-4">
+                        <div class="text-center border-r border-amber-500/20">
+                            <p class="text-[10px] font-black text-amber-400 uppercase tracking-wider mb-1">Total Tip Allocated</p>
+                            <div id="tip-res-amt" class="text-2xl font-black text-white">₹0</div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-[10px] font-black text-amber-400 uppercase tracking-wider mb-1">Per Person Allocation</p>
+                            <div id="tip-res-split" class="text-2xl font-black text-white">₹0</div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </main>
 
     <!-- History Sidebar -->
     <div id="history-sidebar" class="hidden fixed inset-0 z-[60] flex justify-end">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="toggleHistory(false)"></div>
-        <div class="relative w-full max-w-sm bg-white h-full shadow-2xl p-6 flex flex-col">
-            <div class="flex justify-between items-center mb-8">
-                <h3 class="text-xl font-black text-slate-800 flex items-center gap-2">
-                    <i data-lucide="history" class="w-5 h-5 text-indigo-600"></i> History
-                </h3>
-                <button onclick="toggleHistory(false)" class="p-2 hover:bg-slate-100 rounded-full"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onclick="toggleHistory(false)"></div>
+        <div class="relative w-full max-w-sm bg-slate-900 border-l border-slate-800/80 h-full shadow-2xl p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-xl font-black text-slate-100 flex items-center gap-2">
+                        <i data-lucide="history" class="w-5 h-5 text-indigo-400"></i> History Logs
+                    </h3>
+                    <button onclick="toggleHistory(false)" class="p-2 hover:bg-slate-800 rounded-full text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                
+                <div id="history-list" class="space-y-3 max-h-[60vh] overflow-y-auto no-scrollbar">
+                    <div class="text-center py-20 text-slate-500 italic font-medium">Empty calculations</div>
+                </div>
             </div>
             
-            <div id="history-list" class="flex-1 overflow-y-auto space-y-3 no-scrollbar">
-                <div class="text-center py-20 text-slate-400 italic font-medium">Empty logs</div>
-            </div>
-            
-            <button id="clear-history-btn" onclick="clearHistory()" class="hidden mt-6 w-full py-4 bg-slate-100 text-slate-500 font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-rose-50 hover:text-rose-500 transition-all flex items-center justify-center gap-2">
-                <i data-lucide="trash-2" class="w-4 h-4"></i> Clear
+            <button id="clear-history-btn" onclick="clearHistory()" class="hidden w-full py-4 bg-slate-950 hover:bg-rose-950/40 border border-slate-800 text-slate-400 hover:text-rose-400 font-bold text-xs uppercase tracking-widest rounded-2xl transition-all flex items-center justify-center gap-2">
+                <i data-lucide="trash-2" class="w-4 h-4"></i> Clear History
             </button>
         </div>
     </div>
 
-    <!-- Footer Information -->
-    <footer class="bg-white border-t py-4 px-4 text-center text-xs text-slate-400">
-        <div class="max-w-6xl mx-auto">
-            © 2026 OmniCalc Pro Utility Engine. Optimized for Secure HTTPS Environments.
+    <!-- Footer Area -->
+    <footer class="bg-slate-950 border-t border-slate-900 py-4 text-center text-xs text-slate-500">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <span>© 2026 OmniCalc Pro Widget System. All mathematical calculations execute locally.</span>
+            <div class="flex items-center gap-3">
+                <span class="hover:text-indigo-400 cursor-pointer transition-colors" onclick="showToast('Local state security protocol active.', 'shield-check')">Security Verified</span>
+                <span class="w-1 h-1 bg-slate-800 rounded-full"></span>
+                <span class="hover:text-indigo-400 cursor-pointer transition-colors" onclick="showToast('Designed for frictionless widget embeds.', 'terminal')">API Widget Mode</span>
+            </div>
         </div>
     </footer>
 
-    <!-- Scripts -->
+    <!-- Interactive Execution Logic Scripts -->
     <script>
-        // --- Initialization ---
+        // --- State Management ---
         let history = [];
         let activeTabId = 'finance';
+        let currentMobileView = 'calc'; // or 'suite'
         
-        // Calculator State
+        // Calculator Core Memory Arrays
         let calcDisplay = '0';
         let calcPrevValue = null;
         let lastOp = null;
         let shouldReset = false;
         let calcBuffer = '';
+        let scientificMode = false;
 
-        // Shopping State
-        let shopMode = 'price'; 
+        // Custom Variables for Specialty Tools
+        let shopMode = 'price';
         let isListening = false;
         let recognition = null;
+        let taxMode = 'add'; // or 'remove'
 
+        // Initialize elements on load
         window.onload = () => {
             initSpeech();
             switchTab('finance');
+            setupKeyboardListeners();
+            calculateTax();
         };
 
-        // --- Custom Toast Warning Mechanism ---
-        function showToast(message, isSuccess = false) {
+        // --- Live Theme Customizer for 3rd Party Matching ---
+        function changeTheme(themeName) {
+            const documentElement = document.documentElement;
+            // Clean active classes
+            documentElement.className = '';
+            documentElement.classList.add(`theme-${themeName}`);
+            
+            showToast(`Widget matched to ${themeName.toUpperCase()} theme`, "palette", false);
+        }
+
+        // --- Custom Toast Alert Override ---
+        function showToast(message, iconName = "info", isAlert = false) {
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toast-msg');
             const toastIcon = document.getElementById('toast-icon');
+            const iconWrapper = document.getElementById('toast-icon-wrapper');
 
             if (!toast || !toastMsg) return;
 
             toastMsg.innerText = message;
             if (toastIcon) {
-                toastIcon.setAttribute('data-lucide', isSuccess ? 'check-circle' : 'alert-circle');
-                toastIcon.className = isSuccess ? 'w-5 h-5 text-emerald-400' : 'w-5 h-5 text-rose-400';
-                lucide.createIcons();
+                toastIcon.setAttribute('data-lucide', iconName);
             }
+            if (iconWrapper) {
+                iconWrapper.className = isAlert 
+                    ? "p-1 rounded-lg bg-rose-500/10 text-rose-400" 
+                    : "p-1 rounded-lg dynamic-bg-glow dynamic-text-accent transition-all duration-300";
+            }
+            lucide.createIcons();
 
-            // Slide Toast down
-            toast.className = "fixed top-4 left-1/2 -translate-x-1/2 z-[100] transform transition-all duration-300 translate-y-0 opacity-100";
-
+            toast.classList.remove('hidden');
             setTimeout(() => {
-                toast.className = "fixed top-4 left-1/2 -translate-x-1/2 z-[100] transform transition-all duration-300 -translate-y-20 opacity-0 pointer-events-none";
-            }, 4000);
+                toast.classList.add('hidden');
+            }, 3500);
         }
 
-        // --- Core History ---
-        function addToHistory(name, result) {
-            const entry = {
-                id: Date.now(),
-                name,
-                result,
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            };
-            history.unshift(entry);
-            if (history.length > 15) history.pop();
-            renderHistory();
-            document.getElementById('history-dot').classList.remove('hidden');
-        }
+        // --- Mobile Specific Split-Pane Handling ---
+        function switchMobileView(view) {
+            currentMobileView = view;
+            const btnCalc = document.getElementById('view-toggle-calc');
+            const btnSuite = document.getElementById('view-toggle-suite');
+            const paneCalc = document.getElementById('calc-pane');
+            const paneSuite = document.getElementById('suite-pane');
 
-        function renderHistory() {
-            const list = document.getElementById('history-list');
-            const clearBtn = document.getElementById('clear-history-btn');
-            
-            if (history.length === 0) {
-                list.innerHTML = '<div class="text-center py-20 text-slate-400 italic font-medium">Empty logs</div>';
-                clearBtn.classList.add('hidden');
-                document.getElementById('history-dot').classList.add('hidden');
-                return;
-            }
-
-            clearBtn.classList.remove('hidden');
-            list.innerHTML = history.map(item => `
-                <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex justify-between items-center animate-fadeIn">
-                    <div class="flex flex-col">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-0.5">${item.name}</span>
-                        <span class="text-lg font-bold text-slate-800">${item.result}</span>
-                    </div>
-                    <span class="text-[10px] font-bold text-slate-300">${item.time}</span>
-                </div>
-            `).join('');
-        }
-
-        function clearHistory() {
-            history = [];
-            renderHistory();
-        }
-
-        function toggleHistory(show) {
-            const el = document.getElementById('history-sidebar');
-            if (show) {
-                el.classList.remove('hidden');
-                document.getElementById('history-dot').classList.add('hidden');
+            if (view === 'calc') {
+                btnCalc.className = "flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider text-center transition-all bg-indigo-600 dynamic-bg-accent text-white shadow-lg";
+                btnSuite.className = "flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider text-center transition-all bg-slate-900 text-slate-400";
+                paneCalc.classList.remove('hidden');
+                paneSuite.classList.add('hidden');
+                paneSuite.classList.remove('lg:block');
             } else {
-                el.classList.add('hidden');
+                btnSuite.className = "flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider text-center transition-all bg-indigo-600 dynamic-bg-accent text-white shadow-lg";
+                btnCalc.className = "flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider text-center transition-all bg-slate-900 text-slate-400";
+                paneSuite.classList.remove('hidden');
+                paneSuite.classList.add('lg:block');
+                paneCalc.classList.add('hidden');
             }
         }
 
-        // --- Standard Calculator Logic ---
+        // --- Multi-Engine Dynamic Switcher ---
+        function switchTab(tabId) {
+            activeTabId = tabId;
+
+            // Hide all tab panels
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+
+            // Show selected panel
+            const targetPanel = document.getElementById(`panel-${tabId}`);
+            if (targetPanel) {
+                targetPanel.classList.remove('hidden');
+            }
+
+            // Clean active classes on nav headers
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-500 hover:text-slate-300";
+            });
+
+            // Activate target menu button
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn active-tab flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm bg-indigo-600 dynamic-bg-accent text-white shadow-lg shadow-indigo-500/10";
+            }
+
+            // Sync visual attributes if tab matches specific submodules
+            if (tabId === 'finance') {
+                setShopMode(shopMode);
+            }
+
+            lucide.createIcons();
+        }
+
+        // --- Keyboard Entry Listeners ---
+        function setupKeyboardListeners() {
+            window.addEventListener('keydown', (e) => {
+                const targetTagName = e.target.tagName.toLowerCase();
+                if (targetTagName === 'input' || targetTagName === 'select') return; // Bypass if typing in forms
+
+                if (e.key >= '0' && e.key <= '9') handleNum(e.key);
+                else if (e.key === '.') handleNum('.');
+                else if (e.key === '+') handleOp('+');
+                else if (e.key === '-') handleOp('-');
+                else if (e.key === '*') handleOp('*');
+                else if (e.key === '/') handleOp('/');
+                else if (e.key === 'Enter' || e.key === '=') handleEqual();
+                else if (e.key === 'Escape') handleClear();
+            });
+        }
+
+        // --- Standard & Scientific Computational Logic Engine ---
+        function toggleScientificMode() {
+            scientificMode = !scientificMode;
+            const sciPanel = document.getElementById('sci-panel');
+            const arrow = document.getElementById('sci-toggle-arrow');
+            
+            if (scientificMode) {
+                sciPanel.classList.remove('w-0');
+                sciPanel.classList.add('w-14', 'ml-3');
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                sciPanel.classList.add('w-0');
+                sciPanel.classList.remove('w-14', 'ml-3');
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
         function handleNum(num) {
             if ((calcDisplay === '0' && num !== '.') || shouldReset) {
                 calcDisplay = num;
@@ -288,6 +723,45 @@
             }
             lastOp = op;
             calcBuffer = `${calcPrevValue} ${getOpSymbol(op)}`;
+            shouldReset = true;
+            updateCalcUI();
+        }
+
+        function handleSciOp(type) {
+            const current = parseFloat(calcDisplay);
+            let result = 0;
+            let label = '';
+            
+            switch(type) {
+                case 'sin':
+                    result = Math.sin(current * Math.PI / 180);
+                    label = `sin(${current})`;
+                    break;
+                case 'cos':
+                    result = Math.cos(current * Math.PI / 180);
+                    label = `cos(${current})`;
+                    break;
+                case 'tan':
+                    result = Math.tan(current * Math.PI / 180);
+                    label = `tan(${current})`;
+                    break;
+                case 'sqrt':
+                    if (current < 0) {
+                        showToast("Invalid Input: Root of Negative Number", "alert-triangle", true);
+                        return;
+                    }
+                    result = Math.sqrt(current);
+                    label = `√(${current})`;
+                    break;
+                case 'pow':
+                    result = Math.pow(current, 2);
+                    label = `(${current})²`;
+                    break;
+            }
+
+            const formattedResult = Math.round(result * 1000000) / 1000000 + '';
+            addToHistory(label, formattedResult);
+            calcDisplay = formattedResult;
             shouldReset = true;
             updateCalcUI();
         }
@@ -317,6 +791,7 @@
             calcPrevValue = typeof result === 'number' ? result : null;
         }
 
+        // General AC function
         function handleClear() {
             calcDisplay = '0';
             calcPrevValue = null;
@@ -337,201 +812,60 @@
             return op;
         }
 
-        // --- Tabs Data Dictionary ---
-        const tabs = {
-            finance: `
-                <div class="animate-fadeIn space-y-6">
-                    <div class="bg-white rounded-[2.5rem] border border-slate-200 shadow-xl overflow-hidden">
-                        <div class="p-8 bg-indigo-600 flex justify-between items-start text-white">
-                            <div>
-                                <h2 class="text-2xl font-black mb-1 text-white">Shopping Tool</h2>
-                                <p class="text-indigo-200 text-xs font-medium uppercase tracking-widest">Precision Discount Engine</p>
-                            </div>
-                            <button onclick="toggleVoice()" id="mic-trigger" class="h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl bg-white/10 hover:bg-white/20">
-                                <i data-lucide="mic-off" class="w-6 h-6" id="mic-icon"></i>
-                            </button>
-                        </div>
-                        <div class="p-8 space-y-8">
-                            <div class="bg-slate-50 rounded-3xl p-10 text-center border border-slate-100">
-                                <p id="shop-label" class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Estimated Final Price</p>
-                                <div class="text-7xl font-black text-slate-900 mb-2 flex items-center justify-center gap-1">
-                                    <span id="shop-currency" class="text-3xl opacity-30 mt-2 font-light">₹</span>
-                                    <span id="shop-res-main" class="tabular-nums">0</span>
-                                </div>
-                                <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-50 text-emerald-600 rounded-full font-bold text-sm">
-                                    <i data-lucide="trending-up" class="w-4 h-4"></i>
-                                    <span id="shop-res-sub">Ready for values</span>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <div class="flex bg-slate-100 p-1.5 rounded-2xl sm:col-span-2">
-                                    <button onclick="setShopMode('price')" id="btn-mode-price" class="flex-1 py-3 rounded-xl text-xs font-black transition-all bg-white shadow text-indigo-600">FIND FINAL PRICE</button>
-                                    <button onclick="setShopMode('percent')" id="btn-mode-percent" class="flex-1 py-3 rounded-xl text-xs font-black transition-all text-slate-400">FIND DISCOUNT %</button>
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase ml-3">Market Price (₹)</label>
-                                    <input type="number" id="shop-orig" oninput="updateShop()" class="w-full bg-slate-50 border-2 border-transparent focus:border-indigo-100 focus:bg-white p-4 rounded-2xl text-xl font-bold transition-all outline-none" placeholder="0">
-                                </div>
-                                <div class="space-y-2">
-                                    <label id="shop-input-label" class="text-[10px] font-black text-slate-400 uppercase ml-3">Discount (%)</label>
-                                    <div class="relative">
-                                        <input type="number" id="shop-value" oninput="updateShop()" class="w-full bg-slate-50 border-2 border-transparent focus:border-indigo-100 focus:bg-white p-4 rounded-2xl text-xl font-bold transition-all outline-none" placeholder="0">
-                                        <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300">
-                                            <i data-lucide="percent" class="w-5 h-5" id="shop-icon-input"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-[2.5rem] border border-slate-200 shadow-xl p-8 space-y-6">
-                        <div class="flex items-center gap-4 mb-2">
-                            <div class="p-3 bg-indigo-50 text-indigo-500 rounded-2xl"><i data-lucide="trending-up" class="w-6 h-6"></i></div>
-                            <h2 class="text-xl font-bold text-slate-800">Stock Average Calculator</h2>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div class="space-y-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">1st Purchase</p>
-                                <div class="space-y-2">
-                                    <input type="number" id="stk-q1" class="w-full bg-white border border-slate-200 p-3 rounded-xl text-sm font-bold" placeholder="Quantity">
-                                    <input type="number" id="stk-p1" class="w-full bg-white border border-slate-200 p-3 rounded-xl text-sm font-bold" placeholder="Price (₹)">
-                                </div>
-                            </div>
-                            <div class="space-y-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">2nd Purchase</p>
-                                <div class="space-y-2">
-                                    <input type="number" id="stk-q2" class="w-full bg-white border border-slate-200 p-3 rounded-xl text-sm font-bold" placeholder="Quantity">
-                                    <input type="number" id="stk-p2" class="w-full bg-white border border-slate-200 p-3 rounded-xl text-sm font-bold" placeholder="Price (₹)">
-                                </div>
-                            </div>
-                        </div>
-                        <button onclick="handleStkCalc()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-[2rem] shadow-xl hover:bg-indigo-700 transition-all">CALCULATE AVERAGE</button>
-                        <div id="stk-res-box" class="hidden bg-indigo-50 p-6 rounded-3xl border border-indigo-100 text-center">
-                            <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">New Average Cost</p>
-                            <div id="stk-res-val" class="text-4xl font-black text-indigo-900">₹0</div>
-                        </div>
-                    </div>
-                </div>`,
-            health: `
-                <div class="animate-fadeIn max-w-md mx-auto bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-xl space-y-6">
-                    <div class="flex items-center gap-4 mb-2">
-                        <div class="p-3 bg-rose-50 text-rose-500 rounded-2xl"><i data-lucide="heart-pulse" class="w-6 h-6"></i></div>
-                        <h2 class="text-xl font-bold text-slate-800">Body Mass Index</h2>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-3">Weight (kg)</label>
-                            <input type="number" id="bmi-w" class="w-full bg-slate-50 p-4 rounded-2xl text-xl font-bold outline-none border-2 border-transparent focus:border-rose-100" placeholder="70">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-3">Height (cm)</label>
-                            <input type="number" id="bmi-h" class="w-full bg-slate-50 p-4 rounded-2xl text-xl font-bold outline-none border-2 border-transparent focus:border-rose-100" placeholder="175">
-                        </div>
-                    </div>
-                    <button onclick="handleBMICalc()" class="w-full bg-rose-600 text-white font-black py-5 rounded-[2rem] shadow-xl hover:bg-rose-700 transition-all">CALCULATE BMI</button>
-                    <div id="bmi-res-box" class="hidden bg-slate-50 p-8 rounded-3xl border border-slate-100 text-center">
-                        <div id="bmi-res-val" class="text-5xl font-black text-rose-900 mb-1 tabular-nums">0</div>
-                        <div id="bmi-status" class="text-sm font-bold uppercase tracking-wider text-emerald-500">Healthy</div>
-                    </div>
-                </div>`,
-            math: `
-                <div class="animate-fadeIn max-w-md mx-auto bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-xl text-center">
-                    <div class="mx-auto w-20 h-20 bg-blue-50 text-blue-500 rounded-3xl flex items-center justify-center mb-6">
-                        <i data-lucide="zap" class="w-10 h-10"></i>
-                    </div>
-                    <h2 class="text-xl font-bold text-slate-800 mb-2">Pythagorean Theorem</h2>
-                    <p class="text-slate-400 text-sm mb-8">Calculate Side C (Hypotenuse) of a triangle.</p>
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <input type="number" id="pyth-a" placeholder="Side A" class="p-4 bg-slate-50 rounded-2xl font-bold text-center border-2 border-transparent focus:border-blue-100 outline-none">
-                        <input type="number" id="pyth-b" placeholder="Side B" class="p-4 bg-slate-50 rounded-2xl font-bold text-center border-2 border-transparent focus:border-blue-100 outline-none">
-                    </div>
-                    <button onclick="handlePythCalc()" class="w-full bg-blue-600 text-white font-black py-5 rounded-[2rem] shadow-xl">FIND SIDE C</button>
-                    <div id="pyth-res-box" class="hidden mt-8 text-5xl font-black text-blue-900 tracking-tighter">C = <span id="pyth-res-val">0</span></div>
-                </div>`,
-            unit: `
-                <div class="animate-fadeIn max-w-md mx-auto bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-xl space-y-6">
-                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-3"><i data-lucide="arrow-right-left" class="text-slate-400"></i> Unit Bridge</h2>
-                    <div class="space-y-4">
-                        <select id="unit-type" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl font-bold outline-none focus:border-indigo-100">
-                            <option value="kg-lb">Kilogram → Pound</option>
-                            <option value="lb-kg">Pound → Kilogram</option>
-                            <option value="km-mi">Kilometer → Mile</option>
-                            <option value="mi-km">Mile → Kilometer</option>
-                            <option value="c-f">Celsius → Fahrenheit</option>
-                        </select>
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-3">Input Value</label>
-                            <input type="number" id="unit-input" oninput="handleUnitConvert()" class="w-full bg-slate-50 p-4 rounded-2xl text-xl font-bold border-2 border-transparent focus:border-indigo-100 outline-none" placeholder="Enter value">
-                        </div>
-                    </div>
-                    <div id="unit-res-box" class="hidden bg-slate-50 p-6 rounded-3xl border border-slate-100 text-center">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Converted Value</p>
-                        <div id="unit-res-val" class="text-4xl font-black text-indigo-900">0</div>
-                    </div>
-                </div>`,
-            utility: `
-                <div class="animate-fadeIn max-w-md mx-auto bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-xl space-y-6">
-                    <div class="flex items-center gap-4 mb-2">
-                        <div class="p-3 bg-amber-50 text-amber-500 rounded-2xl"><i data-lucide="dollar-sign" class="w-6 h-6"></i></div>
-                        <h2 class="text-xl font-bold text-slate-800">Tip & Split Engine</h2>
-                    </div>
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Total Bill (₹)</label>
-                                <input type="number" id="tip-bill" oninput="handleTipCalc()" class="w-full bg-slate-50 p-3 rounded-xl font-bold outline-none" placeholder="1000">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Tip Percent (%)</label>
-                                <input type="number" id="tip-pct" oninput="handleTipCalc()" class="w-full bg-slate-50 p-3 rounded-xl font-bold outline-none" placeholder="10" value="10">
-                            </div>
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Split Count (People)</label>
-                            <input type="number" id="tip-people" oninput="handleTipCalc()" class="w-full bg-slate-50 p-3 rounded-xl font-bold outline-none" placeholder="2" value="2">
-                        </div>
-                    </div>
-                    <div id="tip-res-box" class="bg-amber-50/50 p-6 rounded-3xl border border-amber-100/70 grid grid-cols-2 gap-2 text-center">
-                        <div>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase">Tip Amount</p>
-                            <span id="tip-res-amt" class="text-xl font-black text-amber-900">₹0</span>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase">Per Person Pay</p>
-                            <span id="tip-res-split" class="text-xl font-black text-amber-900">₹0</span>
-                        </div>
-                    </div>
-                </div>`
-        };
+        // --- Core History Handling ---
+        function addToHistory(name, result) {
+            const entry = {
+                id: Date.now(),
+                name,
+                result,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+            history.unshift(entry);
+            if (history.length > 15) history.pop();
+            renderHistory();
+            document.getElementById('history-dot').classList.remove('hidden');
+        }
 
-        function switchTab(tabId) {
-            activeTabId = tabId;
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            const clearBtn = document.getElementById('clear-history-btn');
             
-            // Clean active classes from all tab targets
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = "tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-500 hover:text-slate-800";
-            });
-
-            // Activate chosen node
-            const activeBtn = document.getElementById(`tab-${tabId}`);
-            if (activeBtn) {
-                activeBtn.className = "tab-btn active-tab flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm bg-indigo-600 text-white shadow-md";
+            if (history.length === 0) {
+                list.innerHTML = '<div class="text-center py-20 text-slate-500 italic font-medium">Empty calculations</div>';
+                clearBtn.classList.add('hidden');
+                document.getElementById('history-dot').classList.add('hidden');
+                return;
             }
 
-            // Paint Component Frame
-            const tabContentArea = document.getElementById('tab-content');
-            if (tabContentArea) {
-                tabContentArea.innerHTML = tabs[tabId];
-            }
-            lucide.createIcons();
+            clearBtn.classList.remove('hidden');
+            list.innerHTML = history.map(item => `
+                <div class="p-4 bg-slate-950 border border-slate-800 rounded-2xl flex justify-between items-center animate-fadeIn">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-0.5">${item.name}</span>
+                        <span class="text-base font-extrabold text-white">${item.result}</span>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-500">${item.time}</span>
+                </div>
+            `).join('');
+        }
 
-            // Re-apply sub-mode initialization configurations
-            if (tabId === 'finance') {
-                setShopMode(shopMode);
+        function clearHistory() {
+            history = [];
+            renderHistory();
+            showToast("Calculation logs cleared.", "trash-2");
+        }
+
+        function toggleHistory(show) {
+            const el = document.getElementById('history-sidebar');
+            if (show) {
+                el.classList.remove('hidden');
+                document.getElementById('history-dot').classList.add('hidden');
+            } else {
+                el.classList.add('hidden');
             }
         }
 
-        // --- Shopping & Finance Tool Business Rules ---
+        // --- Discount & Shopping Engine Mechanics ---
         function setShopMode(mode) {
             shopMode = mode;
             const btnPrice = document.getElementById('btn-mode-price');
@@ -543,14 +877,14 @@
             if (!btnPrice || !btnPercent || !inputLabel || !subLabel || !currencySign) return;
 
             if (mode === 'price') {
-                btnPrice.className = "flex-1 py-3 rounded-xl text-xs font-black transition-all bg-white shadow text-indigo-600";
-                btnPercent.className = "flex-1 py-3 rounded-xl text-xs font-black transition-all text-slate-400";
+                btnPrice.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-indigo-600 dynamic-bg-accent text-white shadow-md";
+                btnPercent.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400";
                 inputLabel.innerText = "Discount (%)";
                 subLabel.innerText = "Estimated Final Price";
                 currencySign.style.display = "inline";
             } else {
-                btnPercent.className = "flex-1 py-3 rounded-xl text-xs font-black transition-all bg-white shadow text-indigo-600";
-                btnPrice.className = "flex-1 py-3 rounded-xl text-xs font-black transition-all text-slate-400";
+                btnPercent.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-indigo-600 dynamic-bg-accent text-white shadow-md";
+                btnPrice.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400";
                 inputLabel.innerText = "Sale Price (₹)";
                 subLabel.innerText = "Calculated Markdown Percent";
                 currencySign.style.display = "none";
@@ -571,7 +905,7 @@
 
             if (orig <= 0) {
                 resMain.innerText = "0";
-                resSub.innerText = "Ready for values";
+                resSub.innerText = "Ready for parameters";
                 return;
             }
 
@@ -582,49 +916,68 @@
             } else {
                 if (val > orig) {
                     resMain.innerText = "0";
-                    resSub.innerText = "Sale price cannot exceed market price";
+                    resSub.innerText = "Sale value cannot exceed original market value";
                     return;
                 }
                 const pctSaved = ((orig - val) / orig) * 100;
                 resMain.innerText = Math.round(pctSaved * 100) / 100 + "%";
-                resSub.innerText = `Total discount markdown absolute: ₹${Math.round((orig - val) * 100) / 100}`;
+                resSub.innerText = `Discount absolute weight: ₹${Math.round((orig - val) * 100) / 100}`;
             }
         }
 
-        // --- Stock Average Calculation Execution ---
-        function handleStkCalc() {
-            const q1 = parseFloat(document.getElementById('stk-q1').value) || 0;
-            const p1 = parseFloat(document.getElementById('stk-p1').value) || 0;
-            const q2 = parseFloat(document.getElementById('stk-q2').value) || 0;
-            const p2 = parseFloat(document.getElementById('stk-p2').value) || 0;
+        // --- Tax & VAT Computation Logic ---
+        function setTaxMode(mode) {
+            taxMode = mode;
+            const btnAdd = document.getElementById('tax-btn-add');
+            const btnRemove = document.getElementById('tax-btn-remove');
 
-            const box = document.getElementById('stk-res-box');
-            const valSpan = document.getElementById('stk-res-val');
+            if (!btnAdd || !btnRemove) return;
 
-            if ((q1 + q2) === 0) {
-                showToast("Please input quantities to process calculation.");
-                return;
+            if (mode === 'add') {
+                btnAdd.className = "flex-1 py-2 rounded-lg text-xs font-bold transition-all bg-indigo-600 dynamic-bg-accent text-white";
+                btnRemove.className = "flex-1 py-2 rounded-lg text-xs font-bold transition-all text-slate-400";
+            } else {
+                btnRemove.className = "flex-1 py-2 rounded-lg text-xs font-bold transition-all bg-indigo-600 dynamic-bg-accent text-white";
+                btnAdd.className = "flex-1 py-2 rounded-lg text-xs font-bold transition-all text-slate-400";
             }
-
-            const avg = ((q1 * p1) + (q2 * p2)) / (q1 + q2);
-            const formattedAvg = `₹${Math.round(avg * 100) / 100}`;
-
-            valSpan.innerText = formattedAvg;
-            box.classList.remove('hidden');
-
-            addToHistory(`Stock Avg (${q1} units @ ₹${p1} + ${q2} units @ ₹${p2})`, formattedAvg);
+            calculateTax();
         }
 
-        // --- Health/BMI Business Rules ---
+        function calculateTax() {
+            const baseVal = parseFloat(document.getElementById('tax-base').value) || 0;
+            const rateVal = parseFloat(document.getElementById('tax-rate').value) || 0;
+
+            const taxOutput = document.getElementById('tax-res-calculated');
+            const totalOutput = document.getElementById('tax-res-total');
+
+            if (!taxOutput || !totalOutput) return;
+
+            let taxAmount = 0;
+            let totalVal = 0;
+
+            if (taxMode === 'add') {
+                taxAmount = baseVal * (rateVal / 100);
+                totalVal = baseVal + taxAmount;
+            } else {
+                totalVal = baseVal / (1 + (rateVal / 100));
+                taxAmount = baseVal - totalVal;
+            }
+
+            taxOutput.innerText = `₹${Math.round(taxAmount * 100) / 100}`;
+            totalOutput.innerText = `₹${Math.round(totalVal * 100) / 100}`;
+        }
+
+        // --- Health & BMI Metrics Visual Logic ---
         function handleBMICalc() {
             const w = parseFloat(document.getElementById('bmi-w').value) || 0;
             const h = parseFloat(document.getElementById('bmi-h').value) || 0;
             const box = document.getElementById('bmi-res-box');
             const valSpan = document.getElementById('bmi-res-val');
             const statusDiv = document.getElementById('bmi-status');
+            const pin = document.getElementById('bmi-pin');
 
             if (w <= 0 || h <= 0) {
-                showToast("Please enter valid positive numbers for height & weight.");
+                showToast("Enter absolute height and weight dimensions.", "alert-triangle", true);
                 return;
             }
 
@@ -634,25 +987,35 @@
 
             valSpan.innerText = score;
 
+            // Determine visual pin position and categorization boundaries
+            let positionPercentage = 0;
             if (score < 18.5) {
                 statusDiv.innerText = "Underweight";
-                statusDiv.className = "text-sm font-bold uppercase tracking-wider text-amber-500";
+                statusDiv.className = "inline-block mt-2 text-xs font-black uppercase tracking-wider px-3.5 py-1 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/20";
+                positionPercentage = (score / 18.5) * 25; // Scale to under-limit quadrant
             } else if (score < 25) {
-                statusDiv.innerText = "Healthy Target";
-                statusDiv.className = "text-sm font-bold uppercase tracking-wider text-emerald-500";
+                statusDiv.innerText = "Optimal Weight";
+                statusDiv.className = "inline-block mt-2 text-xs font-black uppercase tracking-wider px-3.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/20";
+                positionPercentage = 25 + ((score - 18.5) / 6.5) * 30; // Scale to healthy quadrant
             } else if (score < 30) {
                 statusDiv.innerText = "Overweight";
-                statusDiv.className = "text-sm font-bold uppercase tracking-wider text-amber-500";
+                statusDiv.className = "inline-block mt-2 text-xs font-black uppercase tracking-wider px-3.5 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20";
+                positionPercentage = 55 + ((score - 25) / 5) * 25; // Scale to over-limit quadrant
             } else {
                 statusDiv.innerText = "Obese Condition";
-                statusDiv.className = "text-sm font-bold uppercase tracking-wider text-rose-500";
+                statusDiv.className = "inline-block mt-2 text-xs font-black uppercase tracking-wider px-3.5 py-1 rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/20";
+                positionPercentage = 80 + Math.min(20, ((score - 30) / 10) * 20); // Scale to obese quadrant
+            }
+
+            if (pin) {
+                pin.style.left = `calc(${Math.min(98, Math.max(2, positionPercentage))}% - 3px)`;
             }
 
             box.classList.remove('hidden');
-            addToHistory(`BMI Calculation (${w}kg / ${h}cm)`, `${score} (${statusDiv.innerText})`);
+            addToHistory(`BMI Evaluation (${w}kg / ${h}cm)`, `${score} (${statusDiv.innerText})`);
         }
 
-        // --- Pythagorean Math Business Logic ---
+        // --- Pythagorean Math Calculation ---
         function handlePythCalc() {
             const a = parseFloat(document.getElementById('pyth-a').value) || 0;
             const b = parseFloat(document.getElementById('pyth-b').value) || 0;
@@ -660,7 +1023,7 @@
             const valSpan = document.getElementById('pyth-res-val');
 
             if (a <= 0 || b <= 0) {
-                showToast("Triangulation side parameters must be positive.");
+                showToast("Side bounds must represent valid physical measurements.", "alert-triangle", true);
                 return;
             }
 
@@ -669,10 +1032,10 @@
 
             valSpan.innerText = formattedC;
             box.classList.remove('hidden');
-            addToHistory(`Hypotenuse (A:${a}, B:${b})`, `C: ${formattedC}`);
+            addToHistory(`Pythagoras (Sides: ${a}, ${b})`, `C = ${formattedC}`);
         }
 
-        // --- Conversion System Matrix ---
+        // --- Cross-System Conversion Matrix ---
         function handleUnitConvert() {
             const type = document.getElementById('unit-type').value;
             const val = parseFloat(document.getElementById('unit-input').value);
@@ -693,6 +1056,7 @@
                 case 'km-mi': result = val * 0.621371; unitLabel = ' mi'; break;
                 case 'mi-km': result = val / 0.621371; unitLabel = ' km'; break;
                 case 'c-f': result = (val * 9/5) + 32; unitLabel = ' °F'; break;
+                case 'f-c': result = (val - 32) * 5/9; unitLabel = ' °C'; break;
             }
 
             const parsedResult = Math.round(result * 100) / 100 + unitLabel;
@@ -700,7 +1064,7 @@
             box.classList.remove('hidden');
         }
 
-        // --- Tip Processing Engine ---
+        // --- Hospitality Tip Processing Engine ---
         function handleTipCalc() {
             const bill = parseFloat(document.getElementById('tip-bill').value) || 0;
             const pct = parseFloat(document.getElementById('tip-pct').value) || 0;
@@ -713,14 +1077,13 @@
             document.getElementById('tip-res-split').innerText = `₹${Math.round((total / people) * 10) / 10}`;
         }
 
-        // --- Voice Parsing System Engine Infrastructure ---
+        // --- Voice Parsing Infrastructure ---
         function initSpeech() {
             const SpeechContract = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechContract) return;
 
-            // Warn hosting console if unsecure
             if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
-                console.warn("OmniCalc Web Security Notice: Voice engine strictly requires an SSL / HTTPS hosted environment.");
+                console.warn("OmniCalc Secure Mode: Microphone functionality requires secure SSL hosting.");
             }
 
             recognition = new SpeechContract();
@@ -730,10 +1093,12 @@
 
             recognition.onstart = () => {
                 isListening = true;
-                const micStatus = document.getElementById('mic-status');
-                if (micStatus) micStatus.classList.remove('hidden');
+                const mStatus = document.getElementById('mic-status');
+                if (mStatus) mStatus.classList.remove('hidden');
+                
                 const trigger = document.getElementById('mic-trigger');
-                if (trigger) trigger.className = "h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl bg-rose-500 text-white mic-active-pulse";
+                if (trigger) trigger.className = "h-12 w-12 rounded-2xl flex items-center justify-center transition-all shadow-lg border border-rose-500/20 bg-rose-500/10 text-white mic-active-pulse animate-pulse";
+                
                 const icon = document.getElementById('mic-icon');
                 if (icon) icon.setAttribute('data-lucide', 'mic');
                 lucide.createIcons();
@@ -741,10 +1106,12 @@
 
             recognition.onend = () => {
                 isListening = false;
-                const micStatus = document.getElementById('mic-status');
-                if (micStatus) micStatus.classList.add('hidden');
+                const mStatus = document.getElementById('mic-status');
+                if (mStatus) mStatus.classList.add('hidden');
+                
                 const trigger = document.getElementById('mic-trigger');
-                if (trigger) trigger.className = "h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl bg-white/10 hover:bg-white/20";
+                if (trigger) trigger.className = "h-12 w-12 rounded-2xl flex items-center justify-center transition-all shadow-lg border border-slate-700/40 bg-slate-800 hover:bg-slate-700";
+                
                 const icon = document.getElementById('mic-icon');
                 if (icon) icon.setAttribute('data-lucide', 'mic-off');
                 lucide.createIcons();
@@ -756,13 +1123,13 @@
             };
 
             recognition.onerror = () => {
-                showToast("Voice capture error. Ensure microphone permission is granted.");
+                showToast("Speech registration error. Check browser configuration.", "alert-triangle", true);
             };
         }
 
         function toggleVoice() {
             if (!recognition) {
-                showToast("Voice parsing is not supported on this browser context.");
+                showToast("Web speech parsing module unconfigured on this platform.", "alert-triangle", true);
                 return;
             }
             if (isListening) {
@@ -771,7 +1138,7 @@
                 try {
                     recognition.start();
                 } catch(e) {
-                    showToast("Microphone is currently unavailable or busy.");
+                    showToast("Speech capture device busy.", "alert-triangle", true);
                 }
             }
         }
@@ -787,7 +1154,7 @@
                     origInput.value = metrics[0];
                     valInput.value = metrics[1];
                     updateShop();
-                    showToast(`Voice set: Market Price ${metrics[0]}, Discount ${metrics[1]}`, true);
+                    showToast(`Loaded: Base ${metrics[0]}, Scale ${metrics[1]}`, "check-circle");
                 }
             }
         }
