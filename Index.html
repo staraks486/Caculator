@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
         
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -44,7 +44,6 @@
 </head>
 <body class="bg-slate-50 text-slate-900 selection:bg-indigo-100">
 
-    <!-- Header -->
     <header class="bg-white/80 backdrop-blur-md border-b sticky top-0 z-50 px-4 py-3">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2.5">
@@ -70,7 +69,6 @@
     <main class="max-w-6xl mx-auto px-4 py-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            <!-- LEFT: Standard Calculator -->
             <div class="lg:col-span-5 space-y-6">
                 <div class="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/50">
                     <div class="bg-slate-900 rounded-3xl p-6 mb-6 shadow-inner">
@@ -106,10 +104,9 @@
                 </div>
             </div>
 
-            <!-- RIGHT: Tabbed Field Calculators -->
             <div class="lg:col-span-7 space-y-6">
                 <div class="flex p-1.5 bg-white border border-slate-200 rounded-full shadow-sm overflow-x-auto no-scrollbar">
-                    <button onclick="switchTab('finance')" id="tab-finance" class="tab-btn active-tab flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm bg-indigo-600 text-white shadow-md">
+                    <button onclick="switchTab('finance')" id="tab-finance" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-500 hover:text-slate-800">
                         <i data-lucide="shopping-cart" class="w-4 h-4"></i> Shopping & Finance
                     </button>
                     <button onclick="switchTab('health')" id="tab-health" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-500 hover:text-slate-800">
@@ -127,94 +124,11 @@
                 </div>
 
                 <div id="tab-content" class="min-h-[500px]">
-                    <!-- Finance Content (Default) -->
-                    <div id="view-finance" class="animate-fadeIn space-y-6">
-                        <div class="bg-white rounded-[2.5rem] border border-slate-200 shadow-xl overflow-hidden">
-                            <div class="p-8 bg-indigo-600 flex justify-between items-start text-white">
-                                <div>
-                                    <h2 class="text-2xl font-black mb-1 text-white">Shopping Tool</h2>
-                                    <p class="text-indigo-200 text-xs font-medium uppercase tracking-widest">Precision Discount Engine</p>
-                                </div>
-                                <button onclick="toggleVoice()" id="mic-trigger" class="h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl bg-white/10 hover:bg-white/20">
-                                    <i data-lucide="mic-off" class="w-6 h-6" id="mic-icon"></i>
-                                </button>
-                            </div>
-
-                            <div class="p-8 space-y-8">
-                                <div class="bg-slate-50 rounded-3xl p-10 text-center border border-slate-100">
-                                    <p id="shop-label" class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Estimated Final Price</p>
-                                    <div class="text-7xl font-black text-slate-900 mb-2 flex items-center justify-center gap-1">
-                                        <span id="shop-currency" class="text-3xl opacity-30 mt-2 font-light">₹</span>
-                                        <span id="shop-res-main" class="tabular-nums">0</span>
-                                    </div>
-                                    <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-50 text-emerald-600 rounded-full font-bold text-sm">
-                                        <i data-lucide="trending-up" class="w-4 h-4"></i>
-                                        <span id="shop-res-sub">Ready for values</span>
-                                    </div>
-                                </div>
-
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                    <div class="flex bg-slate-100 p-1.5 rounded-2xl sm:col-span-2">
-                                        <button onclick="setShopMode('price')" id="btn-mode-price" class="flex-1 py-3 rounded-xl text-xs font-black transition-all bg-white shadow text-indigo-600">FIND FINAL PRICE</button>
-                                        <button onclick="setShopMode('percent')" id="btn-mode-percent" class="flex-1 py-3 rounded-xl text-xs font-black transition-all text-slate-400">FIND DISCOUNT %</button>
-                                    </div>
-                                    
-                                    <div class="space-y-2">
-                                        <label class="text-[10px] font-black text-slate-400 uppercase ml-3">Market Price (₹)</label>
-                                        <input type="number" id="shop-orig" oninput="updateShop()" class="w-full bg-slate-50 border-2 border-transparent focus:border-indigo-100 focus:bg-white p-4 rounded-2xl text-xl font-bold transition-all outline-none" placeholder="0">
-                                    </div>
-                                    
-                                    <div class="space-y-2">
-                                        <label id="shop-input-label" class="text-[10px] font-black text-slate-400 uppercase ml-3">Discount (%)</label>
-                                        <div class="relative">
-                                            <input type="number" id="shop-value" oninput="updateShop()" class="w-full bg-slate-50 border-2 border-transparent focus:border-indigo-100 focus:bg-white p-4 rounded-2xl text-xl font-bold transition-all outline-none" placeholder="0">
-                                            <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300">
-                                                <i data-lucide="percent" class="w-5 h-5" id="shop-icon-input"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Stock Average Tool -->
-                        <div class="bg-white rounded-[2.5rem] border border-slate-200 shadow-xl p-8 space-y-6">
-                            <div class="flex items-center gap-4 mb-2">
-                                <div class="p-3 bg-indigo-50 text-indigo-500 rounded-2xl"><i data-lucide="trending-up" class="w-6 h-6"></i></div>
-                                <h2 class="text-xl font-bold text-slate-800">Stock Average Calculator</h2>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <div class="space-y-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">1st Purchase</p>
-                                    <div class="space-y-2">
-                                        <input type="number" id="stk-q1" class="w-full bg-white border border-slate-200 p-3 rounded-xl text-sm font-bold" placeholder="Quantity">
-                                        <input type="number" id="stk-p1" class="w-full bg-white border border-slate-200 p-3 rounded-xl text-sm font-bold" placeholder="Price (₹)">
-                                    </div>
-                                </div>
-                                <div class="space-y-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">2nd Purchase</p>
-                                    <div class="space-y-2">
-                                        <input type="number" id="stk-q2" class="w-full bg-white border border-slate-200 p-3 rounded-xl text-sm font-bold" placeholder="Quantity">
-                                        <input type="number" id="stk-p2" class="w-full bg-white border border-slate-200 p-3 rounded-xl text-sm font-bold" placeholder="Price (₹)">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <button onclick="handleStkCalc()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-[2rem] shadow-xl hover:bg-indigo-700 transition-all">CALCULATE AVERAGE</button>
-                            
-                            <div id="stk-res-box" class="hidden bg-indigo-50 p-6 rounded-3xl border border-indigo-100 text-center">
-                                <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">New Average Cost</p>
-                                <div id="stk-res-val" class="text-4xl font-black text-indigo-900">₹0</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                     </div>
             </div>
         </div>
     </main>
 
-    <!-- History Sidebar -->
     <div id="history-sidebar" class="hidden fixed inset-0 z-[60] flex justify-end">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="toggleHistory(false)"></div>
         <div class="relative w-full max-w-sm bg-white h-full shadow-2xl p-6 flex flex-col">
@@ -235,7 +149,6 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script>
         // --- Initialization ---
         let history = [];
@@ -249,12 +162,11 @@
         let calcBuffer = '';
 
         // Shopping State
-        let shopMode = 'price'; // or 'percent'
+        let shopMode = 'price'; 
         let isListening = false;
         let recognition = null;
 
         window.onload = () => {
-            lucide.createIcons();
             initSpeech();
             switchTab('finance');
         };
@@ -311,7 +223,77 @@
             }
         }
 
-        // --- Tabs ---
+        // --- Standard Calculator Logic ---
+        function handleNum(num) {
+            if (calcDisplay === '0' && num !== '.' || shouldReset) {
+                calcDisplay = num;
+                shouldReset = false;
+            } else {
+                if (num === '.' && calcDisplay.includes('.')) return;
+                calcDisplay += num;
+            }
+            updateCalcUI();
+        }
+
+        function handleOp(op) {
+            const current = parseFloat(calcDisplay);
+            if (lastOp && !shouldReset) {
+                executeCalculation();
+            } else {
+                calcPrevValue = current;
+            }
+            lastOp = op;
+            calcBuffer = `${calcPrevValue} ${getOpSymbol(op)}`;
+            shouldReset = true;
+            updateCalcUI();
+        }
+
+        function handleEqual() {
+            if (!lastOp || shouldReset) return;
+            const current = parseFloat(calcDisplay);
+            const equationText = `${calcBuffer} ${current} =`;
+            executeCalculation();
+            calcBuffer = '';
+            lastOp = null;
+            shouldReset = true;
+            updateCalcUI();
+            addToHistory(equationText, calcDisplay);
+        }
+
+        function executeCalculation() {
+            const current = parseFloat(calcDisplay);
+            let result = 0;
+            switch(lastOp) {
+                case '+': result = calcPrevValue + current; break;
+                case '-': result = calcPrevValue - current; break;
+                case '*': result = calcPrevValue * current; break;
+                case '/': result = current !== 0 ? calcPrevValue / current : 'Error'; break;
+            }
+            calcDisplay = typeof result === 'number' ? Math.round(result * 1000000) / 1000000 + '' : result;
+            calcPrevValue = typeof result === 'number' ? result : null;
+        }
+
+        function handleClear() {
+            calcDisplay = '0';
+            calcPrevValue = null;
+            lastOp = null;
+            calcBuffer = '';
+            shouldReset = false;
+            updateCalcUI();
+        }
+
+        function updateCalcUI() {
+            document.getElementById('calc-display').innerText = calcDisplay;
+            document.getElementById('calc-buffer').innerText = calcBuffer;
+        }
+
+        function getOpSymbol(op) {
+            if (op === '/') return '÷';
+            if (op === '*') return '×';
+            return op;
+        }
+
+        // --- Tabs Data Dictionary ---
         const tabs = {
             finance: `
                 <div class="animate-fadeIn space-y-6">
@@ -424,33 +406,55 @@
                 </div>`,
             unit: `
                 <div class="animate-fadeIn max-w-md mx-auto bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-xl space-y-6">
-                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-3"><i data-lucide="ruler" class="text-slate-400"></i> Unit Bridge</h2>
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-3"><i data-lucide="arrow-right-left" class="text-slate-400"></i> Unit Bridge</h2>
                     <div class="space-y-4">
-                        <select id="unit-type" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl font-bold outline-none focus:border-slate-200">
+                        <select id="unit-type" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl font-bold outline-none focus:border-indigo-100">
                             <option value="kg-lb">Kilogram → Pound</option>
                             <option value="lb-kg">Pound → Kilogram</option>
                             <option value="km-mi">Kilometer → Mile</option>
+                            <option value="mi-km">Mile → Kilometer</option>
                             <option value="c-f">Celsius → Fahrenheit</option>
                         </select>
-                        <input type="number" id="unit-val" class="w-full p-6 bg-slate-900 text-white rounded-3xl text-3xl font-black text-center tabular-nums" placeholder="0">
-                        <button onclick="handleUnitCalc()" class="w-full bg-indigo-600 text-white font-black py-5 rounded-[2rem]">CONVERT</button>
-                        <div id="unit-res-box" class="hidden p-8 bg-indigo-50 border border-indigo-100 rounded-3xl text-center text-4xl font-black text-indigo-900">
-                            0
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-3">Input Value</label>
+                            <input type="number" id="unit-input" oninput="handleUnitConvert()" class="w-full bg-slate-50 p-4 rounded-2xl text-xl font-bold border-2 border-transparent focus:border-indigo-100 outline-none" placeholder="Enter value">
                         </div>
+                    </div>
+                    <div id="unit-res-box" class="hidden bg-slate-50 p-6 rounded-3xl border border-slate-100 text-center">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Converted Value</p>
+                        <div id="unit-res-val" class="text-4xl font-black text-indigo-900">0</div>
                     </div>
                 </div>`,
             utility: `
                 <div class="animate-fadeIn max-w-md mx-auto bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-xl space-y-6">
-                    <div class="flex items-center gap-4">
-                        <div class="p-3 bg-amber-50 text-amber-600 rounded-2xl"><i data-lucide="calendar" class="w-6 h-6"></i></div>
-                        <h2 class="text-xl font-bold text-slate-800">Age Analyzer</h2>
+                    <div class="flex items-center gap-4 mb-2">
+                        <div class="p-3 bg-amber-50 text-amber-500 rounded-2xl"><i data-lucide="dollar-sign" class="w-6 h-6"></i></div>
+                        <h2 class="text-xl font-bold text-slate-800">Tip & Split Engine</h2>
                     </div>
                     <div class="space-y-4">
-                        <input type="date" id="age-dob" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl font-bold focus:border-amber-100 outline-none">
-                        <button onclick="handleAgeCalc()" class="w-full bg-amber-500 text-white font-black py-5 rounded-[2rem]">GET AGE</button>
-                        <div id="age-res-box" class="hidden text-center p-8 bg-amber-50 rounded-3xl border border-amber-100">
-                            <p class="text-xs font-black text-amber-600 uppercase tracking-widest mb-1">Elapsed Years</p>
-                            <div id="age-res-val" class="text-5xl font-black text-amber-900">0</div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Total Bill (₹)</label>
+                                <input type="number" id="tip-bill" oninput="handleTipCalc()" class="w-full bg-slate-50 p-3 rounded-xl font-bold outline-none" placeholder="1000">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Tip Percent (%)</label>
+                                <input type="number" id="tip-pct" oninput="handleTipCalc()" class="w-full bg-slate-50 p-3 rounded-xl font-bold outline-none" placeholder="10" value="10">
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Split Count (People)</label>
+                            <input type="number" id="tip-people" oninput="handleTipCalc()" class="w-full bg-slate-50 p-3 rounded-xl font-bold outline-none" placeholder="2" value="2">
+                        </div>
+                    </div>
+                    <div id="tip-res-box" class="bg-amber-50/50 p-6 rounded-3xl border border-amber-100/70 grid grid-cols-2 gap-2 text-center">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase">Tip Amount</p>
+                            <span id="tip-res-amt" class="text-xl font-black text-amber-900">₹0</span>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase">Per Person Pay</p>
+                            <span id="tip-res-split" class="text-xl font-black text-amber-900">₹0</span>
                         </div>
                     </div>
                 </div>`
@@ -458,272 +462,261 @@
 
         function switchTab(tabId) {
             activeTabId = tabId;
-            const content = document.getElementById('tab-content');
-            content.innerHTML = tabs[tabId];
             
-            // Update Buttons
+            // Clean active classes from all tab targets
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
-                btn.classList.add('text-slate-500', 'hover:text-slate-800');
+                btn.className = "tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-500 hover:text-slate-800";
             });
+
+            // Activate chosen node
             const activeBtn = document.getElementById(`tab-${tabId}`);
-            activeBtn.classList.remove('text-slate-500', 'hover:text-slate-800');
-            activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
-            
+            if (activeBtn) {
+                activeBtn.className = "tab-btn active-tab flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm bg-indigo-600 text-white shadow-md";
+            }
+
+            // Paint Component Frame
+            document.getElementById('tab-content').innerHTML = tabs[tabId];
             lucide.createIcons();
-            
-            // Special initialization for specific tabs if needed
-            if(tabId === 'finance') {
-                updateShop();
+
+            // Re-apply sub-mode initialization arrays if any
+            if (tabId === 'finance') {
+                setShopMode(shopMode);
             }
         }
 
-        // --- Standard Calculator ---
-        function handleNum(num) {
-            if (calcDisplay === '0' || shouldReset) {
-                calcDisplay = num === '.' ? '0.' : num;
-                shouldReset = false;
-            } else {
-                if (num === '.' && calcDisplay.includes('.')) return;
-                calcDisplay += num;
-            }
-            updateCalcDisplay();
-        }
-
-        function handleOp(op) {
-            const current = parseFloat(calcDisplay);
-            if (calcPrevValue !== null && !shouldReset) {
-                performCalculation();
-            } else {
-                calcPrevValue = current;
-            }
-            lastOp = op;
-            calcBuffer = `${current} ${op === '*' ? '×' : op === '/' ? '÷' : op}`;
-            shouldReset = true;
-            updateCalcDisplay();
-        }
-
-        function performCalculation() {
-            if (lastOp === null || calcPrevValue === null) return;
-            const current = parseFloat(calcDisplay);
-            let res = 0;
-            switch (lastOp) {
-                case '+': res = calcPrevValue + current; break;
-                case '-': res = calcPrevValue - current; break;
-                case '*': res = calcPrevValue * current; break;
-                case '/': res = current !== 0 ? calcPrevValue / current : 'Error'; break;
-                default: return;
-            }
-            const finalRes = typeof res === 'number' ? (Number.isInteger(res) ? res : res.toFixed(2)) : res;
-            calcDisplay = finalRes.toString();
-            calcPrevValue = typeof res === 'number' ? res : null;
-            updateCalcDisplay();
-            return finalRes;
-        }
-
-        function handleEqual() {
-            const res = performCalculation();
-            if (res !== undefined) {
-                calcBuffer = '';
-                lastOp = null;
-                shouldReset = true;
-                updateCalcDisplay();
-                addToHistory('Calculation', res);
-            }
-        }
-
-        function handleClear() {
-            calcDisplay = '0';
-            calcPrevValue = null;
-            calcBuffer = '';
-            lastOp = null;
-            shouldReset = false;
-            updateCalcDisplay();
-        }
-
-        function updateCalcDisplay() {
-            document.getElementById('calc-display').innerText = calcDisplay;
-            document.getElementById('calc-buffer').innerText = calcBuffer;
-        }
-
-        // --- Shopping Tool Logic ---
+        // --- Shopping & Finance Tool Business Rules ---
         function setShopMode(mode) {
             shopMode = mode;
             const btnPrice = document.getElementById('btn-mode-price');
             const btnPercent = document.getElementById('btn-mode-percent');
-            const label = document.getElementById('shop-label');
             const inputLabel = document.getElementById('shop-input-label');
-            const currency = document.getElementById('shop-currency');
-            
+            const subLabel = document.getElementById('shop-label');
+            const currencySign = document.getElementById('shop-currency');
+
+            if (!btnPrice || !btnPercent) return;
+
             if (mode === 'price') {
                 btnPrice.className = "flex-1 py-3 rounded-xl text-xs font-black transition-all bg-white shadow text-indigo-600";
                 btnPercent.className = "flex-1 py-3 rounded-xl text-xs font-black transition-all text-slate-400";
-                label.innerText = "Estimated Final Price";
                 inputLabel.innerText = "Discount (%)";
-                currency.classList.remove('hidden');
-                document.getElementById('shop-icon-input').setAttribute('data-lucide', 'percent');
+                subLabel.innerText = "Estimated Final Price";
+                currencySign.style.display = "inline";
             } else {
                 btnPercent.className = "flex-1 py-3 rounded-xl text-xs font-black transition-all bg-white shadow text-indigo-600";
                 btnPrice.className = "flex-1 py-3 rounded-xl text-xs font-black transition-all text-slate-400";
-                label.innerText = "Calculated Percentage";
                 inputLabel.innerText = "Sale Price (₹)";
-                currency.classList.add('hidden');
-                document.getElementById('shop-icon-input').setAttribute('data-lucide', 'trending-up');
+                subLabel.innerText = "Calculated Markdown Percent";
+                currencySign.style.display = "none";
             }
-            lucide.createIcons();
             updateShop();
         }
 
         function updateShop() {
             const orig = parseFloat(document.getElementById('shop-orig').value) || 0;
             const val = parseFloat(document.getElementById('shop-value').value) || 0;
-            const mainEl = document.getElementById('shop-res-main');
-            const subEl = document.getElementById('shop-res-sub');
+            const resMain = document.getElementById('shop-res-main');
+            const resSub = document.getElementById('shop-res-sub');
 
-            if (orig === 0) {
-                mainEl.innerText = '0';
-                subEl.innerText = 'Ready for values';
+            if (!resMain || !resSub) return;
+
+            if (orig <= 0) {
+                resMain.innerText = "0";
+                resSub.innerText = "Ready for values";
                 return;
             }
 
             if (shopMode === 'price') {
-                const final = orig - (orig * (val / 100));
-                mainEl.innerText = Math.round(final).toLocaleString();
-                subEl.innerText = `You Save ₹${Math.round(orig - final).toLocaleString()}`;
+                const finalPrice = orig - (orig * (val / 100));
+                resMain.innerText = Math.max(0, Math.round(finalPrice * 100) / 100);
+                resSub.innerText = `You save ₹${Math.round((orig - finalPrice) * 100) / 100}`;
             } else {
-                const p = ((orig - val) / orig) * 100;
-                mainEl.innerText = `${p.toFixed(1)}%`;
-                subEl.innerText = `You Save ₹${Math.round(orig - val).toLocaleString()}`;
+                if (val > orig) {
+                    resMain.innerText = "0";
+                    resSub.innerText = "Sale price cannot exceed market price";
+                    return;
+                }
+                const pctSaved = ((orig - val) / orig) * 100;
+                resMain.innerText = Math.round(pctSaved * 100) / 100 + "%";
+                resSub.innerText = `Total discount markdown absolute: ₹${Math.round((orig - val) * 100) / 100}`;
             }
         }
 
-        // --- Other Tool Logic ---
+        // --- Stock Average Calculation Execution ---
         function handleStkCalc() {
             const q1 = parseFloat(document.getElementById('stk-q1').value) || 0;
             const p1 = parseFloat(document.getElementById('stk-p1').value) || 0;
             const q2 = parseFloat(document.getElementById('stk-q2').value) || 0;
             const p2 = parseFloat(document.getElementById('stk-p2').value) || 0;
-            
-            if (q1 + q2 === 0) return;
-            const totalInv = (q1 * p1) + (q2 * p2);
-            const totalQty = q1 + q2;
-            const avg = (totalInv / totalQty).toFixed(2);
-            
-            document.getElementById('stk-res-val').innerText = `₹${avg}`;
-            document.getElementById('stk-res-box').classList.remove('hidden');
-            addToHistory('Stock Average', `₹${avg}`);
+
+            const box = document.getElementById('stk-res-box');
+            const valSpan = document.getElementById('stk-res-val');
+
+            if((q1 + q2) === 0) return;
+
+            const avg = ((q1 * p1) + (q2 * p2)) / (q1 + q2);
+            const formattedAvg = `₹${Math.round(avg * 100) / 100}`;
+
+            valSpan.innerText = formattedAvg;
+            box.classList.remove('hidden');
+
+            addToHistory(`Stock Avg (${q1} units @ ₹${p1} + ${q2} units @ ₹${p2})`, formattedAvg);
         }
 
+        // --- Health/BMI Business Rules ---
         function handleBMICalc() {
-            const w = parseFloat(document.getElementById('bmi-w').value);
-            const h = parseFloat(document.getElementById('bmi-h').value);
-            if (!w || !h) return;
-            
-            const resValue = (w / ((h / 100) ** 2)).toFixed(1);
-            let statusLabel = 'Healthy';
-            let color = 'text-emerald-500';
+            const w = parseFloat(document.getElementById('bmi-w').value) || 0;
+            const h = parseFloat(document.getElementById('bmi-h').value) || 0;
+            const box = document.getElementById('bmi-res-box');
+            const valSpan = document.getElementById('bmi-res-val');
+            const statusDiv = document.getElementById('bmi-status');
 
-            if (resValue < 18.5) { statusLabel = 'Underweight'; color = 'text-amber-500'; }
-            else if (resValue >= 25 && resValue < 30) { statusLabel = 'Overweight'; color = 'text-amber-500'; }
-            else if (resValue >= 30) { statusLabel = 'Obese'; color = 'text-rose-500'; }
+            if (w <= 0 || h <= 0) return;
 
-            document.getElementById('bmi-res-val').innerText = resValue;
-            document.getElementById('bmi-status').innerText = statusLabel;
-            document.getElementById('bmi-status').className = `text-sm font-bold uppercase tracking-wider ${color}`;
-            document.getElementById('bmi-res-box').classList.remove('hidden');
-            addToHistory('BMI Check', resValue);
-        }
+            const hm = h / 100;
+            const bmi = w / (hm * hm);
+            const score = Math.round(bmi * 10) / 10;
 
-        function handlePythCalc() {
-            const a = parseFloat(document.getElementById('pyth-a').value);
-            const b = parseFloat(document.getElementById('pyth-b').value);
-            if (!a || !b) return;
+            valSpan.innerText = score;
 
-            const res = Math.sqrt(a**2 + b**2).toFixed(2);
-            document.getElementById('pyth-res-val').innerText = res;
-            document.getElementById('pyth-res-box').classList.remove('hidden');
-            addToHistory('Pythagoras', res);
-        }
-
-        function handleUnitCalc() {
-            const type = document.getElementById('unit-type').value;
-            const val = parseFloat(document.getElementById('unit-val').value) || 0;
-            let r = 0;
-            
-            if(type === 'kg-lb') r = val * 2.20462;
-            else if(type === 'lb-kg') r = val / 2.20462;
-            else if(type === 'km-mi') r = val * 0.621371;
-            else r = (val * 9/5) + 32;
-
-            const res = r.toFixed(2);
-            document.getElementById('unit-res-box').innerText = res;
-            document.getElementById('unit-res-box').classList.remove('hidden');
-            addToHistory('Convert', res);
-        }
-
-        function handleAgeCalc() {
-            const dob = document.getElementById('age-dob').value;
-            if(!dob) return;
-            const y = Math.floor((new Date() - new Date(dob)) / (1000*60*60*24*365.25));
-            if (!isNaN(y)) {
-                document.getElementById('age-res-val').innerText = y;
-                document.getElementById('age-res-box').classList.remove('hidden');
-                addToHistory('Age', `${y}y`);
+            if (score < 18.5) {
+                statusDiv.innerText = "Underweight";
+                statusDiv.className = "text-sm font-bold uppercase tracking-wider text-amber-500";
+            } else if (score < 25) {
+                statusDiv.innerText = "Healthy Target";
+                statusDiv.className = "text-sm font-bold uppercase tracking-wider text-emerald-500";
+            } else if (score < 30) {
+                statusDiv.innerText = "Overweight";
+                statusDiv.className = "text-sm font-bold uppercase tracking-wider text-amber-500";
+            } else {
+                statusDiv.innerText = "Obese Condition";
+                statusDiv.className = "text-sm font-bold uppercase tracking-wider text-rose-500";
             }
+
+            box.classList.remove('hidden');
+            addToHistory(`BMI Calculation (${w}kg / ${h}cm)`, `${score} (${statusDiv.innerText})`);
         }
 
-        // --- Speech Logic ---
+        // --- Pythagorean Math Business Logic ---
+        function handlePythCalc() {
+            const a = parseFloat(document.getElementById('pyth-a').value) || 0;
+            const b = parseFloat(document.getElementById('pyth-b').value) || 0;
+            const box = document.getElementById('pyth-res-box');
+            const valSpan = document.getElementById('pyth-res-val');
+
+            if (a <= 0 || b <= 0) return;
+
+            const c = Math.sqrt((a * a) + (b * b));
+            const formattedC = Math.round(c * 1000) / 1000;
+
+            valSpan.innerText = formattedC;
+            box.classList.remove('hidden');
+            addToHistory(`Hypotenuse (A:${a}, B:${b})`, `C: ${formattedC}`);
+        }
+
+        // --- Conversion System Matrix ---
+        function handleUnitConvert() {
+            const type = document.getElementById('unit-type').value;
+            const val = parseFloat(document.getElementById('unit-input').value);
+            const box = document.getElementById('unit-res-box');
+            const valSpan = document.getElementById('unit-res-val');
+
+            if (isNaN(val)) {
+                box.classList.add('hidden');
+                return;
+            }
+
+            let result = 0;
+            let unitLabel = '';
+
+            switch(type) {
+                case 'kg-lb': result = val * 2.20462; unitLabel = ' lbs'; break;
+                case 'lb-kg': result = val / 2.20462; unitLabel = ' kg'; break;
+                case 'km-mi': result = val * 0.621371; unitLabel = ' mi'; break;
+                case 'mi-km': result = val / 0.621371; unitLabel = ' km'; break;
+                case 'c-f': result = (val * 9/5) + 32; unitLabel = ' °F'; break;
+            }
+
+            const parsedResult = Math.round(result * 100) / 100 + unitLabel;
+            valSpan.innerText = parsedResult;
+            box.classList.remove('hidden');
+        }
+
+        // --- Custom Utility Panel: Tip Processing Engine ---
+        function handleTipCalc() {
+            const bill = parseFloat(document.getElementById('tip-bill').value) || 0;
+            const pct = parseFloat(document.getElementById('tip-pct').value) || 0;
+            const people = Math.max(1, parseInt(document.getElementById('tip-people').value) || 1);
+
+            const tipAmt = bill * (pct / 100);
+            const total = bill + tipAmt;
+
+            document.getElementById('tip-res-amt').innerText = `₹${Math.round(tipAmt * 10) / 10}`;
+            document.getElementById('tip-res-split').innerText = `₹${Math.round((total / people) * 10) / 10}`;
+        }
+
+        // --- Voice Parsing System Engine Infrastructure ---
         function initSpeech() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return;
+            const SpeechContract = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechContract) return;
 
-            recognition = new SpeechRecognition();
-            recognition.continuous = true;
-            recognition.interimResults = false;
+            // Security warning context check for deployment/web hosting environments
+            if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+                console.warn("OmniCalc Warning: Web Speech APIs require an HTTPS hosted context to activate microphonic inputs safely.");
+            }
+
+            recognition = new SpeechContract();
+            recognition.continuous = false;
             recognition.lang = 'en-IN';
+            recognition.interimResults = false;
 
-            recognition.onresult = (event) => {
-                const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
-                const numbers = transcript.match(/\d+/g);
-                if (numbers && numbers.length >= 2) {
-                    if (activeTabId === 'finance') {
-                        document.getElementById('shop-orig').value = numbers[0];
-                        document.getElementById('shop-value').value = numbers[1];
-                        updateShop();
-                        addToHistory('Voice Shopping', `₹${numbers[0]} input`);
-                    }
-                }
+            recognition.onstart = () => {
+                isListening = true;
+                document.getElementById('mic-status').classList.remove('hidden');
+                const trigger = document.getElementById('mic-trigger');
+                if(trigger) trigger.className = "h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl bg-rose-500 text-white mic-active-pulse";
+                const icon = document.getElementById('mic-icon');
+                if(icon) icon.setAttribute('data-lucide', 'mic');
+                lucide.createIcons();
             };
 
             recognition.onend = () => {
-                if (isListening) recognition.start();
+                isListening = false;
+                document.getElementById('mic-status').classList.add('hidden');
+                const trigger = document.getElementById('mic-trigger');
+                if(trigger) trigger.className = "h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl bg-white/10 hover:bg-white/20";
+                const icon = document.getElementById('mic-icon');
+                if(icon) icon.setAttribute('data-lucide', 'mic-off');
+                lucide.createIcons();
+            };
+
+            recognition.onresult = (event) => {
+                const text = event.results[0][0].transcript.toLowerCase();
+                parseVoiceCommand(text);
             };
         }
 
         function toggleVoice() {
             if (!recognition) {
-                alert("Speech recognition not supported in this browser.");
+                alert("Speech recognition is not supported or requires an active HTTPS web hosting profile.");
                 return;
             }
+            if (isListening) recognition.stop();
+            else recognition.start();
+        }
 
-            const micIcon = document.getElementById('mic-icon');
-            const micTrigger = document.getElementById('mic-trigger');
-            const micStatus = document.getElementById('mic-status');
+        function parseVoiceCommand(phrase) {
+            const metrics = phrase.match(/\d+/g);
+            if (!metrics) return;
 
-            if (isListening) {
-                isListening = false;
-                recognition.stop();
-                micIcon.setAttribute('data-lucide', 'mic-off');
-                micTrigger.className = "h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl bg-white/10 hover:bg-white/20";
-                micStatus.classList.add('hidden');
-            } else {
-                isListening = true;
-                recognition.start();
-                micIcon.setAttribute('data-lucide', 'mic');
-                micTrigger.className = "h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl bg-rose-500 mic-active-pulse";
-                micStatus.classList.remove('hidden');
+            if (metrics.length >= 2) {
+                const origInput = document.getElementById('shop-orig');
+                const valInput = document.getElementById('shop-value');
+                if (origInput && valInput) {
+                    origInput.value = metrics[0];
+                    valInput.value = metrics[1];
+                    updateShop();
+                }
             }
-            lucide.createIcons();
         }
     </script>
 </body>
