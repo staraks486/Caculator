@@ -42,8 +42,17 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 selection:bg-indigo-100">
+<body class="bg-slate-50 text-slate-900 selection:bg-indigo-100 min-h-screen flex flex-col justify-between">
 
+    <!-- Toast Notification Container -->
+    <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] transform transition-all duration-300 -translate-y-20 opacity-0 pointer-events-none">
+        <div class="bg-slate-900 text-white px-6 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-800">
+            <i data-lucide="info" class="w-5 h-5 text-indigo-400" id="toast-icon"></i>
+            <span id="toast-msg" class="text-xs font-semibold tracking-wide">Notification message</span>
+        </div>
+    </div>
+
+    <!-- Header -->
     <header class="bg-white/80 backdrop-blur-md border-b sticky top-0 z-50 px-4 py-3">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2.5">
@@ -66,9 +75,10 @@
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 py-8">
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
+            <!-- LEFT: Standard Calculator -->
             <div class="lg:col-span-5 space-y-6">
                 <div class="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/50">
                     <div class="bg-slate-900 rounded-3xl p-6 mb-6 shadow-inner">
@@ -104,9 +114,10 @@
                 </div>
             </div>
 
+            <!-- RIGHT: Tabbed Field Calculators -->
             <div class="lg:col-span-7 space-y-6">
                 <div class="flex p-1.5 bg-white border border-slate-200 rounded-full shadow-sm overflow-x-auto no-scrollbar">
-                    <button onclick="switchTab('finance')" id="tab-finance" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-500 hover:text-slate-800">
+                    <button onclick="switchTab('finance')" id="tab-finance" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm bg-indigo-600 text-white shadow-md">
                         <i data-lucide="shopping-cart" class="w-4 h-4"></i> Shopping & Finance
                     </button>
                     <button onclick="switchTab('health')" id="tab-health" class="tab-btn flex items-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-500 hover:text-slate-800">
@@ -124,11 +135,13 @@
                 </div>
 
                 <div id="tab-content" class="min-h-[500px]">
-                     </div>
+                    <!-- Hydrated dynamically by switchTab -->
+                </div>
             </div>
         </div>
     </main>
 
+    <!-- History Sidebar -->
     <div id="history-sidebar" class="hidden fixed inset-0 z-[60] flex justify-end">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="toggleHistory(false)"></div>
         <div class="relative w-full max-w-sm bg-white h-full shadow-2xl p-6 flex flex-col">
@@ -149,6 +162,14 @@
         </div>
     </div>
 
+    <!-- Footer Information -->
+    <footer class="bg-white border-t py-4 px-4 text-center text-xs text-slate-400">
+        <div class="max-w-6xl mx-auto">
+            © 2026 OmniCalc Pro Utility Engine. Optimized for Secure HTTPS Environments.
+        </div>
+    </footer>
+
+    <!-- Scripts -->
     <script>
         // --- Initialization ---
         let history = [];
@@ -170,6 +191,29 @@
             initSpeech();
             switchTab('finance');
         };
+
+        // --- Custom Toast Warning Mechanism ---
+        function showToast(message, isSuccess = false) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            const toastIcon = document.getElementById('toast-icon');
+
+            if (!toast || !toastMsg) return;
+
+            toastMsg.innerText = message;
+            if (toastIcon) {
+                toastIcon.setAttribute('data-lucide', isSuccess ? 'check-circle' : 'alert-circle');
+                toastIcon.className = isSuccess ? 'w-5 h-5 text-emerald-400' : 'w-5 h-5 text-rose-400';
+                lucide.createIcons();
+            }
+
+            // Slide Toast down
+            toast.className = "fixed top-4 left-1/2 -translate-x-1/2 z-[100] transform transition-all duration-300 translate-y-0 opacity-100";
+
+            setTimeout(() => {
+                toast.className = "fixed top-4 left-1/2 -translate-x-1/2 z-[100] transform transition-all duration-300 -translate-y-20 opacity-0 pointer-events-none";
+            }, 4000);
+        }
 
         // --- Core History ---
         function addToHistory(name, result) {
@@ -225,7 +269,7 @@
 
         // --- Standard Calculator Logic ---
         function handleNum(num) {
-            if (calcDisplay === '0' && num !== '.' || shouldReset) {
+            if ((calcDisplay === '0' && num !== '.') || shouldReset) {
                 calcDisplay = num;
                 shouldReset = false;
             } else {
@@ -475,10 +519,13 @@
             }
 
             // Paint Component Frame
-            document.getElementById('tab-content').innerHTML = tabs[tabId];
+            const tabContentArea = document.getElementById('tab-content');
+            if (tabContentArea) {
+                tabContentArea.innerHTML = tabs[tabId];
+            }
             lucide.createIcons();
 
-            // Re-apply sub-mode initialization arrays if any
+            // Re-apply sub-mode initialization configurations
             if (tabId === 'finance') {
                 setShopMode(shopMode);
             }
@@ -493,7 +540,7 @@
             const subLabel = document.getElementById('shop-label');
             const currencySign = document.getElementById('shop-currency');
 
-            if (!btnPrice || !btnPercent) return;
+            if (!btnPrice || !btnPercent || !inputLabel || !subLabel || !currencySign) return;
 
             if (mode === 'price') {
                 btnPrice.className = "flex-1 py-3 rounded-xl text-xs font-black transition-all bg-white shadow text-indigo-600";
@@ -512,12 +559,15 @@
         }
 
         function updateShop() {
-            const orig = parseFloat(document.getElementById('shop-orig').value) || 0;
-            const val = parseFloat(document.getElementById('shop-value').value) || 0;
+            const origEl = document.getElementById('shop-orig');
+            const valEl = document.getElementById('shop-value');
             const resMain = document.getElementById('shop-res-main');
             const resSub = document.getElementById('shop-res-sub');
 
-            if (!resMain || !resSub) return;
+            if (!origEl || !valEl || !resMain || !resSub) return;
+
+            const orig = parseFloat(origEl.value) || 0;
+            const val = parseFloat(valEl.value) || 0;
 
             if (orig <= 0) {
                 resMain.innerText = "0";
@@ -551,7 +601,10 @@
             const box = document.getElementById('stk-res-box');
             const valSpan = document.getElementById('stk-res-val');
 
-            if((q1 + q2) === 0) return;
+            if ((q1 + q2) === 0) {
+                showToast("Please input quantities to process calculation.");
+                return;
+            }
 
             const avg = ((q1 * p1) + (q2 * p2)) / (q1 + q2);
             const formattedAvg = `₹${Math.round(avg * 100) / 100}`;
@@ -570,7 +623,10 @@
             const valSpan = document.getElementById('bmi-res-val');
             const statusDiv = document.getElementById('bmi-status');
 
-            if (w <= 0 || h <= 0) return;
+            if (w <= 0 || h <= 0) {
+                showToast("Please enter valid positive numbers for height & weight.");
+                return;
+            }
 
             const hm = h / 100;
             const bmi = w / (hm * hm);
@@ -603,7 +659,10 @@
             const box = document.getElementById('pyth-res-box');
             const valSpan = document.getElementById('pyth-res-val');
 
-            if (a <= 0 || b <= 0) return;
+            if (a <= 0 || b <= 0) {
+                showToast("Triangulation side parameters must be positive.");
+                return;
+            }
 
             const c = Math.sqrt((a * a) + (b * b));
             const formattedC = Math.round(c * 1000) / 1000;
@@ -641,7 +700,7 @@
             box.classList.remove('hidden');
         }
 
-        // --- Custom Utility Panel: Tip Processing Engine ---
+        // --- Tip Processing Engine ---
         function handleTipCalc() {
             const bill = parseFloat(document.getElementById('tip-bill').value) || 0;
             const pct = parseFloat(document.getElementById('tip-pct').value) || 0;
@@ -659,9 +718,9 @@
             const SpeechContract = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechContract) return;
 
-            // Security warning context check for deployment/web hosting environments
+            // Warn hosting console if unsecure
             if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
-                console.warn("OmniCalc Warning: Web Speech APIs require an HTTPS hosted context to activate microphonic inputs safely.");
+                console.warn("OmniCalc Web Security Notice: Voice engine strictly requires an SSL / HTTPS hosted environment.");
             }
 
             recognition = new SpeechContract();
@@ -671,21 +730,23 @@
 
             recognition.onstart = () => {
                 isListening = true;
-                document.getElementById('mic-status').classList.remove('hidden');
+                const micStatus = document.getElementById('mic-status');
+                if (micStatus) micStatus.classList.remove('hidden');
                 const trigger = document.getElementById('mic-trigger');
-                if(trigger) trigger.className = "h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl bg-rose-500 text-white mic-active-pulse";
+                if (trigger) trigger.className = "h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl bg-rose-500 text-white mic-active-pulse";
                 const icon = document.getElementById('mic-icon');
-                if(icon) icon.setAttribute('data-lucide', 'mic');
+                if (icon) icon.setAttribute('data-lucide', 'mic');
                 lucide.createIcons();
             };
 
             recognition.onend = () => {
                 isListening = false;
-                document.getElementById('mic-status').classList.add('hidden');
+                const micStatus = document.getElementById('mic-status');
+                if (micStatus) micStatus.classList.add('hidden');
                 const trigger = document.getElementById('mic-trigger');
-                if(trigger) trigger.className = "h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl bg-white/10 hover:bg-white/20";
+                if (trigger) trigger.className = "h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl bg-white/10 hover:bg-white/20";
                 const icon = document.getElementById('mic-icon');
-                if(icon) icon.setAttribute('data-lucide', 'mic-off');
+                if (icon) icon.setAttribute('data-lucide', 'mic-off');
                 lucide.createIcons();
             };
 
@@ -693,15 +754,26 @@
                 const text = event.results[0][0].transcript.toLowerCase();
                 parseVoiceCommand(text);
             };
+
+            recognition.onerror = () => {
+                showToast("Voice capture error. Ensure microphone permission is granted.");
+            };
         }
 
         function toggleVoice() {
             if (!recognition) {
-                alert("Speech recognition is not supported or requires an active HTTPS web hosting profile.");
+                showToast("Voice parsing is not supported on this browser context.");
                 return;
             }
-            if (isListening) recognition.stop();
-            else recognition.start();
+            if (isListening) {
+                recognition.stop();
+            } else {
+                try {
+                    recognition.start();
+                } catch(e) {
+                    showToast("Microphone is currently unavailable or busy.");
+                }
+            }
         }
 
         function parseVoiceCommand(phrase) {
@@ -715,6 +787,7 @@
                     origInput.value = metrics[0];
                     valInput.value = metrics[1];
                     updateShop();
+                    showToast(`Voice set: Market Price ${metrics[0]}, Discount ${metrics[1]}`, true);
                 }
             }
         }
