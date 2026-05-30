@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; text-align: center; }
+        .calculator { display: inline-block; background: #fff; padding: 20px; border-radius: 10px; margin-top: 100px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);}
+        input { width: 160px; font-size: 1.5em; margin-bottom: 10px; text-align: right; }
+        button { width: 40px; height: 40px; font-size: 1.1em; margin: 2px; }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input id="display" disabled>
+        <br>
+        <button onclick="appendNumber('7')">7</button>
+        <button onclick="appendNumber('8')">8</button>
+        <button onclick="appendNumber('9')">9</button>
+        <button onclick="setOperator('/')">÷</button>
+        <br>
+        <button onclick="appendNumber('4')">4</button>
+        <button onclick="appendNumber('5')">5</button>
+        <button onclick="appendNumber('6')">6</button>
+        <button onclick="setOperator('*')">×</button>
+        <br>
+        <button onclick="appendNumber('1')">1</button>
+        <button onclick="appendNumber('2')">2</button>
+        <button onclick="appendNumber('3')">3</button>
+        <button onclick="setOperator('-')">-</button>
+        <br>
+        <button onclick="appendNumber('0')">0</button>
+        <button onclick="appendDot()">.</button>
+        <button onclick="calculate()">=</button>
+        <button onclick="setOperator('+')">+</button>
+        <br>
+        <button onclick="clearDisplay()" colspan="4">C</button>
+    </div>
+    <script>
+      let display = document.getElementById('display');
+      let current = '';
+      let operator = '';
+      let first = null;
+      function appendNumber(num) {
+        current += num;
+        display.value = current;
+      }
+      function setOperator(op) {
+        if(current === '') return;
+        if(first === null) {
+          first = parseFloat(current);
+        } else {
+          first = operate(first, parseFloat(current), operator);
+        }
+        operator = op;
+        current = '';
+      }
+      function calculate() {
+        if(operator && current !== '') {
+          display.value = operate(first, parseFloat(current), operator);
+          current = display.value;
+          operator = '';
+          first = null;
+        }
+      }
+      function clearDisplay() {
+        current = '';
+        operator = '';
+        first = null;
+        display.value = '';
+      }
+      function appendDot() {
+        if(!current.includes('.')) {
+          current += '.';
+          display.value = current;
+        }
+      }
+      function operate(a, b, op) {
+        switch(op) {
+          case '+': return a + b;
+          case '-': return a - b;
+          case '*': return a * b;
+          case '/': return b !== 0 ? a / b : 'Error';
+        }
+      }
+    </script>
+</body>
+</html>
