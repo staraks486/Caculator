@@ -143,6 +143,15 @@
         .tab-panel { display: none; }
         .tab-panel.active { display: block; animation: fadeIn 0.4s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Counter Pro Max Additional Styles */
+        .counter-card { transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.05); background: rgba(15, 23, 42, 0.6); border-radius: 1.25rem; }
+        .active-group { border-color: var(--primary-accent) !important; background: rgba(var(--primary-rgb), 0.05); }
+        .counter-chip-adv { display: inline-flex; align-items: center; background: rgba(15,23,42,0.8); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; margin: 2px; border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; }
+        .small-btn { padding: 5px 10px; font-size: 10px; border-radius: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; transition: transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .small-btn:active { transform: scale(0.95); }
+        .capturing-mode-counter { background-color: #090d16 !important; padding-bottom: 2rem !important; }
+        .capturing-mode-counter .hide-on-capture { display: none !important; }
     </style>
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500/30">
@@ -156,8 +165,8 @@
             <h3 id="modal-title" class="text-lg font-black text-white leading-none">Confirm System Overwrite</h3>
             <p id="modal-desc" class="text-xs text-slate-400 font-semibold leading-relaxed">This operation is irreversible. Are you sure you wish to wipe the sandbox storage?</p>
             <div class="flex gap-3 pt-2">
-                <button onclick="closeModal()" class="flex-1 py-3 bg-slate-950 hover:bg-slate-800 border border-slate-850 rounded-xl text-xs font-bold uppercase transition-all">Cancel</button>
-                <button id="modal-confirm-btn" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold uppercase transition-all shadow-lg shadow-red-600/10">Wipe Data</button>
+                <button onclick="closeOmniModal()" class="flex-1 py-3 bg-slate-950 hover:bg-slate-800 border border-slate-850 rounded-xl text-xs font-bold uppercase transition-all">Cancel</button>
+                <button id="modal-confirm-btn" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold uppercase transition-all shadow-lg shadow-red-600/10">Confirm</button>
             </div>
         </div>
     </div>
@@ -324,20 +333,23 @@
         <div id="suite-pane" class="hidden lg:col-span-7 space-y-6 lg:block">
             
             <div class="flex flex-wrap p-1.5 bg-slate-900 border border-slate-800 rounded-2xl shadow-inner gap-1.5">
-                <button onclick="switchTab('finance')" id="tab-finance" class="tab-btn flex-1 min-w-[140px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm bg-slate-800 text-white shadow-md">
-                    <i data-lucide="shopping-cart" class="w-4 h-4"></i> Finance & Wealth
+                <button onclick="switchTab('finance')" id="tab-finance" class="tab-btn flex-1 min-w-[120px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm bg-slate-800 text-white shadow-md">
+                    <i data-lucide="shopping-cart" class="w-4 h-4"></i> Finance
                 </button>
-                <button onclick="switchTab('health')" id="tab-health" class="tab-btn flex-1 min-w-[140px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-400 hover:text-slate-200">
-                    <i data-lucide="heart-pulse" class="w-4 h-4"></i> Health & BMI
+                <button onclick="switchTab('health')" id="tab-health" class="tab-btn flex-1 min-w-[120px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-400 hover:text-slate-200">
+                    <i data-lucide="heart-pulse" class="w-4 h-4"></i> Health
                 </button>
-                <button onclick="switchTab('unit')" id="tab-unit" class="tab-btn flex-1 min-w-[140px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-400 hover:text-slate-200">
+                <button onclick="switchTab('unit')" id="tab-unit" class="tab-btn flex-1 min-w-[120px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-400 hover:text-slate-200">
                     <i data-lucide="arrow-right-left" class="w-4 h-4"></i> Convert
                 </button>
-                <button onclick="switchTab('counter')" id="tab-counter" class="tab-btn flex-1 min-w-[140px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-400 hover:text-slate-200">
-                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Counter Pro Max
+                <button onclick="switchTab('footwear')" id="tab-footwear" class="tab-btn flex-1 min-w-[120px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-400 hover:text-slate-200">
+                    <i data-lucide="footprints" class="w-4 h-4"></i> Step Fit
                 </button>
-                <button onclick="switchTab('utility')" id="tab-utility" class="tab-btn flex-1 min-w-[140px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-400 hover:text-slate-200">
-                    <i data-lucide="briefcase" class="w-4 h-4"></i> Utility Tools
+                <button onclick="switchTab('counter')" id="tab-counter" class="tab-btn flex-1 min-w-[120px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-400 hover:text-slate-200">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Counter
+                </button>
+                <button onclick="switchTab('utility')" id="tab-utility" class="tab-btn flex-1 min-w-[120px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-400 hover:text-slate-200">
+                    <i data-lucide="briefcase" class="w-4 h-4"></i> Utility
                 </button>
             </div>
 
@@ -521,34 +533,213 @@
                     </div>
                 </div>
 
-                <!-- 4. Counter Pro Max Tab -->
-                <div id="panel-counter" class="tab-panel space-y-6">
-                    <div id="counter-container" class="bg-gradient-to-tr from-slate-900 to-slate-800 p-8 rounded-[2.5rem] shadow-2xl text-center border border-slate-700/50 relative overflow-hidden">
-                        <div class="absolute top-4 right-4 flex gap-2">
-                            <span class="counter-chip"><i data-lucide="tag" class="w-3 h-3 mr-1"></i> Tally #01</span>
+                <!-- 4. Step Fit Pro Tab -->
+                <div id="panel-footwear" class="tab-panel space-y-6">
+                    <div class="glass-panel p-6 md:p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2.5 dynamic-bg-glow dynamic-text-accent rounded-2xl border dynamic-border-glow">
+                                    <i data-lucide="footprints" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-black text-white leading-none">Step Fit Pro</h3>
+                                    <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Retail Standard Calculator</p>
+                                </div>
+                            </div>
+                            <button onclick="startFootwearVoice()" id="mic-btn-footwear" class="h-10 w-10 rounded-xl flex items-center justify-center transition-all shadow-lg border border-slate-700/40 bg-slate-800 hover:bg-slate-700" title="Voice Input">
+                                <i data-lucide="mic" class="w-4 h-4 dynamic-text-accent"></i>
+                            </button>
                         </div>
-                        <h3 class="text-lg font-black text-slate-400 uppercase tracking-widest mb-6">Master Counter</h3>
+
+                        <!-- Tabs -->
+                        <div class="flex p-1 bg-slate-900/80 rounded-xl mb-4 border border-slate-800">
+                            <button onclick="setFootwearType('men')" id="btn-fw-men" class="flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all dynamic-bg-accent text-white shadow-md">Men</button>
+                            <button onclick="setFootwearType('women')" id="btn-fw-women" class="flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all text-slate-500 hover:text-white">Women</button>
+                            <button onclick="setFootwearType('kids')" id="btn-fw-kids" class="flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all text-slate-500 hover:text-white">Kids</button>
+                        </div>
+
+                        <!-- Inputs -->
+                        <div class="grid grid-cols-1 gap-4">
+                            <!-- Master CM -->
+                            <div class="input-container rounded-2xl p-4 space-y-1">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[9px] font-bold dynamic-text-accent uppercase tracking-widest">Foot Length (CM)</span>
+                                    <span id="fw-range-hint" class="text-[8px] text-slate-500 font-bold">24.0-29.3</span>
+                                </div>
+                                <input type="number" step="0.1" id="fw-size-cm" placeholder="0.0"
+                                    class="w-full bg-transparent text-4xl font-extrabold outline-none text-white placeholder:text-slate-800"
+                                    oninput="lookupFootwear('cm', this.value)">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="input-container rounded-2xl p-3 space-y-1">
+                                    <span class="text-[9px] font-bold text-orange-400 uppercase tracking-widest">India / UK</span>
+                                    <input type="number" step="0.5" id="fw-size-in" placeholder="0"
+                                        class="w-full bg-transparent text-xl font-bold outline-none text-white placeholder:text-slate-800"
+                                        oninput="lookupFootwear('in', this.value)">
+                                </div>
+                                <div class="input-container rounded-2xl p-3 space-y-1">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">US / CA</span>
+                                    <input type="number" step="0.5" id="fw-size-us" placeholder="0"
+                                        class="w-full bg-transparent text-xl font-bold outline-none text-white placeholder:text-slate-800"
+                                        oninput="lookupFootwear('us', this.value)">
+                                </div>
+                            </div>
+
+                            <div class="input-container rounded-2xl p-3 space-y-1">
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Europe (EU)</span>
+                                <input type="number" step="1" id="fw-size-eu" placeholder="0"
+                                    class="w-full bg-transparent text-xl font-bold outline-none text-white placeholder:text-slate-800"
+                                    oninput="lookupFootwear('eu', this.value)">
+                            </div>
+                        </div>
+
+                        <!-- Clear Action -->
+                        <button onclick="clearFootwearAll()" class="w-full mt-4 py-3 rounded-xl bg-slate-800/40 border border-slate-700/50 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white hover:bg-red-500/20 transition-all">
+                            Reset Sizes
+                        </button>
                         
-                        <div id="counter-value" class="text-[8rem] md:text-[10rem] font-black text-white leading-none tracking-tighter tabular-nums my-4">0</div>
+                        <!-- Dynamic Reference (Collapsible) -->
+                        <div class="mt-6 space-y-3">
+                            <button onclick="toggleFwSection('fw-ref-table')" class="w-full flex items-center justify-between px-4 py-3 bg-slate-900/40 rounded-xl border border-slate-800 group hover:border-slate-700 transition-colors">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-white transition-colors">Retail Reference Chart</span>
+                                <i data-lucide="chevron-down" id="arrow-fw-ref" class="w-4 h-4 text-slate-500 transition-transform"></i>
+                            </button>
+                            <div id="fw-ref-table" class="hidden overflow-hidden transition-all duration-300">
+                                <div class="bg-slate-900/60 rounded-2xl border border-slate-800 p-4">
+                                    <div class="overflow-x-auto no-scrollbar">
+                                        <table class="w-full text-[10px] text-left">
+                                            <thead class="text-slate-500 border-b border-slate-800 uppercase">
+                                                <tr>
+                                                    <th class="pb-2">CM</th>
+                                                    <th class="pb-2">EU</th>
+                                                    <th class="pb-2">US</th>
+                                                    <th class="pb-2 text-orange-400">IN</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="fw-table-body" class="text-slate-400"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button onclick="toggleFwSection('fw-standards')" class="w-full flex items-center justify-between px-4 py-3 bg-slate-900/40 rounded-xl border border-slate-800 group hover:border-slate-700 transition-colors">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-white transition-colors">International Standards</span>
+                                <i data-lucide="chevron-down" id="arrow-fw-std" class="w-4 h-4 text-slate-500 transition-transform"></i>
+                            </button>
+                            <div id="fw-standards" class="hidden space-y-2">
+                                <div class="grid grid-cols-2 gap-2 text-[9px] uppercase tracking-tighter">
+                                    <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                                        <p class="dynamic-text-accent font-bold mb-1">MondoPoint</p>
+                                        <p class="text-slate-500 leading-tight">Metric length in CM/MM.</p>
+                                    </div>
+                                    <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                                        <p class="text-orange-400 font-bold mb-1">Barleycorn</p>
+                                        <p class="text-slate-500 leading-tight">UK/IN: 1 size = 1/3 inch.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         
-                        <div class="flex items-center justify-center gap-4 mt-8">
-                            <button onclick="updateCounter(-1)" class="w-16 h-16 rounded-full bg-slate-950 border border-slate-700 text-slate-300 flex items-center justify-center hover:bg-slate-800 transition-all active:scale-90 shadow-lg">
-                                <i data-lucide="minus" class="w-6 h-6"></i>
-                            </button>
-                            <button onclick="updateCounter(1)" class="w-24 h-24 rounded-[2rem] dynamic-bg-accent text-white flex items-center justify-center hover:opacity-90 transition-all active:scale-90 shadow-xl border border-white/10">
-                                <i data-lucide="plus" class="w-10 h-10"></i>
-                            </button>
-                            <button onclick="updateCounter(0)" class="w-16 h-16 rounded-full bg-slate-950 border border-slate-700 text-slate-300 flex items-center justify-center hover:bg-slate-800 transition-all active:scale-90 shadow-lg" title="Reset Counter">
-                                <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
-                            </button>
+                        <div class="mt-8 text-center border-t border-slate-800/80 pt-4">
+                            <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Powered by Step Fit Pro | Arvind Kumar Shukla</p>
                         </div>
                     </div>
-                    <button onclick="exportCounterImage()" class="w-full py-4 glass-panel rounded-2xl font-black text-sm uppercase tracking-wider transition-all text-slate-300 hover:text-white flex items-center justify-center gap-2">
-                        <i data-lucide="camera" class="w-4 h-4"></i> Export Image Report
-                    </button>
                 </div>
 
-                <!-- 5. Utility Tab (Placeholder/Basic Tool) -->
+                <!-- 5. Counter Pro Max Tab -->
+                <div id="panel-counter" class="tab-panel space-y-6">
+                    <!-- Integrated Counter Pro Max Sub-navigation -->
+                    <div class="flex p-1 bg-slate-900/80 rounded-xl mb-4 border border-slate-800 w-full max-w-xl mx-auto">
+                        <button onclick="switchCounterSubTab('board')" id="btn-c-board" class="flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all dynamic-bg-accent text-white shadow-md">Active Board</button>
+                        <button onclick="switchCounterSubTab('history')" id="btn-c-history" class="flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all text-slate-500 hover:text-white">Saved Sessions</button>
+                    </div>
+
+                    <!-- Sub-tab: Board -->
+                    <div id="c-sub-board" class="space-y-6 active">
+                        <div id="c-captureContent" class="glass-panel p-6 md:p-8 rounded-[2.5rem] shadow-2xl relative max-w-xl mx-auto transition-colors">
+                            <div class="flex justify-between items-center mb-8 border-b border-slate-800 pb-6">
+                                <div>
+                                    <p class="text-[9px] font-black dynamic-text-accent uppercase tracking-widest leading-none mb-2">Grand Total</p>
+                                    <div id="c-grandTotal" class="text-4xl font-black text-white leading-none tabular-nums">0</div>
+                                </div>
+                                <div class="flex flex-wrap justify-end gap-2 hide-on-capture">
+                                    <button id="c-voiceBtn" onclick="toggleCounterVoice()" class="small-btn bg-slate-800 text-slate-300 hover:text-white border border-slate-700" title="Voice Input"><i data-lucide="mic" class="w-4 h-4"></i></button>
+                                    <button onclick="shareCounterAsImage()" class="small-btn bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/40 transition-colors" title="Export Image"><i data-lucide="image" class="w-4 h-4"></i></button>
+                                    <button onclick="shareCounterData()" class="small-btn bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/40 transition-colors" title="Export Text"><i data-lucide="file-text" class="w-4 h-4"></i></button>
+                                    <button onclick="addCounterGroup()" class="small-btn dynamic-bg-glow dynamic-text-accent border dynamic-border-glow hover:opacity-80 transition-colors" title="Add Group">+ Grp</button>
+                                </div>
+                            </div>
+
+                            <!-- Print Header (Hidden normally) -->
+                            <div class="hidden max-w-md mx-auto pt-4 pb-4 px-5 bg-slate-900 border border-slate-800 rounded-xl mb-6" id="c-printHeader">
+                                <div class="border-b border-slate-800 pb-3 mb-4">
+                                    <h2 class="text-lg font-black text-white uppercase tracking-widest text-center">Inventory Report</h2>
+                                    <p id="c-printDate" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2 text-center"></p>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-black dynamic-text-accent uppercase tracking-wider">Total Count</span>
+                                    <span id="c-printGrandTotal" class="text-2xl font-black text-white tabular-nums">0</span>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center mb-4 px-1 hide-on-capture">
+                                <div id="c-clock" class="text-[11px] font-bold text-slate-400 tabular-nums">00:00:00</div>
+                                <div id="c-date" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Loading...</div>
+                            </div>
+
+                            <div id="c-groupsList" class="space-y-4 mb-8 max-h-[50vh] overflow-y-auto no-scrollbar pr-1"></div>
+
+                            <div class="mt-8 space-y-6 hide-on-capture">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 focus-within:border-indigo-500 transition-colors">
+                                        <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Counted By</label>
+                                        <input id="c-countedBy" list="c-nameList" onchange="saveCounterPersonnel()" placeholder="Name" class="w-full text-xs font-bold outline-none bg-transparent text-white">
+                                    </div>
+                                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 focus-within:border-indigo-500 transition-colors">
+                                        <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Checked By</label>
+                                        <input id="c-checkedBy" list="c-nameList" onchange="saveCounterPersonnel()" placeholder="Name" class="w-full text-xs font-bold outline-none bg-transparent text-white">
+                                    </div>
+                                </div>
+                                <datalist id="c-nameList"></datalist>
+
+                                <button onclick="finishCounterSession()" class="w-full py-4 rounded-2xl dynamic-bg-accent text-white font-black uppercase tracking-widest text-xs shadow-lg shadow-indigo-500/20 active:scale-95 transition-all flex flex-col items-center justify-center gap-1">
+                                    <span>Save Session to History</span>
+                                    <span class="text-[9px] text-white/70 normal-case tracking-normal">Clear board and start fresh</span>
+                                </button>
+                                
+                                <!-- POSITIVE QUOTE -->
+                                <div class="p-6 bg-slate-900/60 rounded-[2rem] text-slate-300 text-center border border-slate-800 mt-6">
+                                    <p id="c-quoteBox" class="text-sm font-bold italic leading-relaxed">"Great things never come from comfort zones."</p>
+                                </div>
+
+                                <div class="text-center mt-6 border-t border-slate-800/80 pt-4">
+                                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Powered by Counter Pro Max | Arvind Kumar Shukla</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sub-tab: History -->
+                    <div id="c-sub-history" class="hidden space-y-6 max-w-xl mx-auto">
+                        <div class="glass-panel p-6 md:p-8 rounded-[2.5rem] shadow-2xl relative">
+                            <div class="mb-6 px-1 border-b border-slate-800 pb-4">
+                                <h2 class="text-lg font-black text-white uppercase tracking-widest">Session History</h2>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">Your past counting records</p>
+                            </div>
+                            
+                            <div id="c-historyList" class="space-y-4 max-h-[60vh] overflow-y-auto no-scrollbar pr-1"></div>
+                            
+                            <div id="c-emptyHistory" class="hidden text-center py-12 px-6 bg-slate-900/50 rounded-[2rem] border border-slate-800 mt-4">
+                                <div class="text-4xl mb-4 opacity-50">📭</div>
+                                <h3 class="text-sm font-black text-slate-300 uppercase tracking-widest mb-2">No History Yet</h3>
+                                <p class="text-xs font-semibold text-slate-500">Finish your current counting session to save it here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Utility Tab (Placeholder/Basic Tool) -->
                 <div id="panel-utility" class="tab-panel space-y-6">
                     <div class="glass-panel p-8 rounded-[2.5rem] shadow-2xl text-center">
                         <div class="w-16 h-16 mx-auto rounded-full dynamic-bg-glow flex items-center justify-center mb-4">
@@ -591,12 +782,399 @@
             temp: { c: 'C', f: 'F', k: 'K' } // Special logic needed
         };
 
+        // Modal Logic Integration for overrides
+        let omniModalCallback = null;
+        function showOmniModal(title, text, confirmCallback) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-desc').innerText = text;
+            omniModalCallback = confirmCallback;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+        function closeOmniModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+            omniModalCallback = null;
+        }
+        document.getElementById('modal-confirm-btn').addEventListener('click', () => {
+            if(omniModalCallback) omniModalCallback();
+            closeOmniModal();
+        });
+
+        // Footwear State
+        let fwCurrentType = 'men';
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let fwRecognition = SpeechRecognition ? new SpeechRecognition() : null;
+        
+        const fwMasterData = {
+            men: [
+                {cm: 24.0, eu: 38, us: 5, in: 4}, {cm: 24.7, eu: 39, us: 6, in: 5},
+                {cm: 25.3, eu: 40, us: 7, in: 6}, {cm: 26.0, eu: 41, us: 8, in: 7},
+                {cm: 26.7, eu: 42, us: 9, in: 8}, {cm: 27.3, eu: 43, us: 10, in: 9},
+                {cm: 28.0, eu: 44, us: 11, in: 10}, {cm: 28.7, eu: 45, us: 12, in: 11},
+                {cm: 29.3, eu: 46, us: 13, in: 12}
+            ],
+            women: [
+                {cm: 22.0, eu: 35, us: 4, in: 2}, {cm: 22.7, eu: 36, us: 5, in: 3},
+                {cm: 23.3, eu: 37, us: 6, in: 4}, {cm: 24.0, eu: 38, us: 6, in: 5},
+                {cm: 24.7, eu: 39, us: 7, in: 6}, {cm: 25.3, eu: 40, us: 8, in: 7},
+                {cm: 26.0, eu: 41, us: 9, in: 8}, {cm: 26.7, eu: 42, us: 10, in: 9},
+                {cm: 27.3, eu: 43, us: 11, in: 10}
+            ],
+            kids: [
+                {cm: 14.0, eu: 23, us: 6, in: 5}, {cm: 14.7, eu: 24, us: 7, in: 6},
+                {cm: 15.3, eu: 25, us: 8, in: 7}, {cm: 16.0, eu: 26, us: 9, in: 8},
+                {cm: 16.7, eu: 27, us: 10, in: 9}, {cm: 17.3, eu: 28, us: 11, in: 10},
+                {cm: 18.0, eu: 29, us: 12, in: 11}, {cm: 18.7, eu: 30, us: 13, in: 12},
+                {cm: 19.3, eu: 31, us: 1, in: 13}, {cm: 20.0, eu: 32, us: 2, in: 1},
+                {cm: 20.7, eu: 33, us: 3, in: 2}, {cm: 21.3, eu: 34, us: 4, in: 3}
+            ]
+        };
+
+        // Counter Pro Max Logic
+        let cState = {
+            groups: [
+                { id: 1, name: "Male", items: [] },
+                { id: 2, name: "Female", items: [] },
+                { id: 3, name: "Shoecare", items: [] },
+                { id: 4, name: "Shoehorn", items: [] },
+                { id: 5, name: "Prop", items: [] },
+                { id: 6, name: "Bag", items: [] },
+                { id: 7, name: "Belt", items: [] },
+                { id: 8, name: "Shoetree", items: [] }
+            ],
+            activeIdx: 0,
+            isVoice: false,
+            savedNames: ["Arvind Kumar Shukla"],
+            countedBy: "",
+            checkedBy: "",
+            history: [] 
+        };
+
+        const cQuotes = [
+            "Your hard work today is your success tomorrow.",
+            "Accuracy is the twin brother of honesty.",
+            "Focus on being productive, not busy.",
+            "Small steps lead to big results.",
+            "Success is the sum of small efforts repeated daily.",
+            "Believe you can and you're halfway there.",
+            "Quality is not an act, it is a habit."
+        ];
+
+        const cAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playCounterSound(type) {
+            if (cAudioCtx.state === 'suspended') cAudioCtx.resume();
+            const osc = cAudioCtx.createOscillator();
+            const gainNode = cAudioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(cAudioCtx.destination);
+
+            if (type === 'add') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, cAudioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1200, cAudioCtx.currentTime + 0.05);
+                gainNode.gain.setValueAtTime(0.2, cAudioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, cAudioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(cAudioCtx.currentTime + 0.1);
+                if (navigator.vibrate) navigator.vibrate(10);
+            } else if (type === 'remove') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, cAudioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(200, cAudioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.2, cAudioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, cAudioCtx.currentTime + 0.15);
+                osc.start(); osc.stop(cAudioCtx.currentTime + 0.15);
+                if (navigator.vibrate) navigator.vibrate([15, 30, 15]);
+            }
+        }
+
+        function initCounter() {
+            const saved = localStorage.getItem('omni_cpm_v7');
+            if (saved) {
+                try { 
+                    const parsed = JSON.parse(saved); 
+                    cState = { ...cState, ...parsed };
+                    if(!cState.history) cState.history = []; 
+                } catch(e) {}
+            }
+            
+            setInterval(() => {
+                const clockEl = document.getElementById('c-clock');
+                if(clockEl) clockEl.innerText = new Date().toLocaleTimeString('en-US', { hour12: false });
+            }, 1000);
+            
+            document.getElementById('c-quoteBox').innerText = `"${cQuotes[Math.floor(Math.random() * cQuotes.length)]}"`;
+            document.getElementById('c-date').innerText = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            
+            renderCounter();
+            renderCounterHistory();
+            updateCounterNameList();
+        }
+
+        function switchCounterSubTab(tab) {
+            document.getElementById('c-sub-board').classList.toggle('hidden', tab !== 'board');
+            document.getElementById('c-sub-history').classList.toggle('hidden', tab !== 'history');
+            
+            document.getElementById('btn-c-board').className = tab === 'board' 
+                ? 'flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all dynamic-bg-accent text-white shadow-md' 
+                : 'flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all text-slate-500 hover:text-white';
+                
+            document.getElementById('btn-c-history').className = tab === 'history' 
+                ? 'flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all dynamic-bg-accent text-white shadow-md' 
+                : 'flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all text-slate-500 hover:text-white';
+                
+            if(tab === 'history') renderCounterHistory();
+        }
+
+        function saveCounterData() {
+            localStorage.setItem('omni_cpm_v7', JSON.stringify(cState));
+            updateCounterNameList();
+        }
+
+        function saveCounterPersonnel() {
+            cState.countedBy = document.getElementById('c-countedBy').value.trim();
+            cState.checkedBy = document.getElementById('c-checkedBy').value.trim();
+            [cState.countedBy, cState.checkedBy].forEach(n => {
+                if(n && !cState.savedNames.includes(n)) cState.savedNames.push(n);
+            });
+            saveCounterData();
+        }
+
+        function renderCounter() {
+            const list = document.getElementById('c-groupsList');
+            list.innerHTML = "";
+            let grandTotal = 0;
+
+            cState.groups.forEach((g, idx) => {
+                const subtotal = g.items.reduce((a, b) => a + b, 0);
+                grandTotal += subtotal;
+
+                const el = document.createElement('div');
+                el.className = `counter-card p-4 mb-3 ${cState.activeIdx === idx ? 'active-group' : ''}`;
+                el.onclick = (e) => { 
+                    if(e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON' && cState.activeIdx !== idx) { 
+                        cState.activeIdx = idx; renderCounter(); 
+                    }
+                };
+
+                el.innerHTML = `
+                    <div class="flex justify-between items-center mb-3">
+                        <input value="${g.name}" onchange="renameCounterGroup(${idx}, this.value)" class="bg-transparent font-black text-sm outline-none w-2/3 text-white">
+                        <div class="dynamic-text-accent font-black text-lg tabular-nums">${subtotal}</div>
+                    </div>
+                    <div class="flex gap-2 mb-3">
+                        <input id="c-in-${idx}" type="number" placeholder="Value" onkeydown="if(event.key==='Enter') manualAddCounter(${idx})" class="w-full text-xs font-bold p-2.5 bg-slate-900 border border-slate-800 rounded-xl focus:border-indigo-500 outline-none text-white placeholder-slate-600">
+                        <button onclick="manualAddCounter(${idx})" class="small-btn dynamic-bg-accent text-white hover:opacity-90 transition-opacity">Add</button>
+                        <button onclick="quickPlusOneCounter(${idx})" class="small-btn bg-slate-700 hover:bg-slate-600 text-white shadow-sm transition-colors">+1</button>
+                    </div>
+                    <div class="flex flex-wrap min-h-[24px]">
+                        ${g.items.map((num, i) => `
+                            <div class="counter-chip-adv">
+                                <span class="text-[8px] text-slate-500 mr-1.5 font-normal">#${i+1}</span>
+                                ${num}
+                                <span onclick="removeCounterItem(${idx}, ${i})" class="ml-1.5 text-slate-400 hover:text-red-500 cursor-pointer text-lg">×</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="flex justify-between items-center mt-3 pt-3 border-t border-slate-800/50">
+                         <button onclick="undoCounter(${idx})" class="text-[9px] font-black text-slate-400 hover:text-white uppercase tracking-widest transition-colors"><i data-lucide="undo-2" class="w-3 h-3 inline"></i> Undo</button>
+                         <button onclick="promptRemoveCounterGroup(${idx})" class="text-[9px] font-black text-red-400 hover:text-red-300 uppercase tracking-widest transition-colors"><i data-lucide="trash" class="w-3 h-3 inline"></i> Delete</button>
+                    </div>
+                `;
+                list.appendChild(el);
+            });
+
+            document.getElementById('c-grandTotal').innerText = grandTotal;
+            document.getElementById('c-printGrandTotal').innerText = grandTotal;
+            document.getElementById('c-countedBy').value = cState.countedBy || "";
+            document.getElementById('c-checkedBy').value = cState.checkedBy || "";
+            lucide.createIcons();
+        }
+
+        function renameCounterGroup(idx, val) { cState.groups[idx].name = val || "Untitled"; saveCounterData(); }
+        
+        function manualAddCounter(idx) {
+            const input = document.getElementById(`c-in-${idx}`);
+            const val = parseInt(input.value);
+            if (!isNaN(val)) { 
+                cState.groups[idx].items.push(val); 
+                input.value = ""; 
+                playCounterSound('add');
+                saveCounterData(); renderCounter(); 
+            }
+        }
+        function quickPlusOneCounter(idx) { cState.groups[idx].items.push(1); playCounterSound('add'); saveCounterData(); renderCounter(); }
+        function undoCounter(idx) { 
+            if(cState.groups[idx].items.length > 0) {
+                cState.groups[idx].items.pop(); 
+                playCounterSound('remove');
+                saveCounterData(); renderCounter(); 
+            }
+        }
+        function removeCounterItem(gIdx, iIdx) { cState.groups[gIdx].items.splice(iIdx, 1); playCounterSound('remove'); saveCounterData(); renderCounter(); }
+        
+        function promptRemoveCounterGroup(idx) { 
+            showOmniModal("Delete Category?", `Are you sure you want to delete "${cState.groups[idx].name}" and all its counts?`, () => {
+                cState.groups.splice(idx, 1); saveCounterData(); renderCounter();
+            });
+        }
+        
+        function addCounterGroup() { cState.groups.push({ id: Date.now(), name: "New Category", items: [] }); cState.activeIdx = cState.groups.length - 1; saveCounterData(); renderCounter(); }
+        
+        function updateCounterNameList() {
+            const dl = document.getElementById('c-nameList');
+            dl.innerHTML = cState.savedNames.map(n => `<option value="${n}">`).join('');
+        }
+
+        function finishCounterSession() {
+            const currentTotal = parseInt(document.getElementById('c-grandTotal').innerText);
+            if (currentTotal === 0) {
+                showToast("Cannot save an empty session.", "alert-circle");
+                return;
+            }
+
+            showOmniModal("Save to History?", "This will save your current counts to the History tab and clear the board to start a fresh counting session.", () => {
+                const sessionRecord = {
+                    id: Date.now(),
+                    dateString: new Date().toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' }),
+                    total: currentTotal,
+                    countedBy: cState.countedBy,
+                    checkedBy: cState.checkedBy,
+                    groups: JSON.parse(JSON.stringify(cState.groups))
+                };
+                
+                cState.history.unshift(sessionRecord);
+                if(cState.history.length > 50) cState.history.pop();
+                
+                cState.groups.forEach(g => g.items = []);
+                
+                saveCounterData();
+                renderCounter();
+                switchCounterSubTab('history');
+                showToast("Session Saved & Board Cleared!", "check-circle");
+                playCounterSound('add');
+            });
+        }
+
+        function renderCounterHistory() {
+            const list = document.getElementById('c-historyList');
+            const empty = document.getElementById('c-emptyHistory');
+            
+            if (cState.history.length === 0) {
+                list.innerHTML = "";
+                empty.classList.remove('hidden');
+                return;
+            }
+            
+            empty.classList.add('hidden');
+            list.innerHTML = cState.history.map(record => {
+                const summary = record.groups
+                    .filter(g => g.items.length > 0)
+                    .map(g => `<span class="inline-block bg-slate-800 text-slate-300 text-[9px] px-2 py-1 rounded font-bold mr-1 mb-1 border border-slate-700">${g.name}: ${g.items.reduce((a,b)=>a+b,0)}</span>`)
+                    .join('');
+
+                return `
+                <div class="counter-card p-5 mb-4 border border-slate-800">
+                    <div class="flex justify-between items-start mb-3 border-b border-slate-800/80 pb-3">
+                        <div>
+                            <div class="text-xs font-black text-white mb-1">${record.dateString}</div>
+                            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-1 flex flex-wrap gap-2">
+                                <span class="bg-slate-900 border border-slate-800 px-1.5 py-0.5 rounded text-slate-400">BY: ${record.countedBy || 'N/A'}</span>
+                                <span class="bg-slate-900 border border-slate-800 px-1.5 py-0.5 rounded text-slate-400">CHK: ${record.checkedBy || 'N/A'}</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[9px] font-black dynamic-text-accent uppercase tracking-widest leading-none mb-1">Total</div>
+                            <div class="text-xl font-black text-white leading-none tabular-nums">${record.total}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4 flex flex-wrap">
+                        ${summary || '<span class="text-xs text-slate-500 italic">No category details</span>'}
+                    </div>
+                    
+                    <div class="flex gap-2 justify-end pt-3 border-t border-slate-800/50">
+                        <button onclick="promptDeleteCounterHistory(${record.id})" class="small-btn bg-red-500/10 text-red-400 hover:bg-red-500/20 mr-auto shadow-none transition-colors">Delete</button>
+                        <button onclick="shareCounterHistoryAsText(${record.id})" class="small-btn bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-colors">Text</button>
+                        <button onclick="shareCounterHistoryAsText(${record.id})" class="small-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors">Img</button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function promptDeleteCounterHistory(id) {
+            showOmniModal("Delete Record?", "Are you sure you want to permanently delete this past session?", () => {
+                cState.history = cState.history.filter(h => h.id !== id);
+                saveCounterData();
+                renderCounterHistory();
+                showToast("Record Deleted", "trash");
+            });
+        }
+
+        function shareCounterData() {
+            let text = `ACTIVE INVENTORY COUNT\nDate: ${new Date().toLocaleString()}\n\n`;
+            cState.groups.forEach(g => {
+                const total = g.items.reduce((a,b)=>a+b,0);
+                if(total > 0) text += `${g.name}: ${total} (${g.items.join("+")})\n`;
+            });
+            text += `\nGRAND TOTAL: ${document.getElementById('c-grandTotal').innerText}`;
+            if(navigator.share) {
+                navigator.share({ title: 'Inventory Count', text: text }).catch(()=>{});
+            } else {
+                navigator.clipboard.writeText(text).then(() => showToast("Copied to Clipboard!", "copy"));
+            }
+        }
+
+        function shareCounterHistoryAsText(id) {
+            const session = cState.history.find(h => h.id === id);
+            if(!session) return;
+            let report = `HISTORY REPORT - ${session.dateString}\n\n`;
+            session.groups.forEach(g => {
+                const total = g.items.reduce((a,b)=>a+b,0);
+                if(total > 0) report += `${g.name.toUpperCase()}: ${g.items.join("+")} = ${total}\n`;
+            });
+            report += `\nGRAND TOTAL: ${session.total}\n`;
+            report += `BY: ${session.countedBy || 'N/A'} | CHECK: ${session.checkedBy || 'N/A'}\n`;
+            
+            if (navigator.share) {
+                navigator.share({ title: 'Past Counter Report', text: report }).catch(()=>{});
+            } else {
+                navigator.clipboard.writeText(report).then(() => showToast("Copied to Clipboard!", "copy"));
+            }
+        }
+
+        function shareCounterAsImage() {
+            showToast("Generating image...", "camera");
+            const node = document.getElementById('c-captureContent');
+            const printHeader = document.getElementById('c-printHeader');
+            
+            document.getElementById('c-printDate').innerText = new Date().toLocaleString();
+            node.classList.add('capturing-mode-counter');
+            printHeader.classList.remove('hidden');
+            
+            html2canvas(node, { scale: 2, backgroundColor: "#090d16" }).then(canvas => {
+                node.classList.remove('capturing-mode-counter');
+                printHeader.classList.add('hidden');
+                
+                const link = document.createElement('a');
+                link.download = `Inventory_${Date.now()}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+                showToast("Report Exported!", "check-circle");
+            });
+        }
+
+        function toggleCounterVoice() {
+            showToast("Voice counting active (Mocked)", "mic");
+        }
+
         // On Load Initializations
         document.addEventListener('DOMContentLoaded', () => {
             calculateWealth();
             updateShop();
             setupConverter();
             calculateBMI();
+            setFootwearType('men');
+            initCounter();
             
             // Re-render icons if new ones were added dynamically
             lucide.createIcons();
@@ -610,6 +1188,9 @@
             activeTheme = themeName;
             showToast(`Theme switched to ${themeName.charAt(0).toUpperCase() + themeName.slice(1)}`);
             calculateWealth(); // Redraw chart colors
+            
+            // Re-apply dynamic footwear active tab if needed
+            setFootwearType(fwCurrentType);
         }
 
         function showToast(msg, iconStr = 'info') {
@@ -1042,8 +1623,110 @@
             
             document.getElementById('conv-output').value = Number.isInteger(result) ? result : result.toFixed(4);
         }
+        
+        // 4. Step Fit Pro
+        function setFootwearType(t) {
+            fwCurrentType = t;
+            ['men', 'women', 'kids'].forEach(b => {
+                const el = document.getElementById('btn-fw-'+b);
+                if(b === t) {
+                    el.className = 'flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all dynamic-bg-accent text-white shadow-md';
+                } else {
+                    el.className = 'flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all text-slate-500 hover:text-white';
+                }
+            });
+            const range = fwMasterData[t];
+            document.getElementById('fw-range-hint').innerText = `${range[0].cm}-${range[range.length-1].cm}`;
+            renderFootwearTable();
+            clearFootwearAll();
+        }
 
-        // 4. Counter Pro Max
+        function renderFootwearTable() {
+            const body = document.getElementById('fw-table-body');
+            body.innerHTML = fwMasterData[fwCurrentType].map(row => `
+                <tr class="border-b border-slate-800/80">
+                    <td class="py-2 dynamic-text-accent font-bold">${row.cm}</td>
+                    <td class="py-2">${row.eu}</td>
+                    <td class="py-2">${row.us}</td>
+                    <td class="py-2 text-orange-400 font-bold">${row.in}</td>
+                </tr>
+            `).join('');
+        }
+
+        function toggleFwSection(id) {
+            const el = document.getElementById(id);
+            const arrow = document.getElementById('arrow-' + id);
+            el.classList.toggle('hidden');
+            if(arrow) arrow.classList.toggle('rotate-180');
+        }
+
+        function lookupFootwear(source, val) {
+            if(val === "") return;
+            const v = parseFloat(val);
+            const dataset = fwMasterData[fwCurrentType];
+            let match;
+            if (source === 'cm') {
+                match = dataset.find(d => d.cm >= v) || dataset[dataset.length-1];
+            } else {
+                match = dataset.find(d => d[source] == v) || dataset.reduce((prev, curr) => Math.abs(curr[source] - v) < Math.abs(prev[source] - v) ? curr : prev);
+            }
+            if(match) updateFwFields(match);
+        }
+
+        function updateFwFields(data) {
+            const ids = ['cm', 'in', 'us', 'eu'];
+            ids.forEach(id => {
+                const el = document.getElementById('fw-size-' + id);
+                if (document.activeElement !== el) el.value = data[id];
+            });
+        }
+
+        function clearFootwearAll() {
+            ['cm', 'in', 'us', 'eu'].forEach(id => document.getElementById('fw-size-'+id).value = '');
+        }
+
+        function startFootwearVoice() {
+            if(!fwRecognition) {
+                showToast("Voice recognition not supported in this browser.", "alert-triangle");
+                return;
+            }
+            
+            try {
+                fwRecognition.start();
+            } catch (e) {
+                showToast("Voice recognition error or already running.", "alert-triangle");
+                return;
+            }
+
+            fwRecognition.onstart = () => {
+                document.getElementById('mic-btn-footwear').classList.add('dynamic-bg-glow');
+                showToast("Listening for shoe size...", "mic");
+            };
+            
+            fwRecognition.onresult = (e) => {
+                const transcript = e.results[0][0].transcript;
+                const num = transcript.match(/\d+(\.\d+)?/);
+                if(num) {
+                    const val = num[0];
+                    if (parseFloat(val) > 15) {
+                        document.getElementById('fw-size-cm').value = val;
+                        lookupFootwear('cm', val);
+                    } else {
+                        document.getElementById('fw-size-in').value = val;
+                        lookupFootwear('in', val);
+                    }
+                    showToast("Matched size: " + val, "check-circle");
+                } else {
+                    showToast("No numeric size detected.", "info");
+                }
+            };
+            
+            fwRecognition.onend = () => {
+                document.getElementById('mic-btn-footwear').classList.remove('dynamic-bg-glow');
+            };
+        }
+
+        // 5. Counter Pro Max
         function updateCounter(change) {
             if(change === 0) {
                 counterValue = 0;
