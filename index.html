@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" class="theme-indigo">
 <head>
@@ -451,6 +452,55 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Stock Average Calculator -->
+                    <div class="glass-panel rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-6">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2.5 dynamic-bg-glow dynamic-text-accent rounded-2xl border dynamic-border-glow">
+                                <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-black text-white leading-none">Stock Average Engine</h3>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Investment Averaging Down</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-800/80">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-3">Current Holding</p>
+                                    <div class="flex gap-3">
+                                        <input type="number" id="stk-qty1" oninput="calcStockAvg()" placeholder="Qty" class="w-1/2 bg-slate-950 border border-slate-800 p-3 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                                        <input type="number" id="stk-prc1" oninput="calcStockAvg()" placeholder="Price (₹)" class="w-1/2 bg-slate-950 border border-slate-800 p-3 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                                    </div>
+                                </div>
+                                <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-800/80">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-3">New Purchase</p>
+                                    <div class="flex gap-3">
+                                        <input type="number" id="stk-qty2" oninput="calcStockAvg()" placeholder="Qty" class="w-1/2 bg-slate-950 border border-slate-800 p-3 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                                        <input type="number" id="stk-prc2" oninput="calcStockAvg()" placeholder="Price (₹)" class="w-1/2 bg-slate-950 border border-slate-800 p-3 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-950/80 border border-slate-800/85 rounded-3xl p-6 flex flex-col justify-center relative overflow-hidden">
+                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 text-center">New Average Price</p>
+                                <div class="text-4xl font-extrabold text-white mb-4 text-center tabular-nums">
+                                    <span class="text-xl text-slate-500 font-light">₹</span><span id="stk-res-avg">0.00</span>
+                                </div>
+                                <div class="space-y-2 border-t border-slate-800 pt-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-slate-400">Total Quantity:</span>
+                                        <span id="stk-res-qty" class="font-extrabold text-white">0</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-slate-400">Total Investment:</span>
+                                        <span id="stk-res-inv" class="font-extrabold dynamic-text-accent">₹0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- 2. Health & BMI Tab -->
@@ -741,14 +791,77 @@
 
                 <!-- 6. Utility Tab (Placeholder/Basic Tool) -->
                 <div id="panel-utility" class="tab-panel space-y-6">
-                    <div class="glass-panel p-8 rounded-[2.5rem] shadow-2xl text-center">
-                        <div class="w-16 h-16 mx-auto rounded-full dynamic-bg-glow flex items-center justify-center mb-4">
-                            <i data-lucide="wrench" class="w-8 h-8 dynamic-text-accent"></i>
+                    <!-- Date Calculator -->
+                    <div class="glass-panel rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2.5 dynamic-bg-glow dynamic-text-accent rounded-2xl border dynamic-border-glow">
+                                <i data-lucide="calendar" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-black text-white leading-none">Time & Date Engine</h3>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Chronological Computations</p>
+                            </div>
                         </div>
-                        <h3 class="text-xl font-black text-white mb-2">Utility Toolkit</h3>
-                        <p class="text-sm text-slate-400 mb-6">GPA computation and advanced string hashing modules will be available in v2.0.</p>
-                        <div class="px-4 py-2 bg-slate-900 inline-block rounded-xl border border-slate-800 text-xs font-bold text-slate-500 uppercase tracking-widest">
-                            Coming Soon
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Duration Between Dates -->
+                            <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-800/80 space-y-4">
+                                <p class="text-[10px] font-bold dynamic-text-accent uppercase">Duration Between Dates</p>
+                                <div class="flex gap-3">
+                                    <input type="date" id="util-date1" onchange="calcDateDiff()" class="w-1/2 bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs font-bold text-slate-300 focus:outline-none focus:border-indigo-500 transition-colors [color-scheme:dark]">
+                                    <input type="date" id="util-date2" onchange="calcDateDiff()" class="w-1/2 bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs font-bold text-slate-300 focus:outline-none focus:border-indigo-500 transition-colors [color-scheme:dark]">
+                                </div>
+                                <div class="flex justify-between items-end border-t border-slate-800/80 pt-3">
+                                    <span class="text-xs text-slate-400 font-bold">Difference:</span>
+                                    <span id="util-date-diff-res" class="text-lg font-black text-white">0 Days</span>
+                                </div>
+                            </div>
+
+                            <!-- Add/Subtract Days -->
+                            <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-800/80 space-y-4">
+                                <p class="text-[10px] font-bold dynamic-text-accent uppercase">Shift Date</p>
+                                <div class="flex gap-3">
+                                    <input type="date" id="util-date-base" onchange="calcDateOffset()" class="w-1/2 bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs font-bold text-slate-300 focus:outline-none focus:border-indigo-500 transition-colors [color-scheme:dark]">
+                                    <input type="number" id="util-date-offset" oninput="calcDateOffset()" placeholder="+/- Days" value="30" class="w-1/2 bg-slate-950 border border-slate-800 p-3 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                                </div>
+                                <div class="flex justify-between items-end border-t border-slate-800/80 pt-3">
+                                    <span class="text-xs text-slate-400 font-bold">Target Date:</span>
+                                    <span id="util-date-shift-res" class="text-lg font-black text-white">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Text Transformer -->
+                    <div class="glass-panel rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2.5 dynamic-bg-glow dynamic-text-accent rounded-2xl border dynamic-border-glow">
+                                <i data-lucide="type" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-black text-white leading-none">Text & Hash Tools</h3>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">String Manipulation & Encoding</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <textarea id="util-text-input" oninput="analyzeText()" placeholder="Enter your text here for analysis or transformation..." class="w-full h-32 bg-slate-900/80 border border-slate-800 focus:border-indigo-500 p-4 rounded-2xl text-sm text-slate-200 outline-none transition-all resize-none"></textarea>
+                            
+                            <div class="flex flex-wrap gap-2 justify-between items-center bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
+                                <div class="flex gap-4 px-2">
+                                    <div class="text-[10px] font-black uppercase text-slate-500"><span id="util-text-chars" class="text-white text-xs mr-1">0</span>Chars</div>
+                                    <div class="text-[10px] font-black uppercase text-slate-500"><span id="util-text-words" class="text-white text-xs mr-1">0</span>Words</div>
+                                    <div class="text-[10px] font-black uppercase text-slate-500"><span id="util-text-lines" class="text-white text-xs mr-1">0</span>Lines</div>
+                                </div>
+                                <button onclick="copyUtilText()" class="text-[10px] font-black text-slate-400 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-1 bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-700/50"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <button onclick="transformText('upper')" class="py-2 rounded-xl text-xs font-bold text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700/50 transition-colors">UPPERCASE</button>
+                                <button onclick="transformText('lower')" class="py-2 rounded-xl text-xs font-bold text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700/50 transition-colors">lowercase</button>
+                                <button onclick="transformText('enc')" class="py-2 rounded-xl text-xs font-bold text-white dynamic-bg-accent dynamic-bg-hover transition-colors shadow-md">Base64 Enc</button>
+                                <button onclick="transformText('dec')" class="py-2 rounded-xl text-xs font-bold text-white bg-slate-700 hover:bg-slate-600 transition-colors shadow-md border border-slate-600">Base64 Dec</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1175,6 +1288,8 @@
             calculateBMI();
             setFootwearType('men');
             initCounter();
+            calcStockAvg(); // Init stock average as 0
+            initUtility(); // Init Utility Date defaults
             
             // Re-render icons if new ones were added dynamically
             lucide.createIcons();
@@ -1502,14 +1617,14 @@
 
             if (shopMode === 'price') {
                 let finalPrice = orig - (orig * (val / 100));
-                resMain.textContent = finalPrice.toFixed(2);
+                resMain.textContent = finalPrice.toFixed(3);
                 let saved = orig - finalPrice;
-                resSub.textContent = `You save ₹${saved.toFixed(2)}`;
+                resSub.textContent = `You save ₹${saved.toFixed(3)}`;
             } else {
                 let discountPercent = ((orig - val) / orig) * 100;
-                resMain.textContent = discountPercent.toFixed(1) + "%";
+                resMain.textContent = discountPercent.toFixed(3) + "%";
                 let saved = orig - val;
-                resSub.textContent = `You saved ₹${saved.toFixed(2)}`;
+                resSub.textContent = `You saved ₹${saved.toFixed(3)}`;
             }
         }
 
@@ -1547,6 +1662,22 @@
                 barP.style.height = '10%';
                 barI.style.height = '10%';
             }
+        }
+
+        // 1. Finance - Stock Average Engine
+        function calcStockAvg() {
+            let q1 = parseFloat(document.getElementById('stk-qty1').value) || 0;
+            let p1 = parseFloat(document.getElementById('stk-prc1').value) || 0;
+            let q2 = parseFloat(document.getElementById('stk-qty2').value) || 0;
+            let p2 = parseFloat(document.getElementById('stk-prc2').value) || 0;
+
+            let totalQty = q1 + q2;
+            let totalInv = (q1 * p1) + (q2 * p2);
+            let avgPrice = totalQty > 0 ? (totalInv / totalQty) : 0;
+
+            document.getElementById('stk-res-qty').textContent = totalQty.toLocaleString('en-IN');
+            document.getElementById('stk-res-inv').textContent = `₹${totalInv.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('stk-res-avg').textContent = avgPrice.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
         }
 
         // 2. Health - BMI
@@ -1751,6 +1882,69 @@
                 showToast("Report exported successfully!", "check-circle");
             });
         }
+
+        // 6. Utility Toolkit
+        function initUtility() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('util-date1').value = today;
+            document.getElementById('util-date2').value = today;
+            document.getElementById('util-date-base').value = today;
+            calcDateDiff();
+            calcDateOffset();
+        }
+
+        function calcDateDiff() {
+            const d1 = document.getElementById('util-date1').value;
+            const d2 = document.getElementById('util-date2').value;
+            if(!d1 || !d2) return;
+            const diffTime = Math.abs(new Date(d2) - new Date(d1));
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            document.getElementById('util-date-diff-res').textContent = diffDays + " Days";
+        }
+
+        function calcDateOffset() {
+            const base = document.getElementById('util-date-base').value;
+            const offset = parseInt(document.getElementById('util-date-offset').value) || 0;
+            if(!base) return;
+            const date = new Date(base);
+            date.setDate(date.getDate() + offset);
+            document.getElementById('util-date-shift-res').textContent = date.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function analyzeText() {
+            const txt = document.getElementById('util-text-input').value;
+            document.getElementById('util-text-chars').textContent = txt.length;
+            document.getElementById('util-text-words').textContent = txt.trim() ? txt.trim().split(/\s+/).length : 0;
+            document.getElementById('util-text-lines').textContent = txt ? txt.split(/\r\n|\r|\n/).length : 0;
+        }
+
+        function transformText(action) {
+            const el = document.getElementById('util-text-input');
+            let txt = el.value;
+            if(!txt) return;
+            
+            try {
+                if(action === 'upper') txt = txt.toUpperCase();
+                else if(action === 'lower') txt = txt.toLowerCase();
+                else if(action === 'enc') txt = btoa(unescape(encodeURIComponent(txt)));
+                else if(action === 'dec') txt = decodeURIComponent(escape(atob(txt)));
+                
+                el.value = txt;
+                analyzeText();
+                showToast("Text Transformed!", "check-circle");
+            } catch (e) {
+                showToast("Invalid string for decoding.", "alert-triangle");
+            }
+        }
+
+        function copyUtilText() {
+            const txt = document.getElementById('util-text-input').value;
+            if(!txt) return;
+            navigator.clipboard.writeText(txt).then(() => showToast("Text Copied!", "copy"));
+        }
     </script>
 </body>
 </html>
+
+
+```
