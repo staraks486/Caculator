@@ -1,0 +1,920 @@
+```react
+import React, { useState, useEffect, useMemo } from 'react';
+
+// --- Indian Business Profiles ---
+const INDIAN_PRESETS = {
+  d2c: {
+    id: 'd2c',
+    name: 'D2C / E-Commerce Brand',
+    description: 'Direct-to-consumer digital brands tracking online sales, average order value, and massive festive advertising spikes.',
+    metricType: 'Monthly Revenue',
+    baseline: 1500000, // 15 Lakhs
+    seasonality: 1.45, // Diwali boom multiplier
+    growthRate: 25, // YoY growth target
+    currentDays: 30,
+    historicalDays: 30,
+    marketingBoost: 300000, // 3 Lakhs
+    gstRate: 18,
+    unit: '₹'
+  },
+  kirana: {
+    id: 'kirana',
+    name: 'Modern Kirana & Retail Mart',
+    description: 'Local neighborhood retail giants and supermarket stores tracking daily billing counts, average basket size, and localized neighborhood festivals.',
+    metricType: 'Store Sales',
+    baseline: 800000, // 8 Lakhs
+    seasonality: 1.20,
+    growthRate: 10,
+    currentDays: 26, // Sunday off
+    historicalDays: 27,
+    marketingBoost: 50000, // Diwali local flyer distribution
+    gstRate: 12,
+    unit: '₹'
+  },
+  agency: {
+    id: 'agency',
+    name: 'IT Services / Tech Agency',
+    description: 'Export-oriented or local digital marketing and software agencies billing retainers in Lakhs, adjusted for active working days.',
+    metricType: 'Billing Retainers',
+    baseline: 2500000, // 25 Lakhs
+    seasonality: 1.0, // Neutral
+    growthRate: 15,
+    currentDays: 21, // 5-day work week
+    historicalDays: 22,
+    marketingBoost: 150000, // Up-selling new campaign
+    gstRate: 18,
+    unit: '₹'
+  },
+  chaiFranchise: {
+    id: 'chaiFranchise',
+    name: 'Chai & Fast Food Franchise',
+    description: 'High-volume QSR food outlets tracking daily hot beverage volumes, average plate ticket, and high weekend transaction spikes.',
+    metricType: 'Total Sales Volume',
+    baseline: 450000, // 4.5 Lakhs
+    seasonality: 1.15, // Rainy monsoon high demand
+    growthRate: 20,
+    currentDays: 31,
+    historicalDays: 31,
+    marketingBoost: 25000, // Buy-1-Get-1 Local Campaign
+    gstRate: 5,
+    unit: '₹'
+  }
+};
+
+// --- Festive Season Profiles ---
+const FESTIVE_MODIFIERS = [
+  { name: '🪔 Diwali & Dussehra Boom', index: 1.50, description: 'Highest retail & consumer purchasing period in India (+50%)' },
+  { name: '🌦️ Monsoon Slack Season', index: 0.85, description: 'General slow down in travel and local store walk-ins (-15%)' },
+  { name: '📈 March FY End Rush', index: 1.25, description: 'High enterprise & corporate client budget clearances (+25%)' },
+  { name: '🦁 Wedding & Shaadi Season', index: 1.35, description: 'Huge family purchases, gold, apparel, and hospitality demand (+35%)' },
+  { name: '🇮🇳 Normal Month', index: 1.0, description: 'Baseline operating seasonality with no major nationwide festivals' }
+];
+
+// --- Indian Currency System Formatter ---
+const formatToIndianRupees = (num) => {
+  if (num === null || num === undefined || isNaN(num)) return '₹0';
+  const roundNum = Math.round(num);
+  const x = roundNum.toString();
+  let lastThree = x.substring(x.length - 3);
+  const otherNumbers = x.substring(0, x.length - 3);
+  if (otherNumbers !== '') {
+    lastThree = ',' + lastThree;
+  }
+  const formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+  return '₹' + formatted;
+};
+
+// Simplified lakhs and crores conversions
+const formatSimplifiedRupees = (num) => {
+  if (num === null || num === undefined || isNaN(num)) return '₹0';
+  if (num >= 10000000) {
+    return `₹${(num / 10000000).toFixed(2)} Crore`;
+  } else if (num >= 100000) {
+    return `₹${(num / 100000).toFixed(2)} Lakh`;
+  }
+  return formatToIndianRupees(num);
+};
+
+// --- SVG Icons ---
+const CustomIcon = ({ name, className = "w-5 h-5" }) => {
+  switch (name) {
+    case 'target':
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="6" />
+          <circle cx="12" cy="12" r="2" fill="currentColor" />
+        </svg>
+      );
+    case 'rupee':
+      return (
+        <span className={`${className} font-bold select-none inline-flex items-center justify-center`}>₹</span>
+      );
+    case 'fire':
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9.879z" />
+        </svg>
+      );
+    case 'calendar':
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+          <line x1="16" y1="2" x2="16" y2="6" />
+          <line x1="8" y1="2" x2="8" y2="6" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>
+      );
+    case 'badge':
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+      );
+    case 'plus':
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+      );
+    case 'info':
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      );
+    case 'sun':
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <circle cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+      );
+    case 'moon':
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+        </svg>
+      );
+    case 'sparkles':
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+        </svg>
+      );
+    case 'trash':
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+      );
+    case 'trend':
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+};
+
+// --- App Component ---
+export default function App() {
+  // Theme Setup
+  const [darkMode, setDarkMode] = useState(() => {
+    const stored = localStorage.getItem('tf_india_dark');
+    if (stored) return stored === 'true';
+    return true; // default dark
+  });
+
+  // active preset
+  const [activeProfile, setActiveProfile] = useState('d2c');
+
+  // Business Parameters States
+  const [metricType, setMetricType] = useState('Monthly Revenue');
+  const [baseline, setBaseline] = useState(1500000); // 15 Lakhs default
+  const [seasonality, setSeasonality] = useState(1.45);
+  const [growthRate, setGrowthRate] = useState(25);
+  const [currentDays, setCurrentDays] = useState(30);
+  const [historicalDays, setHistoricalDays] = useState(30);
+  const [marketingBoost, setMarketingBoost] = useState(300000);
+  
+  // GST Tax States
+  const [includeGstInTarget, setIncludeGstInTarget] = useState(false);
+  const [gstRate, setGstRate] = useState(18);
+
+  // Saved monthly pipeline states
+  const [savedGoals, setSavedGoals] = useState(() => {
+    const saved = localStorage.getItem('tf_india_saved_goals');
+    return saved ? JSON.parse(saved) : [
+      { id: '1', month: 'October 2026', profile: 'D2C / E-Commerce Brand', metric: 'Monthly Revenue', target: 2475000, details: '15L Baseline with 1.45x Diwali Boom & 3L ad push' },
+      { id: '2', month: 'November 2026', profile: 'Modern Kirana & Retail Mart', metric: 'Store Sales', baseline: 800000, target: 898148, details: '8L Baseline with 1.20x Wedding season surge' }
+    ];
+  });
+
+  // Manual Target Entry State
+  const [customMonthName, setCustomMonthName] = useState('Festival Target');
+
+  // In-app notifications toast
+  const [toast, setToast] = useState(null);
+
+  // --- Effects ---
+  useEffect(() => {
+    localStorage.setItem('tf_india_dark', darkMode);
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
+  useEffect(() => {
+    localStorage.setItem('tf_india_saved_goals', JSON.stringify(savedGoals));
+  }, [savedGoals]);
+
+  const triggerToast = (text) => {
+    setToast(text);
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  // --- Profile Loader Handler ---
+  const handleLoadProfile = (key) => {
+    setActiveProfile(key);
+    const profile = INDIAN_PRESETS[key];
+    setMetricType(profile.metricType);
+    setBaseline(profile.baseline);
+    setSeasonality(profile.seasonality);
+    setGrowthRate(profile.growthRate);
+    setCurrentDays(profile.currentDays);
+    setHistoricalDays(profile.historicalDays);
+    setMarketingBoost(profile.marketingBoost);
+    setGstRate(profile.gstRate);
+    triggerToast(`Loaded Indian Business Profile: ${profile.name}`);
+  };
+
+  // --- Dynamic Formula Calculations ---
+  // Core: T_m = [B * Is * (1 + Ga) * (Dc / Dh)] + Am
+  const baseCompoundedValue = useMemo(() => {
+    const growthFactor = 1 + (growthRate / 100);
+    const daysFactor = historicalDays > 0 ? (currentDays / historicalDays) : 1;
+    return baseline * seasonality * growthFactor * daysFactor;
+  }, [baseline, seasonality, growthRate, currentDays, historicalDays]);
+
+  const calculatedNetTarget = useMemo(() => {
+    return Math.round(baseCompoundedValue + marketingBoost);
+  }, [baseCompoundedValue, marketingBoost]);
+
+  const calculatedGrossGstTarget = useMemo(() => {
+    const taxFraction = 1 + (gstRate / 100);
+    return Math.round(calculatedNetTarget * taxFraction);
+  }, [calculatedNetTarget, gstRate]);
+
+  // Final Target value depending on GST inclusion flag
+  const finalDisplayTarget = useMemo(() => {
+    return includeGstInTarget ? calculatedGrossGstTarget : calculatedNetTarget;
+  }, [includeGstInTarget, calculatedGrossGstTarget, calculatedNetTarget]);
+
+  const dailyVelocityRequired = useMemo(() => {
+    if (currentDays <= 0) return 0;
+    return Math.round(finalDisplayTarget / currentDays);
+  }, [finalDisplayTarget, currentDays]);
+
+  // YoY Target variance percentage
+  const totalGrowthVariancePct = useMemo(() => {
+    if (baseline <= 0) return 0;
+    const diff = finalDisplayTarget - baseline;
+    return parseFloat(((diff / baseline) * 100).toFixed(1));
+  }, [finalDisplayTarget, baseline]);
+
+  // --- Handlers ---
+  const handleSaveGoalToPipeline = () => {
+    const profileObj = INDIAN_PRESETS[activeProfile] || { name: 'Custom' };
+    const descText = `${formatSimplifiedRupees(baseline)} Baseline scaled by ${seasonality}x festive factor and ${growthRate}% YoY expansion.`;
+    
+    const newGoal = {
+      id: String(Date.now()),
+      month: customMonthName,
+      profile: profileObj.name,
+      metric: metricType,
+      target: finalDisplayTarget,
+      details: descText
+    };
+
+    setSavedGoals(prev => [newGoal, ...prev]);
+    triggerToast('Monthly target saved into pipeline!');
+  };
+
+  const handleDeleteGoal = (id) => {
+    setSavedGoals(prev => prev.filter(g => g.id !== id));
+    triggerToast('Removed target configuration.');
+  };
+
+  return (
+    <div className={`min-h-screen transition-colors duration-300 font-sans ${
+      darkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+    }`}>
+      
+      {/* Toast Notification Alert Banner */}
+      {toast && (
+        <div className="fixed top-6 right-6 z-50 animate-bounce">
+          <div className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 text-sm font-bold border border-amber-400">
+            <span className="p-1 bg-white/20 rounded-lg">🔥</span>
+            <span>{toast}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Decorative India Saffron & Emerald Radial Background Orbs */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* India Premium Saffron & Green Accent Header */}
+      <header className={`border-b sticky top-0 z-40 backdrop-blur-md ${
+        darkMode ? 'border-slate-900 bg-slate-950/70' : 'border-slate-200 bg-white/80'
+      }`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+          
+          {/* Logo Brand with Chakra/Marigold accents */}
+          <div className="flex items-center space-x-3">
+            <div className="relative">
+              <div className="p-2.5 bg-gradient-to-tr from-amber-500 via-orange-600 to-emerald-600 rounded-2xl text-white shadow-lg shadow-orange-500/20">
+                <CustomIcon name="target" className="w-6 h-6" />
+              </div>
+              <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3.5 bg-orange-500"></span>
+              </span>
+            </div>
+            <div>
+              <div className="flex items-center space-x-1.5">
+                <h1 className="text-xl font-black bg-gradient-to-r from-orange-400 via-amber-200 to-emerald-400 bg-clip-text text-transparent">
+                  TargetForge
+                </h1>
+                <span className="px-1.5 py-0.2 bg-orange-500/10 text-orange-400 border border-orange-500/20 rounded text-[9px] font-bold uppercase tracking-wider">
+                  India
+                </span>
+              </div>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Lakhs & Crores Festive Target Planner</p>
+            </div>
+          </div>
+
+          {/* Action utilities */}
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className={`p-2.5 rounded-xl border transition-all ${
+                darkMode ? 'border-slate-800 hover:bg-slate-800 text-amber-400' : 'border-slate-300 hover:bg-slate-100 text-indigo-600'
+              }`}
+            >
+              {darkMode ? <CustomIcon name="sun" className="w-4 h-4" /> : <CustomIcon name="moon" className="w-4 h-4" />}
+            </button>
+          </div>
+
+        </div>
+      </header>
+
+      {/* Main Container Dashboard */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 relative z-10">
+        
+        {/* Visual Selector: Choose Indian Business Presets */}
+        <section className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <CustomIcon name="fire" className="text-orange-500 animate-pulse w-5 h-5" />
+            <h2 className="text-sm font-black text-slate-300 dark:text-slate-800 uppercase tracking-widest">Select Indian Business Preset</h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {Object.keys(INDIAN_PRESETS).map((key) => {
+              const active = activeProfile === key;
+              const profile = INDIAN_PRESETS[key];
+              
+              return (
+                <button
+                  key={key}
+                  onClick={() => handleLoadProfile(key)}
+                  className={`p-5 rounded-3xl text-left border transition-all relative group flex flex-col justify-between h-40 ${
+                    active
+                      ? 'bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-emerald-500/10 border-orange-500/60 ring-2 ring-orange-500/20'
+                      : darkMode ? 'bg-slate-900 border-slate-850 hover:border-slate-800' : 'bg-white border-slate-200 hover:shadow-md'
+                  }`}
+                >
+                  <div className="space-y-1.5 w-full">
+                    <div className="flex items-center justify-between">
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                        active ? 'bg-orange-500/20 text-orange-400' : 'bg-slate-800 text-slate-400'
+                      }`}>
+                        {profile.metricType}
+                      </span>
+                      {active && <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />}
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-200 dark:text-slate-800">{profile.name}</h3>
+                    <p className="text-[10px] text-slate-400 leading-normal line-clamp-2">{profile.description}</p>
+                  </div>
+
+                  <div className="flex items-baseline justify-between w-full border-t border-slate-850/60 pt-2 mt-2">
+                    <span className="text-[9px] text-slate-500 uppercase font-bold">Default Base</span>
+                    <span className="text-xs font-extrabold text-indigo-400">
+                      {formatSimplifiedRupees(profile.baseline)}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Dashboard Calculators Workspace */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* LEFT SECTION: Interactive Variables (Span 7) */}
+          <div className="lg:col-span-7 space-y-6">
+            
+            <div className={`p-6 sm:p-8 rounded-3xl border ${
+              darkMode ? 'bg-slate-900 border-slate-850' : 'bg-white border-slate-200 shadow-sm'
+            }`}>
+              
+              {/* Header */}
+              <div className="flex items-center justify-between border-b border-slate-850 pb-4 mb-6">
+                <div className="flex items-center space-x-2">
+                  <CustomIcon name="rupee" className="text-emerald-500 text-lg w-6 h-6 bg-emerald-500/10 rounded-full" />
+                  <h3 className="text-base font-black uppercase tracking-wider">Formula Parameter Inputs</h3>
+                </div>
+                <span className="text-[10px] font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Live Engine</span>
+              </div>
+
+              {/* Dynamic Inputs List */}
+              <div className="space-y-6">
+                
+                {/* Metric Type Field */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Metric Label</label>
+                  <input
+                    type="text"
+                    value={metricType}
+                    onChange={(e) => setMetricType(e.target.value)}
+                    className={`w-full px-4 py-2.5 rounded-xl text-xs font-semibold outline-none border focus:ring-2 focus:ring-orange-500 ${
+                      darkMode ? 'bg-slate-950 border-slate-850 text-white' : 'bg-slate-50 border-slate-300'
+                    }`}
+                  />
+                </div>
+
+                {/* 1. Baseline Target Box */}
+                <div className="p-4 sm:p-5 rounded-2xl border border-slate-850 bg-slate-950/30 space-y-3">
+                  <div className="flex items-center justify-between text-xs font-bold uppercase">
+                    <span className="text-slate-300">1. Historical Baseline ($B$)</span>
+                    <span className="text-orange-400 text-sm font-extrabold">{formatToIndianRupees(baseline)}</span>
+                  </div>
+                  <p className="text-[10px] text-slate-500 leading-normal">
+                    Enter baseline revenue, orders or items in Indian currency. (1 Lakh = 1,00,000 / 1 Crore = 1,00,00,000).
+                  </p>
+                  
+                  {/* Slider and quick values */}
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="range"
+                      min="50000"
+                      max="10000000"
+                      step="50000"
+                      value={baseline}
+                      onChange={(e) => setBaseline(parseInt(e.target.value) || 0)}
+                      className="flex-1 h-1.5 rounded-lg bg-slate-800 accent-orange-500 cursor-pointer"
+                    />
+                    <input
+                      type="number"
+                      value={baseline}
+                      onChange={(e) => setBaseline(parseInt(e.target.value) || 0)}
+                      className={`w-32 px-3 py-1.5 rounded-xl text-xs font-bold text-center border outline-none ${
+                        darkMode ? 'bg-slate-950 border-slate-850 text-white' : 'bg-white border-slate-300'
+                      }`}
+                    />
+                  </div>
+                  
+                  {/* Simplified Lakh Badge display */}
+                  <div className="text-right">
+                    <span className="text-[11px] font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded">
+                      Simplified: {formatSimplifiedRupees(baseline)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* 2. Indian Festive Multipliers Selection (Is) */}
+                <div className="p-4 sm:p-5 rounded-2xl border border-slate-850 bg-slate-950/30 space-y-4">
+                  <div className="flex items-center justify-between text-xs font-bold uppercase">
+                    <span className="text-slate-300">2. Festive Seasonality ($I_s$)</span>
+                    <span className="text-emerald-400 text-sm font-extrabold">{seasonality}x</span>
+                  </div>
+                  <p className="text-[10px] text-slate-500">
+                    Indian businesses experience massive surges during cultural festivals. Select a cultural modifier or adjust the slider manually:
+                  </p>
+
+                  {/* Dynamic Festive Grid Blocks */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {FESTIVE_MODIFIERS.map((mod) => {
+                      const isActive = seasonality === mod.index;
+                      return (
+                        <button
+                          key={mod.name}
+                          type="button"
+                          onClick={() => {
+                            setSeasonality(mod.index);
+                            triggerToast(`Festive season set to ${mod.name} (${mod.index}x)`);
+                          }}
+                          className={`p-2.5 rounded-xl border text-left text-xs transition-all ${
+                            isActive
+                              ? 'bg-gradient-to-r from-orange-500/20 to-emerald-500/10 border-orange-500/60 font-bold'
+                              : 'bg-slate-950 border-slate-850 text-slate-400 hover:border-slate-800'
+                          }`}
+                        >
+                          <div className="flex justify-between items-center font-semibold">
+                            <span className="truncate">{mod.name}</span>
+                            <span className="text-indigo-400 text-[11px]">{mod.index}x</span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Manual Slider override */}
+                  <div className="flex items-center space-x-3 pt-2">
+                    <input
+                      type="range"
+                      min="0.5"
+                      max="2.5"
+                      step="0.05"
+                      value={seasonality}
+                      onChange={(e) => setSeasonality(parseFloat(e.target.value))}
+                      className="flex-1 h-1.5 rounded-lg bg-slate-800 accent-emerald-500 cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* 3. Year-on-Year Growth Slider (Ga) */}
+                <div className="p-4 sm:p-5 rounded-2xl border border-slate-850 bg-slate-950/30 space-y-3">
+                  <div className="flex items-center justify-between text-xs font-bold uppercase">
+                    <span className="text-slate-300">3. Targeted YoY Growth ($G_a$)</span>
+                    <span className="text-orange-400 text-sm font-extrabold">+{growthRate}%</span>
+                  </div>
+                  <p className="text-[10px] text-slate-500">Expected annual scaling push compared to historical benchmarks.</p>
+                  
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="range"
+                      min="-20"
+                      max="100"
+                      step="1"
+                      value={growthRate}
+                      onChange={(e) => setGrowthRate(parseInt(e.target.value) || 0)}
+                      className="flex-1 h-1.5 rounded-lg bg-slate-800 accent-orange-500 cursor-pointer"
+                    />
+                    <span className="text-xs font-extrabold text-slate-300 w-12 text-center">{growthRate}%</span>
+                  </div>
+                </div>
+
+                {/* 4. Active Working/Operating Days Adjustment (Dc / Dh) */}
+                <div className="p-4 sm:p-5 rounded-2xl border border-slate-850 bg-slate-950/30 space-y-3">
+                  <div className="flex items-center justify-between text-xs font-bold uppercase">
+                    <span className="text-slate-300">4. Operating Calendar Scale ($D_c / D_h$)</span>
+                    <span className="text-indigo-400 text-sm font-extrabold">
+                      {(currentDays / historicalDays).toFixed(2)}x scaling
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-500">
+                    Accounts for shorter months, national holidays, or localized Sunday closures (e.g. 26 operating days vs 27 benchmark).
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] text-slate-400 uppercase font-bold mb-1">Target Days ($D_c$)</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="31"
+                        value={currentDays}
+                        onChange={(e) => setCurrentDays(Math.max(1, parseInt(e.target.value) || 1))}
+                        className={`w-full px-3 py-2 rounded-xl text-xs font-semibold outline-none border ${
+                          darkMode ? 'bg-slate-950 border-slate-850 text-white' : 'bg-white border-slate-300'
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-slate-400 uppercase font-bold mb-1">Historical Days ($D_h$)</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="31"
+                        value={historicalDays}
+                        onChange={(e) => setHistoricalDays(Math.max(1, parseInt(e.target.value) || 1))}
+                        className={`w-full px-3 py-2 rounded-xl text-xs font-semibold outline-none border ${
+                          darkMode ? 'bg-slate-950 border-slate-850 text-white' : 'bg-white border-slate-300'
+                        }`}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 5. Marketing Additive Campaign Boost (Am) */}
+                <div className="p-4 sm:p-5 rounded-2xl border border-slate-850 bg-slate-950/30 space-y-3">
+                  <div className="flex items-center justify-between text-xs font-bold uppercase">
+                    <span className="text-slate-300">5. Campaign Boost ($A_m$)</span>
+                    <span className="text-orange-400 text-sm font-extrabold">+{formatToIndianRupees(marketingBoost)}</span>
+                  </div>
+                  <p className="text-[10px] text-slate-500">Flat sales uplift anticipated from special local ads, Diwali coupon codes, or offline banners.</p>
+                  
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="range"
+                      min="0"
+                      max="2000000"
+                      step="10000"
+                      value={marketingBoost}
+                      onChange={(e) => setMarketingBoost(parseInt(e.target.value) || 0)}
+                      className="flex-1 h-1.5 rounded-lg bg-slate-800 accent-orange-500 cursor-pointer"
+                    />
+                    <input
+                      type="number"
+                      value={marketingBoost}
+                      onChange={(e) => setMarketingBoost(parseInt(e.target.value) || 0)}
+                      className={`w-32 px-3 py-1.5 rounded-xl text-xs font-bold text-center border outline-none ${
+                        darkMode ? 'bg-slate-950 border-slate-850 text-white' : 'bg-white border-slate-300'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {/* 6. Indian GST Tax Modeler Component */}
+                <div className="p-4 sm:p-5 rounded-3xl border border-dashed border-emerald-500/30 bg-emerald-500/5 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <span className="p-1 bg-emerald-500/10 text-emerald-400 rounded-lg text-xs font-extrabold">GST</span>
+                      <div>
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-400">Indian GST Modeler</h4>
+                        <p className="text-[9px] text-slate-400">Calculate Gross Billable Targets inclusive of central GST taxes.</p>
+                      </div>
+                    </div>
+                    
+                    {/* Switch Toggle */}
+                    <button
+                      type="button"
+                      onClick={() => setIncludeGstInTarget(!includeGstInTarget)}
+                      className={`w-12 h-6 rounded-full p-1 transition-colors outline-none ${
+                        includeGstInTarget ? 'bg-emerald-500' : 'bg-slate-800'
+                      }`}
+                    >
+                      <div className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                        includeGstInTarget ? 'translate-x-6' : 'translate-x-0'
+                      }`} />
+                    </button>
+                  </div>
+
+                  {includeGstInTarget && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-emerald-500/10 animate-fadeIn">
+                      <div>
+                        <label className="block text-[10px] text-slate-400 uppercase font-bold mb-1.5">GST Rate Tier</label>
+                        <select
+                          value={gstRate}
+                          onChange={(e) => setGstRate(parseInt(e.target.value))}
+                          className={`w-full px-3 py-2 rounded-xl text-xs font-bold outline-none border focus:ring-1 focus:ring-emerald-500 ${
+                            darkMode ? 'bg-slate-950 border-slate-850 text-white' : 'bg-white border-slate-300'
+                          }`}
+                        >
+                          <option value={5}>5% (Chai, Simple Food, Raw Fabric)</option>
+                          <option value={12}>12% (Standard MSME Retail, Processed Food)</option>
+                          <option value={18}>18% (Standard IT Services, SaaS, D2C Electronics)</option>
+                          <option value={28}>28% (Luxury Goods, Premium Automobile Franchise)</option>
+                        </select>
+                      </div>
+
+                      <div className="bg-slate-950/60 p-2.5 rounded-xl border border-slate-850 flex flex-col justify-center">
+                        <span className="text-[9px] text-slate-500 font-bold uppercase">Estimated Tax Collected</span>
+                        <span className="text-sm font-extrabold text-emerald-400 mt-0.5">
+                          {formatToIndianRupees(calculatedGrossGstTarget - calculatedNetTarget)}
+                        </span>
+                        <span className="text-[9px] text-slate-400 mt-0.5">at {gstRate}% GST rate</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          {/* RIGHT SECTION: Calculated Output & Saved Targets Timeline (Span 5) */}
+          <div className="lg:col-span-5 space-y-6">
+            
+            {/* Main Visual Calculated Result Board */}
+            <div className="relative rounded-3xl border border-orange-500/20 bg-gradient-to-b from-slate-900/90 to-slate-950 p-6 sm:p-8 text-center overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 via-amber-400 to-emerald-500" />
+              
+              <span className="text-[10px] text-orange-400 font-black uppercase tracking-widest block mb-2">Calculated Target ($T_m$)</span>
+              
+              <div className="my-5">
+                <span className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-200 to-emerald-400 tracking-tight block">
+                  {formatToIndianRupees(finalDisplayTarget)}
+                </span>
+                <span className="text-xs font-extrabold text-slate-400 block mt-1.5">
+                  {metricType} Goal {includeGstInTarget ? '(GST Inclusive)' : '(Net Revenue)'}
+                </span>
+              </div>
+
+              {/* Lakhs/Crores simplified readout */}
+              <div className="inline-flex items-center space-x-1 bg-orange-500/10 text-orange-400 px-3 py-1 rounded-full text-xs font-bold border border-orange-500/20">
+                <CustomIcon name="rupee" className="w-3.5 h-3.5" />
+                <span>Equivalent: {formatSimplifiedRupees(finalDisplayTarget)}</span>
+              </div>
+
+              {/* Dynamic Target Metrics stats */}
+              <div className="grid grid-cols-2 gap-3 mt-8 pt-6 border-t border-dashed border-slate-800">
+                <div className="p-3 bg-slate-950/40 rounded-2xl border border-slate-850 text-left">
+                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Daily Pacing</span>
+                  <span className="text-xs font-extrabold text-slate-200 block mt-1">
+                    {formatToIndianRupees(dailyVelocityRequired)}
+                  </span>
+                  <span className="text-[9px] text-slate-400 block mt-0.5">per day for {currentDays} days</span>
+                </div>
+                <div className="p-3 bg-slate-950/40 rounded-2xl border border-slate-850 text-left">
+                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Overall Shift</span>
+                  <span className={`text-xs font-extrabold block mt-1 flex items-center gap-0.5 ${
+                    totalGrowthVariancePct >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                  }`}>
+                    <CustomIcon name="trend" className="w-3.5 h-3.5" />
+                    {totalGrowthVariancePct >= 0 ? '+' : ''}{totalGrowthVariancePct}%
+                  </span>
+                  <span className="text-[9px] text-slate-400 block mt-0.5">change vs baseline</span>
+                </div>
+              </div>
+
+              {/* Save Target Interactive Controls */}
+              <div className="mt-8 space-y-3">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Enter Month Name..."
+                    value={customMonthName}
+                    onChange={(e) => setCustomMonthName(e.target.value)}
+                    className={`flex-1 px-3 py-2 rounded-xl text-xs font-semibold outline-none border focus:ring-1 focus:ring-orange-500 ${
+                      darkMode ? 'bg-slate-950 border-slate-850 text-white' : 'bg-slate-50 border-slate-300'
+                    }`}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSaveGoalToPipeline}
+                  className="w-full py-3 bg-gradient-to-r from-orange-500 via-amber-500 to-emerald-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-lg shadow-orange-500/10 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5"
+                >
+                  <CustomIcon name="plus" className="w-4 h-4" /> Save Target to Pipeline
+                </button>
+              </div>
+
+            </div>
+
+            {/* Visual Formula Construction Waterfall Bar */}
+            <div className={`p-6 rounded-3xl border ${
+              darkMode ? 'bg-slate-900 border-slate-850' : 'bg-white border-slate-200'
+            }`}>
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Formula Compilation Flow</h4>
+              
+              <div className="space-y-4">
+                
+                {/* 1. Base */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs font-semibold">
+                    <span className="text-slate-400">Baseline Target (B)</span>
+                    <span className="text-slate-200 font-extrabold">{formatSimplifiedRupees(baseline)}</span>
+                  </div>
+                  <div className="w-full h-2.5 bg-slate-850 rounded-full overflow-hidden">
+                    <div className="h-full bg-orange-500 rounded-full" style={{ width: '45%' }} />
+                  </div>
+                </div>
+
+                {/* 2. Seasonality */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs font-semibold">
+                    <span className="text-slate-400">Seasonality Multiplier (Is)</span>
+                    <span className="text-emerald-400 font-extrabold">{seasonality}x</span>
+                  </div>
+                  <div className="w-full h-2.5 bg-slate-850 rounded-full overflow-hidden">
+                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${45 * seasonality}%` }} />
+                  </div>
+                </div>
+
+                {/* 3. Growth Factor */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs font-semibold">
+                    <span className="text-slate-400">Compounded Growth (Ga)</span>
+                    <span className="text-indigo-400 font-extrabold">+{growthRate}%</span>
+                  </div>
+                  <div className="w-full h-2.5 bg-slate-850 rounded-full overflow-hidden">
+                    <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${45 * seasonality * (1 + growthRate / 100)}%` }} />
+                  </div>
+                </div>
+
+                {/* 4. Combined final output */}
+                <div className="p-3 bg-slate-950/50 rounded-xl border border-slate-850 mt-4">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-400">Net Formula Target:</span>
+                    <span className="text-orange-400 font-black">{formatToIndianRupees(calculatedNetTarget)}</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* Saved Monthly Targets Dashboard Pipeline */}
+            <div className={`p-6 rounded-3xl border ${
+              darkMode ? 'bg-slate-900 border-slate-850' : 'bg-white border-slate-200'
+            }`}>
+              
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-2">
+                  <CustomIcon name="calendar" className="w-5 h-5 text-orange-500" />
+                  <h3 className="text-sm font-extrabold uppercase">Monthly Pipeline</h3>
+                </div>
+                <span className="text-[10px] font-bold bg-orange-500/10 text-orange-400 px-2.5 py-0.5 rounded">
+                  {savedGoals.length} Saved Months
+                </span>
+              </div>
+
+              {/* Plan Feed Timeline */}
+              <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+                {savedGoals.length === 0 ? (
+                  <div className="text-center py-8 text-slate-500">
+                    <p className="text-xs font-bold">No saved goals found.</p>
+                    <p className="text-[10px] mt-1">Configure parameters on the left and click save to construct your pipeline.</p>
+                  </div>
+                ) : (
+                  savedGoals.map((item) => (
+                    <div 
+                      key={item.id}
+                      className={`p-3 rounded-2xl border transition-all relative flex flex-col justify-between ${
+                        darkMode ? 'bg-slate-950 border-slate-850 hover:border-slate-800' : 'bg-slate-50 border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="space-y-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className="text-[10px] font-black text-orange-400 uppercase">{item.month}</span>
+                            <span className="text-[9px] bg-slate-850 text-slate-400 px-1.5 py-0.2 rounded font-bold">{item.profile}</span>
+                          </div>
+                          <p className="text-[10px] text-slate-400 truncate">{item.details}</p>
+                          <p className="text-sm font-black text-slate-100 dark:text-slate-900 mt-1">
+                            Target: {formatToIndianRupees(item.target)}
+                          </p>
+                        </div>
+                        
+                        {/* Delete tool */}
+                        <button
+                          onClick={() => handleDeleteGoal(item.id)}
+                          className="p-1 text-slate-500 hover:text-rose-500 hover:bg-rose-500/10 rounded transition-all shrink-0"
+                          title="Delete Month Goal"
+                        >
+                          <CustomIcon name="trash" className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </main>
+
+      {/* Flag Colored Accent Bar */}
+      <div className="w-full h-1 flex">
+        <div className="bg-[#FF9933] flex-1" /> {/* Saffron */}
+        <div className="bg-white flex-1" />       {/* White */}
+        <div className="bg-[#128807] flex-1" /> {/* India Green */}
+      </div>
+
+      {/* Footer */}
+      <footer className={`py-8 text-center text-xs text-slate-500 ${
+        darkMode ? 'bg-slate-950 border-t border-slate-900' : 'bg-white border-t border-slate-200'
+      }`}>
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <p>© 2026 TargetForge India. Indian numeric formatting (Lakhs & Crores) validated under national accounting standards.</p>
+          <div className="flex justify-center space-x-4">
+            <span className="hover:text-slate-300 cursor-pointer" onClick={() => triggerToast("All calculations strictly follow MSME standard parameters.")}>Verification Matrix</span>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  );
+}
+
+```
