@@ -1,0 +1,1238 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TargetVibe Pro - Universal Business Target Planner</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Premium Typography and custom styles -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Smooth custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+  <!-- Top Navigation Header -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-40 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <div class="p-2 bg-indigo-600 rounded-lg shadow-lg text-white">
+          <svg class="w-6 h-6 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10" />
+            <circle cx="12" cy="12" r="6" />
+            <circle cx="12" cy="12" r="2" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl font-bold bg-gradient-to-r from-white via-slate-200 to-indigo-200 bg-clip-text text-transparent">
+              TargetVibe Pro
+            </h1>
+            <span class="text-[10px] bg-indigo-500/20 text-indigo-300 font-bold px-2 py-0.5 rounded border border-indigo-500/30">PRECISION VERSION</span>
+          </div>
+          <p class="text-xs text-indigo-300 font-medium tracking-wide">
+            Universal Business Target Planner with Expected Value Calculation
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Currency Selection Toggles -->
+        <div class="flex bg-slate-800 rounded-lg p-1 border border-slate-700">
+          <button onclick="setCurrency('INR')" id="btn-currency-INR" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-indigo-600 text-white shadow transition-all">₹ INR</button>
+          <button onclick="setCurrency('USD')" id="btn-currency-USD" class="px-3 py-1.5 rounded-md text-xs font-semibold text-slate-400 hover:text-white transition-all">$ USD</button>
+          <button onclick="setCurrency('EUR')" id="btn-currency-EUR" class="px-3 py-1.5 rounded-md text-xs font-semibold text-slate-400 hover:text-white transition-all">€ EUR</button>
+          <button onclick="setCurrency('GBP')" id="btn-currency-GBP" class="px-3 py-1.5 rounded-md text-xs font-semibold text-slate-400 hover:text-white transition-all">£ GBP</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dashboard Core -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 w-full">
+    
+    <!-- Equation Explanation Box -->
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-xl">
+      <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+        <div class="space-y-2 max-w-2xl">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+            </svg> Dynamic Statistical Target Engine
+          </span>
+          <h2 class="text-2xl font-bold text-white tracking-tight">The Precision Business Target Formula</h2>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Standard sales targets run on arbitrary estimates. TargetVibe Pro uses a **Weighted Moving Average (WMA)** baseline with customizable month priorities, compounds seasonal indices and operational constraints, and calculates a **mathematical expected value** for your conversion pipeline.
+          </p>
+        </div>
+
+        <!-- Formula Rendered with CSS grid -->
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 w-full lg:w-auto flex flex-col items-center justify-center shadow-inner min-w-[320px]">
+          <div class="text-[10px] tracking-widest text-slate-400 font-bold uppercase mb-2">Equation Architecture</div>
+          <div class="font-mono text-xs text-indigo-200 tracking-wider text-center select-all">
+            <span class="text-emerald-400 font-bold">Target</span> = [ (W₁M₁ + W₂M₂ + W₃M₃) × (1+G) × S × C ] + E(P)
+          </div>
+          <div class="mt-4 grid grid-cols-5 gap-1.5 text-[9px] text-slate-400 w-full text-center border-t border-slate-800 pt-3">
+            <div><strong>W₁₋₃:</strong> Weights</div>
+            <div><strong>G:</strong> Growth</div>
+            <div><strong>S:</strong> Season Index</div>
+            <div><strong>C:</strong> Capacity</div>
+            <div><strong>E(P):</strong> Probable Pipe</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Workspace Controls Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- LEFT FIELD: Inputs, sliders, and pipeline manager (7 Columns) -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <!-- Preset Quick Select Buttons -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <span class="text-xs font-semibold text-slate-300">Quick Environment Presets:</span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="applyPreset('festival')" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-300 rounded-lg text-xs font-medium transition-all">🎉 Festival Rush</button>
+            <button onclick="applyPreset('aggressive')" class="px-3 py-1.5 bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 text-violet-300 rounded-lg text-xs font-medium transition-all">🚀 Aggressive Scale</button>
+            <button onclick="applyPreset('normal')" class="px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-300 rounded-lg text-xs font-medium transition-all">📈 Standard Month</button>
+            <button onclick="applyPreset('offseason')" class="px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-300 rounded-lg text-xs font-medium transition-all">📉 Off-Season</button>
+          </div>
+        </div>
+
+        <!-- Section 1: Historical Sales & Custom Weight Allocator -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5 shadow-lg">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2.5">
+              <div class="p-1.5 bg-indigo-500/15 rounded-lg text-indigo-400">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-base font-bold text-white">Historical Volume & WMA Weights</h3>
+                <p class="text-xs text-slate-400 font-medium">Fine-tune baseline priorities. Weights must equal exactly 100%.</p>
+              </div>
+            </div>
+
+            <!-- Total Weight Validation Pill -->
+            <div id="weight-pill-status" class="px-2.5 py-1 rounded-full text-xs font-mono font-bold transition-all">
+              Weights: 100%
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Month 1 -->
+            <div class="space-y-2 bg-slate-950/40 p-3 rounded-xl border border-slate-800/60">
+              <label class="flex items-center justify-between text-xs font-semibold text-slate-300">
+                <span>M₁ (Last Month)</span>
+              </label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-semibold currency-symbol text-xs">₹</span>
+                <input type="number" id="input-m1" value="1000000" oninput="handleInputChange()" class="w-full bg-slate-950 border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-lg py-1.5 pl-6 pr-2 text-xs text-white font-mono transition-all" />
+              </div>
+              <div class="space-y-1">
+                <div class="flex justify-between items-center text-[10px]">
+                  <span class="text-slate-500">Weight (W₁):</span>
+                  <span id="label-w1" class="font-mono text-indigo-400 font-bold">50%</span>
+                </div>
+                <input type="range" id="weight-w1" min="0" max="100" value="50" oninput="handleWeightSlider('w1', this.value)" class="w-full accent-indigo-500 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer" />
+              </div>
+              <div id="preview-m1" class="text-[10px] text-slate-450 font-mono text-slate-400">≈ ₹10,00,000</div>
+            </div>
+
+            <!-- Month 2 -->
+            <div class="space-y-2 bg-slate-950/40 p-3 rounded-xl border border-slate-800/60">
+              <label class="flex items-center justify-between text-xs font-semibold text-slate-300">
+                <span>M₂ (2 Months Ago)</span>
+              </label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-semibold currency-symbol text-xs">₹</span>
+                <input type="number" id="input-m2" value="900000" oninput="handleInputChange()" class="w-full bg-slate-950 border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-lg py-1.5 pl-6 pr-2 text-xs text-white font-mono transition-all" />
+              </div>
+              <div class="space-y-1">
+                <div class="flex justify-between items-center text-[10px]">
+                  <span class="text-slate-500">Weight (W₂):</span>
+                  <span id="label-w2" class="font-mono text-indigo-400 font-bold">30%</span>
+                </div>
+                <input type="range" id="weight-w2" min="0" max="100" value="30" oninput="handleWeightSlider('w2', this.value)" class="w-full accent-indigo-500 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer" />
+              </div>
+              <div id="preview-m2" class="text-[10px] text-slate-450 font-mono text-slate-400">≈ ₹9,00,000</div>
+            </div>
+
+            <!-- Month 3 -->
+            <div class="space-y-2 bg-slate-950/40 p-3 rounded-xl border border-slate-800/60">
+              <label class="flex items-center justify-between text-xs font-semibold text-slate-300">
+                <span>M₃ (3 Months Ago)</span>
+              </label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-semibold currency-symbol text-xs">₹</span>
+                <input type="number" id="input-m3" value="800000" oninput="handleInputChange()" class="w-full bg-slate-950 border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-lg py-1.5 pl-6 pr-2 text-xs text-white font-mono transition-all" />
+              </div>
+              <div class="space-y-1">
+                <div class="flex justify-between items-center text-[10px]">
+                  <span class="text-slate-500">Weight (W₃):</span>
+                  <span id="label-w3" class="font-mono text-indigo-400 font-bold">20%</span>
+                </div>
+                <input type="range" id="weight-w3" min="0" max="100" value="20" oninput="handleWeightSlider('w3', this.value)" class="w-full accent-indigo-500 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer" />
+              </div>
+              <div id="preview-m3" class="text-[10px] text-slate-450 font-mono text-slate-400">≈ ₹8,00,000</div>
+            </div>
+          </div>
+
+          <!-- Interactive Baseline Chart -->
+          <div class="bg-slate-950 rounded-xl p-4 border border-slate-800 space-y-3">
+            <div class="flex justify-between items-center text-xs text-slate-400">
+              <span>Sales Volume Analysis</span>
+              <span class="font-semibold text-indigo-300" id="text-weighted-avg">Weighted Average: ₹0</span>
+            </div>
+            <div class="w-full h-16" id="svg-chart-container"></div>
+          </div>
+        </div>
+
+        <!-- Section 2: Compounding Modifiers (G, S, C) -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-lg">
+          <div class="flex items-center gap-2.5 border-b border-slate-800 pb-3">
+            <div class="p-1.5 bg-indigo-500/15 rounded-lg text-indigo-400">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white">Target Multipliers & Modifiers</h3>
+              <p class="text-xs text-slate-400 font-medium">Apply target goals and operational capacities</p>
+            </div>
+          </div>
+
+          <div class="space-y-5">
+            <!-- Growth Rate (G) -->
+            <div class="space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-semibold text-slate-300">Expected Growth Rate (G)</span>
+                <span id="label-growth" class="text-sm font-mono font-bold text-indigo-400">+10% (1.10x)</span>
+              </div>
+              <div class="flex items-center gap-4">
+                <input type="range" id="range-growth" min="-20" max="100" value="10" oninput="handleGrowthSlider(this.value)" class="flex-1 accent-indigo-500 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer" />
+                <input type="number" id="num-growth" value="10" oninput="handleGrowthInput(this.value)" class="w-16 bg-slate-950 border border-slate-700 rounded-lg py-1 px-2 text-center text-xs font-mono text-white" />
+              </div>
+            </div>
+
+            <!-- Seasonality & Capacity Row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+              <!-- Seasonality (S) -->
+              <div class="space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-semibold text-slate-300">Seasonality Factor (S)</span>
+                  <span id="label-seasonality" class="text-sm font-mono font-bold text-amber-400">1.15x</span>
+                </div>
+                <input type="range" id="range-seasonality" min="0.5" max="2.0" step="0.05" value="1.15" oninput="handleSeasonalitySlider(this.value)" class="w-full accent-amber-500 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer" />
+                <div class="flex justify-between text-[10px] text-slate-500">
+                  <span>Off-Season (0.85)</span>
+                  <span>Normal (1.0)</span>
+                  <span>Peak (1.5)</span>
+                </div>
+              </div>
+
+              <!-- Capacity (C) -->
+              <div class="space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-semibold text-slate-300">Capacity Factor (C)</span>
+                  <span id="label-capacity" class="text-sm font-mono font-bold text-emerald-400">1.05x</span>
+                </div>
+                <input type="range" id="range-capacity" min="0.7" max="1.5" step="0.05" value="1.05" oninput="handleCapacitySlider(this.value)" class="w-full accent-emerald-500 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer" />
+                <div class="flex justify-between text-[10px] text-slate-500">
+                  <span>Limited (0.9)</span>
+                  <span>Normal (1.0)</span>
+                  <span>Expanded (1.2)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Probability-Weighted Campaign Expected Values (P) -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-lg">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2.5">
+              <div class="p-1.5 bg-indigo-500/15 rounded-lg text-indigo-400">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-base font-bold text-white">Conversion Pipeline Expected Value, E(P)</h3>
+                <p class="text-xs text-slate-400 font-medium">Sum of pipeline values multiplied by conversion probability</p>
+              </div>
+            </div>
+            
+            <div class="text-right">
+              <span class="text-[10px] text-slate-400 block uppercase font-mono font-bold">Probable Pipeline Addition</span>
+              <span id="label-total-expected-p" class="text-sm font-bold text-emerald-400 font-mono">₹1,00,000</span>
+            </div>
+          </div>
+
+          <!-- Interactive Pipeline Item List -->
+          <div class="space-y-2 max-h-52 overflow-y-auto pr-1" id="pipeline-items-container">
+            <!-- Generated via Javascript -->
+          </div>
+
+          <!-- Add Pipeline Item Builder Inline -->
+          <form onsubmit="addPipelineItem(event)" class="grid grid-cols-1 md:grid-cols-12 gap-2 pt-2 border-t border-slate-800/80">
+            <input type="text" id="add-pipe-name" placeholder="e.g., Enterprise Lead, Ads Campaign" required class="md:col-span-5 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-xs text-white" />
+            <div class="md:col-span-4 relative">
+              <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 font-semibold currency-symbol text-[10px]">₹</span>
+              <input type="number" id="add-pipe-val" placeholder="Value" required class="w-full bg-slate-950 border border-slate-700 rounded-lg py-1 pl-5 pr-2 text-xs text-white font-mono" />
+            </div>
+            <div class="md:col-span-2 relative flex items-center bg-slate-950 border border-slate-700 rounded-lg px-2">
+              <input type="number" id="add-pipe-prob" placeholder="Prob %" min="0" max="100" required class="w-full bg-transparent border-none py-1 text-xs text-white font-mono focus:outline-none" />
+              <span class="text-[10px] text-slate-500 font-mono">%</span>
+            </div>
+            <button type="submit" class="md:col-span-1 bg-indigo-600 hover:bg-indigo-550 text-white rounded-lg p-1.5 flex items-center justify-center transition-all">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- RIGHT FIELD: Calculations, verification and Output Displays (5 Columns) -->
+      <div class="lg:col-span-5 space-y-6">
+        
+        <!-- CALCULATION HERO -->
+        <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-indigo-500 rounded-2xl p-6 shadow-2xl relative overflow-hidden text-center space-y-4">
+          <div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-emerald-400 via-indigo-500 to-indigo-600"></div>
+          
+          <div class="space-y-1">
+            <span class="text-[10px] font-bold tracking-widest text-indigo-300 uppercase">Calculated Monthly Target</span>
+            <h2 id="hero-monthly-target" class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-none">₹12,94,000</h2>
+            
+            <!-- Precision Target Details -->
+            <div class="flex justify-center items-center gap-1.5 pt-1 text-xs">
+              <span class="text-slate-400">Precision Mode:</span>
+              <select id="select-rounding" onchange="handleRoundingChange(this.value)" class="bg-slate-900 text-indigo-400 font-mono font-bold text-xs py-0.5 px-1.5 rounded border border-slate-700 focus:outline-none cursor-pointer">
+                <option value="exact">Exact Decimals</option>
+                <option value="round" selected>Standard Round</option>
+                <option value="ceil">Ceil (Target Buffer)</option>
+                <option value="floor">Floor (Minimum Goal)</option>
+                <option value="nearest-100">Nearest 100</option>
+                <option value="nearest-1000">Nearest 1,000</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Formula Substitute Box -->
+          <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3 text-left space-y-1">
+            <div class="text-[9px] font-bold text-slate-500 tracking-wider uppercase">Live Substitution Verification</div>
+            <div id="text-live-formula" class="font-mono text-[10px] text-indigo-200 whitespace-normal leading-relaxed break-all select-all">
+              %Equation%
+            </div>
+          </div>
+
+          <!-- Detailed Equation Chronology -->
+          <div class="bg-slate-950 rounded-xl p-4 border border-slate-800 text-left space-y-3.5">
+            <div class="text-[10px] font-bold text-slate-400 tracking-wider uppercase border-b border-slate-800 pb-1.5 flex justify-between">
+              <span>Formula Timeline</span>
+              <span class="text-indigo-400 font-mono">Calculated Flow</span>
+            </div>
+            
+            <div class="space-y-3 text-xs">
+              <!-- Weighted Base -->
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400">1. Weighted Base (<span id="txt-calc-weights">50/30/20</span>):</span>
+                <span id="step-baseline" class="font-mono text-slate-200 font-semibold">₹9,30,000</span>
+              </div>
+              <!-- Growth Scaled -->
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400 font-medium" id="step-growth-title">2. Growth Scaled (10%):</span>
+                <span id="step-growth" class="font-mono text-slate-200 font-semibold">₹10,23,000</span>
+              </div>
+              <!-- Seasonality and Capacity -->
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400">3. Season & Cap Applied:</span>
+                <span id="step-core" class="font-mono text-indigo-300 font-semibold">₹11,94,000</span>
+              </div>
+              <!-- Special Additions expected E(P) -->
+              <div class="flex justify-between items-center pt-2 border-t border-slate-800/80">
+                <span class="text-slate-300 font-medium">4. Probable Pipeline, E(P):</span>
+                <span id="step-campaigns" class="font-mono text-emerald-400 font-semibold">+₹1,00,000</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- True Daily Targets Calculator -->
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-left space-y-3">
+            <div class="flex justify-between items-center border-b border-slate-800/60 pb-2">
+              <div>
+                <span class="text-[9px] font-bold tracking-wider text-slate-400 uppercase block">Daily Target</span>
+                <span id="text-daily-target" class="text-xl font-bold font-mono text-white">₹49,769</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[9px] font-bold tracking-wider text-slate-400 uppercase block">Working Days</span>
+                <span id="label-working-days" class="text-sm font-mono font-bold text-indigo-400">26 Days</span>
+              </div>
+            </div>
+
+            <!-- True Calendar calculator logic -->
+            <div class="grid grid-cols-3 gap-2 text-center">
+              <div class="bg-slate-900/60 p-2 rounded border border-slate-800">
+                <label class="text-[9px] text-slate-500 block">Calendar Days</label>
+                <input type="number" id="input-days-total" value="31" oninput="calculateDays()" class="w-full bg-transparent text-center font-mono text-xs text-white focus:outline-none" />
+              </div>
+              <div class="bg-slate-900/60 p-2 rounded border border-slate-800">
+                <label class="text-[9px] text-slate-500 block">Weekend Days</label>
+                <input type="number" id="input-days-weekends" value="5" oninput="calculateDays()" class="w-full bg-transparent text-center font-mono text-xs text-white focus:outline-none" />
+              </div>
+              <div class="bg-slate-900/60 p-2 rounded border border-slate-800">
+                <label class="text-[9px] text-slate-500 block">Holidays</label>
+                <input type="number" id="input-days-holidays" value="0" oninput="calculateDays()" class="w-full bg-transparent text-center font-mono text-xs text-white focus:outline-none" />
+              </div>
+            </div>
+            <div class="text-[9px] text-slate-400 text-center italic">Calculated Working Days = Calendar Days - Weekends - Holidays</div>
+          </div>
+        </div>
+
+        <!-- Saved Scenario Management Widget -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-lg">
+          <h4 class="text-xs font-bold text-slate-300 tracking-wider uppercase flex items-center gap-2">
+            <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>
+            Save Current Forecast
+          </h4>
+          <form onsubmit="saveScenario(event)" class="flex gap-2">
+            <input type="text" id="input-scenario-name" placeholder="e.g., Summer Q3 Optimistic" required class="flex-1 bg-slate-950 border border-slate-700 focus:border-indigo-500 rounded-lg py-1.5 px-3 text-xs text-white placeholder-slate-500" />
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-550 text-white rounded-lg px-4 py-1.5 text-xs font-semibold shrink-0 transition-all flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg> Save
+            </button>
+          </form>
+
+          <div class="space-y-2">
+            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Saved Forecasts</div>
+            <div id="saved-scenarios-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+              <!-- Rendered via JavaScript -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- SALESPERSON TARGET ALLOCATION SECTION -->
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 pb-4">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <div class="p-1.5 bg-indigo-500/15 rounded-lg text-indigo-400">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+            </div>
+            <h3 class="text-base font-bold text-white">Representative & Team Allocator</h3>
+          </div>
+          <p class="text-xs text-slate-400 font-medium">
+            Distribute target allocations dynamically. Rounded targets are balance-adjusted so they equal your global target precisely.
+          </p>
+        </div>
+
+        <!-- Add Team Member Form -->
+        <form onsubmit="addTeamMember(event)" class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+          <input type="text" id="input-member-name" placeholder="Team Member Name" required class="bg-slate-950 border border-slate-700 focus:border-indigo-500 rounded-lg px-3 py-1.5 text-xs text-white placeholder:text-slate-500" />
+          <div class="flex items-center gap-1 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5">
+            <span class="text-[10px] text-slate-400 mr-1">Weight:</span>
+            <select id="select-member-weight" class="bg-transparent border-none text-xs text-white font-mono focus:ring-0 cursor-pointer">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3" selected>3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+            </select>
+          </div>
+          <button type="submit" class="bg-indigo-600 hover:bg-indigo-550 text-white rounded-lg px-3.5 py-1.5 text-xs font-semibold flex items-center gap-1.5 transition-all">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg> Add Representative
+          </button>
+        </form>
+      </div>
+
+      <!-- Allocations Grid Panel -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Active settings list -->
+        <div class="space-y-3">
+          <div class="text-xs font-bold text-slate-400 tracking-wider uppercase">Active Representatives & Targets</div>
+          <div id="team-list-container" class="space-y-2 max-h-96 overflow-y-auto pr-1">
+            <!-- Rendered via JavaScript -->
+          </div>
+        </div>
+
+        <!-- Load distribution chart map -->
+        <div class="bg-slate-950 rounded-2xl p-5 border border-slate-800 flex flex-col justify-between space-y-6">
+          <div class="space-y-1.5">
+            <div class="text-xs font-bold text-slate-300 tracking-wider uppercase">Distribution Share Map</div>
+            <p class="text-xs text-slate-500">Target balance relative to defined weight coefficients with residual rounding absorption</p>
+          </div>
+
+          <!-- Dynamic load shares bars -->
+          <div id="chart-distribution-bars" class="space-y-4 flex-1 flex flex-col justify-center">
+            <!-- Rendered via JavaScript -->
+          </div>
+
+          <!-- Load balanced details -->
+          <div class="text-[11px] text-slate-500 border-t border-slate-800/85 pt-4 flex justify-between items-center">
+            <span id="text-total-stars-weight">Total Star Weight: 0 Stars</span>
+            <span class="inline-flex items-center gap-1 text-emerald-400 font-medium">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg> Mathematically Exact Allocation
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Informative Footer -->
+  <footer class="border-t border-slate-800 mt-20 bg-slate-900/40 text-slate-500 py-8 text-center text-xs w-full">
+    <div class="max-w-7xl mx-auto px-4 space-y-4">
+      <p>© 2026 TargetVibe Systems. Built for absolute speed and immediate offline deployment.</p>
+      <div class="flex justify-center gap-6 text-[11px] text-slate-400">
+        <span>Historical baseline calculation weight distribution defaults: M₁ (50%), M₂ (30%), M₃ (20%)</span>
+      </div>
+      
+      <!-- Deployment guidelines -->
+      <div class="max-w-md mx-auto bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-2 text-left">
+        <div class="flex items-center gap-2 font-semibold text-slate-300">
+          <svg class="w-4 h-4 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
+            <path fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.137 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z" clipRule="evenodd" />
+          </svg>
+          <span>Host instantly on GitHub Pages:</span>
+        </div>
+        <ol class="list-decimal list-inside text-[11px] text-slate-500 space-y-1">
+          <li>Create a public or private GitHub repository.</li>
+          <li>Save this code as <code class="text-indigo-400">index.html</code> directly at the root.</li>
+          <li>Go to <strong class="text-slate-400">Settings &gt; Pages</strong> in your repository.</li>
+          <li>Choose <strong class="text-slate-400">Deploy from branch</strong>, select <code class="text-slate-400">main</code>, and click <strong class="text-slate-400">Save</strong>.</li>
+        </ol>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Unified Vanilla JavaScript Logic -->
+  <script>
+    // Global Application State Variable with default historical data
+    let state = {
+      currency: 'INR',
+      growth: 10,
+      seasonality: 1.15,
+      capacity: 1.05,
+      workingDays: 26,
+      roundingMode: 'round', // 'exact', 'round', 'ceil', 'floor', 'nearest-100', 'nearest-1000'
+      w1: 50,
+      w2: 30,
+      w3: 20,
+      pipelines: [
+        { id: 'p1', name: 'Premium Loyalty Ads Drive', value: 150000, probability: 60 },
+        { id: 'p2', name: 'Enterprise Bulk Contract Batch', value: 250000, probability: 40 }
+      ],
+      team: [
+        { id: '1', name: 'Aarav Sharma', weight: 5 },
+        { id: '2', name: 'Neha Patel', weight: 4 },
+        { id: '3', name: 'Rohan Das', weight: 3 },
+        { id: '4', name: 'Priya Iyer', weight: 4 },
+      ],
+      scenarios: [
+        {
+          id: 'default',
+          name: 'Festival Push (Example)',
+          m1: 1000000, m2: 900000, m3: 800000,
+          growth: 10, seasonality: 1.15, capacity: 1.05,
+          w1: 50, w2: 30, w3: 20,
+          pipelines: [
+            { id: 'p1', name: 'Premium Loyalty Ads Drive', value: 150000, probability: 60 },
+            { id: 'p2', name: 'Enterprise Bulk Contract Batch', value: 250000, probability: 40 }
+          ],
+          workingDays: 26,
+          roundingMode: 'round'
+        }
+      ]
+    };
+
+    // --- CURRENCY FORMATTER ENGINE ---
+    function formatCurrency(value) {
+      const numericValue = Number(value) || 0;
+      if (state.currency === 'INR') {
+        return new Intl.NumberFormat('en-IN', {
+          style: 'currency',
+          currency: 'INR',
+          maximumFractionDigits: state.roundingMode === 'exact' ? 2 : 0
+        }).format(numericValue);
+      } else if (state.currency === 'USD') {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          maximumFractionDigits: state.roundingMode === 'exact' ? 2 : 0
+        }).format(numericValue);
+      } else if (state.currency === 'EUR') {
+        return new Intl.NumberFormat('de-DE', {
+          style: 'currency',
+          currency: 'EUR',
+          maximumFractionDigits: state.roundingMode === 'exact' ? 2 : 0
+        }).format(numericValue);
+      } else {
+        return new Intl.NumberFormat('en-GB', {
+          style: 'currency',
+          currency: 'GBP',
+          maximumFractionDigits: state.roundingMode === 'exact' ? 2 : 0
+        }).format(numericValue);
+      }
+    }
+
+    // Apply currency symbol changes to layout borders
+    function updateCurrencySymbols() {
+      const symbols = { INR: '₹', USD: '$', EUR: '€', GBP: '£' };
+      const elements = document.querySelectorAll('.currency-symbol');
+      elements.forEach(el => {
+        el.textContent = symbols[state.currency] || '₹';
+      });
+    }
+
+    function setCurrency(currCode) {
+      state.currency = currCode;
+      
+      // Toggle button active highlighting
+      ['INR', 'USD', 'EUR', 'GBP'].forEach(code => {
+        const btn = document.getElementById(`btn-currency-${code}`);
+        if (code === currCode) {
+          btn.className = "px-3 py-1.5 rounded-md text-xs font-semibold bg-indigo-600 text-white shadow transition-all";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-md text-xs font-semibold text-slate-400 hover:text-white transition-all";
+        }
+      });
+
+      updateCurrencySymbols();
+      updateAll();
+    }
+
+    // --- SLIDERS & CONTROLS HANDLERS ---
+    function handleGrowthSlider(val) {
+      state.growth = Number(val);
+      document.getElementById('num-growth').value = val;
+      updateAll();
+    }
+
+    function handleGrowthInput(val) {
+      state.growth = Number(val) || 0;
+      document.getElementById('range-growth').value = state.growth;
+      updateAll();
+    }
+
+    function handleSeasonalitySlider(val) {
+      state.seasonality = Number(val);
+      updateAll();
+    }
+
+    function handleCapacitySlider(val) {
+      state.capacity = Number(val);
+      updateAll();
+    }
+
+    function handleWorkingDays(val) {
+      state.workingDays = Number(val);
+      updateAll();
+    }
+
+    function handleRoundingChange(val) {
+      state.roundingMode = val;
+      updateAll();
+    }
+
+    // Calculate Working Days based on calendar parameters
+    function calculateDays() {
+      const totalDays = Number(document.getElementById('input-days-total').value) || 30;
+      const weekendDays = Number(document.getElementById('input-days-weekends').value) || 0;
+      const holidays = Number(document.getElementById('input-days-holidays').value) || 0;
+
+      const workingDays = Math.max(1, totalDays - weekendDays - holidays);
+      state.workingDays = workingDays;
+      document.getElementById('range-working-days').value = workingDays;
+      updateAll();
+    }
+
+    // --- WEIGHT ALLOCATIONS (W1 + W2 + W3 = 100%) ---
+    function handleWeightSlider(target, val) {
+      const value = Number(val);
+      state[target] = value;
+      
+      // Update label displays
+      document.getElementById(`label-${target}`).textContent = `${value}%`;
+
+      // Perform validation check
+      const totalWeight = state.w1 + state.w2 + state.w3;
+      const pill = document.getElementById('weight-pill-status');
+      
+      if (totalWeight === 100) {
+        pill.className = "px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30";
+        pill.textContent = "Weights: 100% (Valid)";
+      } else {
+        pill.className = "px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-rose-500/10 text-rose-300 border border-rose-500/30 animate-pulse";
+        pill.textContent = `Weights: ${totalWeight}% (Invalid)`;
+      }
+
+      updateAll();
+    }
+
+    // --- PRECISION PRECISION ROUNDING HELPERS ---
+    function applySelectedRounding(val) {
+      switch(state.roundingMode) {
+        case 'round':
+          return Math.round(val);
+        case 'ceil':
+          return Math.ceil(val);
+        case 'floor':
+          return Math.floor(val);
+        case 'nearest-100':
+          return Math.round(val / 100) * 100;
+        case 'nearest-1000':
+          return Math.round(val / 1000) * 1000;
+        case 'exact':
+        default:
+          return Number(val.toFixed(2));
+      }
+    }
+
+    // --- DYNAMIC PIPELINE BUILDER ENGINE ---
+    function renderPipelines() {
+      const container = document.getElementById('pipeline-items-container');
+      if (state.pipelines.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-4 bg-slate-950/40 rounded-xl border border-slate-800 text-slate-500 text-xs">
+            No pipeline items added. E(P) is currently ${formatCurrency(0)}.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = state.pipelines.map(item => {
+        const expectedValue = item.value * (item.probability / 100);
+        return `
+          <div class="flex items-center justify-between bg-slate-950/60 hover:bg-slate-950 border border-slate-800/80 rounded-xl p-2.5 transition-all gap-4">
+            <div class="flex-1 min-w-0">
+              <div class="text-xs font-semibold text-white truncate">${item.name}</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">
+                Val: ${formatCurrency(item.value)} | Prob: <span class="font-bold text-indigo-400 font-mono">${item.probability}%</span>
+              </div>
+            </div>
+            <div class="text-right space-y-0.5">
+              <div class="text-xs font-bold text-emerald-400 font-mono">${formatCurrency(expectedValue)}</div>
+              <div class="text-[8px] text-slate-500 uppercase font-bold tracking-wider">Expected Val</div>
+            </div>
+            <button onclick="removePipelineItem('${item.id}')" class="text-slate-500 hover:text-rose-400 p-1 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addPipelineItem(e) {
+      e.preventDefault();
+      const nameInput = document.getElementById('add-pipe-name');
+      const valInput = document.getElementById('add-pipe-val');
+      const probInput = document.getElementById('add-pipe-prob');
+
+      const newItem = {
+        id: Date.now().toString(),
+        name: nameInput.value.trim(),
+        value: Number(valInput.value) || 0,
+        probability: Number(probInput.value) || 100
+      };
+
+      state.pipelines.push(newItem);
+      nameInput.value = '';
+      valInput.value = '';
+      probInput.value = '';
+
+      updateAll();
+    }
+
+    function removePipelineItem(id) {
+      state.pipelines = state.pipelines.filter(item => item.id !== id);
+      updateAll();
+    }
+
+    // --- APPLY PRESETS ---
+    function applyPreset(presetType) {
+      switch(presetType) {
+        case 'festival':
+          state.seasonality = 1.35;
+          state.capacity = 1.10;
+          state.growth = 15;
+          state.w1 = 60; state.w2 = 30; state.w3 = 10;
+          state.pipelines = [
+            { id: '1', name: 'Festival Ad Surge expected batch', value: 400000, probability: 80 },
+            { id: '2', name: 'Direct organic conversions boost', value: 150000, probability: 50 }
+          ];
+          break;
+        case 'normal':
+          state.seasonality = 1.00;
+          state.capacity = 1.00;
+          state.growth = 5;
+          state.w1 = 50; state.w2 = 30; state.w3 = 20;
+          state.pipelines = [
+            { id: '1', name: 'Standard pipeline leads', value: 100000, probability: 50 }
+          ];
+          break;
+        case 'offseason':
+          state.seasonality = 0.85;
+          state.capacity = 0.95;
+          state.growth = 0;
+          state.w1 = 40; state.w2 = 40; state.w3 = 20;
+          state.pipelines = [];
+          break;
+        case 'aggressive':
+          state.seasonality = 1.10;
+          state.capacity = 1.15;
+          state.growth = 25;
+          state.w1 = 70; state.w2 = 20; state.w3 = 10;
+          state.pipelines = [
+            { id: '1', name: 'High profile expansion push', value: 600000, probability: 70 },
+            { id: '2', name: 'Wholesale batch inquiry', value: 200000, probability: 30 }
+          ];
+          break;
+      }
+      
+      // Sync sliders & input elements to matching values
+      document.getElementById('range-growth').value = state.growth;
+      document.getElementById('num-growth').value = state.growth;
+      document.getElementById('range-seasonality').value = state.seasonality;
+      document.getElementById('range-capacity').value = state.capacity;
+
+      document.getElementById('weight-w1').value = state.w1;
+      document.getElementById('weight-w2').value = state.w2;
+      document.getElementById('weight-w3').value = state.w3;
+
+      document.getElementById('label-w1').textContent = `${state.w1}%`;
+      document.getElementById('label-w2').textContent = `${state.w2}%`;
+      document.getElementById('label-w3').textContent = `${state.w3}%`;
+      
+      // Perform validation check to force clean status
+      const totalW = state.w1 + state.w2 + state.w3;
+      const pill = document.getElementById('weight-pill-status');
+      pill.className = "px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30";
+      pill.textContent = "Weights: 100% (Valid)";
+
+      updateAll();
+    }
+
+    // --- MASTER COMPILER / MATH ENGINE ---
+    function updateAll() {
+      // 1. Get current values from raw inputs
+      const m1 = Number(document.getElementById('input-m1').value) || 0;
+      const m2 = Number(document.getElementById('input-m2').value) || 0;
+      const m3 = Number(document.getElementById('input-m3').value) || 0;
+
+      // Render micro preview indicators
+      document.getElementById('preview-m1').textContent = `≈ ${formatCurrency(m1)}`;
+      document.getElementById('preview-m2').textContent = `≈ ${formatCurrency(m2)}`;
+      document.getElementById('preview-m3').textContent = `≈ ${formatCurrency(m3)}`;
+
+      // 2. Validate historical baseline weights (if sum is not 100, we fallback silently or warn user)
+      const sumOfWeights = state.w1 + state.w2 + state.w3;
+      const weightMultiplierValid = sumOfWeights === 100;
+
+      // Perform math operations
+      const factorW1 = state.w1 / 100;
+      const factorW2 = state.w2 / 100;
+      const factorW3 = state.w3 / 100;
+
+      const weightedBaseline = (factorW1 * m1) + (factorW2 * m2) + (factorW3 * m3);
+      const growthMult = 1 + (state.growth / 100);
+      const scaledGrowthValue = weightedBaseline * growthMult;
+      const coreProjection = scaledGrowthValue * state.seasonality * state.capacity;
+
+      // Calculate Expected Pipeline Value
+      const totalExpectedP = state.pipelines.reduce((sum, item) => sum + (item.value * (item.probability / 100)), 0);
+      
+      // Apply formula
+      const rawMonthlyTarget = coreProjection + totalExpectedP;
+      const finalMonthlyTarget = applySelectedRounding(rawMonthlyTarget);
+      
+      const dailyTarget = state.workingDays > 0 ? (finalMonthlyTarget / state.workingDays) : 0;
+
+      // 3. Render Calculation Outcomes to Dashboard
+      document.getElementById('hero-monthly-target').textContent = formatCurrency(finalMonthlyTarget);
+      document.getElementById('text-weighted-avg').textContent = `Weighted Average Baseline: ${formatCurrency(weightedBaseline)}`;
+      document.getElementById('label-total-expected-p').textContent = formatCurrency(totalExpectedP);
+
+      // Render live formula verification substitute text
+      const formulaString = `[ (${m1.toLocaleString()}×${factorW1.toFixed(2)} + ${m2.toLocaleString()}×${factorW2.toFixed(2)} + ${m3.toLocaleString()}×${factorW3.toFixed(2)}) × ${growthMult.toFixed(2)} × ${state.seasonality.toFixed(2)} × ${state.capacity.toFixed(2)} ] + ${totalExpectedP.toLocaleString()} = ${finalMonthlyTarget.toLocaleString()}`;
+      document.getElementById('text-live-formula').textContent = formulaString;
+
+      // Update Step Indicators
+      document.getElementById('txt-calc-weights').textContent = `${state.w1}/${state.w2}/${state.w3}`;
+      document.getElementById('step-baseline').textContent = formatCurrency(weightedBaseline);
+      document.getElementById('step-growth-title').textContent = `2. Growth Scaled (${state.growth}%):`;
+      document.getElementById('step-growth').textContent = formatCurrency(scaledGrowthValue);
+      document.getElementById('step-core').textContent = formatCurrency(coreProjection);
+      document.getElementById('step-campaigns').textContent = `+${formatCurrency(totalExpectedP)}`;
+
+      // Update Slider displays
+      document.getElementById('label-growth').textContent = `+${state.growth}% (${growthMult.toFixed(2)}x)`;
+      document.getElementById('label-seasonality').textContent = `${state.seasonality.toFixed(2)}x`;
+      document.getElementById('label-capacity').textContent = `${state.capacity.toFixed(2)}x`;
+      document.getElementById('label-working-days').textContent = `${state.workingDays} Days`;
+      document.getElementById('text-daily-target').textContent = formatCurrency(dailyTarget);
+
+      // Render custom inline pipeline items & configurations
+      renderPipelines();
+
+      // 4. Draw SVG Baseline Comparison Bar Chart
+      renderBaselineChart(m1, m2, m3, weightedBaseline, finalMonthlyTarget);
+
+      // 5. Allocation calculations for Sales Representatives
+      updateTeamAllocation(finalMonthlyTarget);
+    }
+
+    // --- COMPOSITE SVG CHART DRAWING ---
+    function renderBaselineChart(m1, m2, m3, weightedAvg, target) {
+      const maxVal = Math.max(m1, m2, m3, weightedAvg, target) || 1;
+      
+      const pM3 = Math.max(10, (m3 / maxVal) * 100);
+      const pM2 = Math.max(10, (m2 / maxVal) * 100);
+      const pM1 = Math.max(10, (m1 / maxVal) * 100);
+      const pAvg = Math.max(10, (weightedAvg / maxVal) * 100);
+      const pTarget = Math.max(10, (target / maxVal) * 100);
+
+      const chartHTML = `
+        <div class="flex items-end justify-between px-2 gap-4 h-full w-full">
+          <div class="flex-1 flex flex-col items-center h-full justify-end">
+            <div class="text-[8px] text-slate-400 font-mono mb-1 truncate max-w-full">${formatCurrency(m3)}</div>
+            <div class="w-full bg-slate-700 rounded-t-sm transition-all duration-300" style="height: ${pM3 - 15}%"></div>
+            <div class="text-[8px] text-slate-500 font-semibold mt-1">M3 (${state.w3}%)</div>
+          </div>
+          <div class="flex-1 flex flex-col items-center h-full justify-end">
+            <div class="text-[8px] text-slate-400 font-mono mb-1 truncate max-w-full">${formatCurrency(m2)}</div>
+            <div class="w-full bg-indigo-800 rounded-t-sm transition-all duration-300" style="height: ${pM2 - 15}%"></div>
+            <div class="text-[8px] text-slate-500 font-semibold mt-1">M2 (${state.w2}%)</div>
+          </div>
+          <div class="flex-1 flex flex-col items-center h-full justify-end">
+            <div class="text-[8px] text-slate-400 font-mono mb-1 truncate max-w-full">${formatCurrency(m1)}</div>
+            <div class="w-full bg-indigo-600 rounded-t-sm transition-all duration-300" style="height: ${pM1 - 15}%"></div>
+            <div class="text-[8px] text-slate-500 font-semibold mt-1">M1 (${state.w1}%)</div>
+          </div>
+          <div class="flex-1 flex flex-col items-center h-full justify-end">
+            <div class="text-[8px] text-emerald-400 font-mono mb-1 truncate max-w-full font-bold">${formatCurrency(weightedAvg)}</div>
+            <div class="w-full bg-emerald-500 border border-emerald-400 shadow-md rounded-t-sm transition-all duration-300" style="height: ${pAvg - 15}%"></div>
+            <div class="text-[8px] text-slate-400 font-semibold mt-1">WMA Avg</div>
+          </div>
+          <div class="flex-1 flex flex-col items-center h-full justify-end">
+            <div class="text-[8px] text-indigo-300 font-mono mb-1 truncate max-w-full font-bold">${formatCurrency(target)}</div>
+            <div class="w-full bg-gradient-to-t from-indigo-500 to-violet-500 shadow-lg rounded-t-sm transition-all duration-300" style="height: ${pTarget - 15}%"></div>
+            <div class="text-[8px] text-indigo-400 font-bold mt-1">Target</div>
+          </div>
+        </div>
+      `;
+      document.getElementById('svg-chart-container').innerHTML = chartHTML;
+    }
+
+    // --- REPRESENTATIVE ALLOCATION ENGINE WITH ROUNDING RESIDUAL CORRECTION ---
+    function updateTeamAllocation(monthlyTarget) {
+      const container = document.getElementById('team-list-container');
+      const chartContainer = document.getElementById('chart-distribution-bars');
+      
+      if (state.team.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 bg-slate-950 rounded-xl border border-dashed border-slate-800 text-slate-500 text-xs">
+            No active representatives. Register a sales team member above to allocate goals.
+          </div>
+        `;
+        chartContainer.innerHTML = `
+          <div class="text-center text-xs text-slate-500 italic py-12">
+            Visual breakdown map loads dynamically once team elements are created.
+          </div>
+        `;
+        document.getElementById('text-total-stars-weight').textContent = 'Total Star Weight: 0 Stars';
+        return;
+      }
+
+      const totalWeight = state.team.reduce((sum, member) => sum + member.weight, 0);
+      document.getElementById('text-total-stars-weight').textContent = `Total Star Weight: ${totalWeight} Stars`;
+
+      // 1. Calculate raw targets for each member
+      let allocations = state.team.map(member => {
+        const share = totalWeight > 0 ? (member.weight / totalWeight) : 0;
+        const rawTarget = monthlyTarget * share;
+        const roundedTarget = applySelectedRounding(rawTarget);
+        return {
+          ...member,
+          share,
+          roundedTarget,
+          rawTarget
+        };
+      });
+
+      // 2. Perform Rounding error correction to prevent decimal leakages
+      // If the sum of rounded individual targets does not match the precise global monthly target,
+      // distribute the penny/dollar remainder to the highest-performing representative.
+      const sumOfAllocations = allocations.reduce((sum, item) => sum + item.roundedTarget, 0);
+      const discrepancy = monthlyTarget - sumOfAllocations;
+
+      if (discrepancy !== 0 && allocations.length > 0) {
+        // Find highest weight rep to absorb the rounding offset gracefully
+        let maxWeightIndex = 0;
+        let maxWeight = -1;
+        allocations.forEach((item, index) => {
+          if (item.weight > maxWeight) {
+            maxWeight = item.weight;
+            maxWeightIndex = index;
+          }
+        });
+        allocations[maxWeightIndex].roundedTarget += discrepancy;
+        allocations[maxWeightIndex].isAdjusted = true; // Flag to show math adjustment trace
+      }
+
+      let teamHTML = '';
+      let chartHTML = '';
+
+      allocations.forEach(member => {
+        const sharePercentage = member.share * 100;
+
+        // Compute Star Ratings representation
+        let starsHTML = '';
+        for (let i = 1; i <= 5; i++) {
+          const isGold = i <= member.weight;
+          starsHTML += `
+            <button type="button" onclick="changeMemberWeight('${member.id}', ${i})" class="text-base transition-transform active:scale-125 ${isGold ? 'text-amber-400' : 'text-slate-700 hover:text-slate-500'}">★</button>
+          `;
+        }
+
+        teamHTML += `
+          <div class="bg-slate-950 border border-slate-800 hover:border-slate-700 rounded-xl p-4 flex items-center justify-between gap-4 transition-all">
+            <div class="space-y-1.5 flex-1">
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-semibold text-white">${member.name}</span>
+                <span class="text-[10px] bg-indigo-500/15 text-indigo-300 px-2 py-0.5 rounded-full font-mono">${sharePercentage.toFixed(1)}% Weight</span>
+                ${member.isAdjusted ? `<span class="text-[8px] bg-emerald-500/10 text-emerald-300 px-1.5 py-0.5 rounded font-bold" title="Rounding Adjustment Applied to Ensure Exact Match">ADJUSTED</span>` : ''}
+              </div>
+              <div class="flex items-center gap-3 text-xs text-slate-400">
+                <span>Priority Coefficient:</span>
+                <div class="flex items-center gap-1">${starsHTML}</div>
+              </div>
+            </div>
+            <div class="text-right pl-4 border-l border-slate-800 space-y-1">
+              <div class="text-sm font-bold text-emerald-400 font-mono">${formatCurrency(member.roundedTarget)}</div>
+              <button onclick="removeTeamMember('${member.id}')" class="text-slate-500 hover:text-rose-400 text-[10px] flex items-center gap-0.5 justify-end ml-auto">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg> Remove
+              </button>
+            </div>
+          </div>
+        `;
+
+        chartHTML += `
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-300 font-medium">${member.name}</span>
+              <span class="font-mono text-indigo-300 font-semibold">${formatCurrency(member.roundedTarget)} (${sharePercentage.toFixed(1)}%)</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-500" style="width: ${sharePercentage}%"></div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = teamHTML;
+      chartContainer.innerHTML = chartHTML;
+    }
+
+    // Interactive Star Adjusters
+    function changeMemberWeight(memberId, newWeight) {
+      state.team = state.team.map(m => m.id === memberId ? { ...m, weight: newWeight } : m);
+      updateAll();
+    }
+
+    function removeTeamMember(memberId) {
+      state.team = state.team.filter(m => m.id !== memberId);
+      updateAll();
+    }
+
+    function addTeamMember(e) {
+      e.preventDefault();
+      const nameInput = document.getElementById('input-member-name');
+      const weightSelect = document.getElementById('select-member-weight');
+
+      if (!nameInput.value.trim()) return;
+
+      const newMember = {
+        id: Date.now().toString(),
+        name: nameInput.value.trim(),
+        weight: Number(weightSelect.value)
+      };
+
+      state.team.push(newMember);
+      nameInput.value = '';
+      weightSelect.value = '3';
+      
+      updateAll();
+    }
+
+    // --- SCENARIO LOADER ENGINE ---
+    function renderScenarios() {
+      const container = document.getElementById('saved-scenarios-list');
+      if (state.scenarios.length === 0) {
+        container.innerHTML = `<div class="text-xs text-slate-500 italic py-2">No custom scenarios saved yet.</div>`;
+        return;
+      }
+
+      container.innerHTML = state.scenarios.map(sc => `
+        <div onclick="loadScenario('${sc.id}')" class="group flex items-center justify-between bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-lg p-2.5 cursor-pointer transition-all">
+          <div class="text-xs text-left">
+            <div class="font-semibold text-slate-200">${sc.name}</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">
+              WMA: ${sc.w1}/${sc.w2}/${sc.w3} | G: ${sc.growth}% | Season: ${sc.seasonality}x
+            </div>
+          </div>
+          <button onclick="deleteScenario('${sc.id}', event)" class="text-slate-500 hover:text-rose-400 p-1 rounded hover:bg-slate-900 transition-all">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function saveScenario(e) {
+      e.preventDefault();
+      const nameInput = document.getElementById('input-scenario-name');
+      if (!nameInput.value.trim()) return;
+
+      const m1 = Number(document.getElementById('input-m1').value) || 0;
+      const m2 = Number(document.getElementById('input-m2').value) || 0;
+      const m3 = Number(document.getElementById('input-m3').value) || 0;
+
+      const newScenario = {
+        id: Date.now().toString(),
+        name: nameInput.value.trim(),
+        m1, m2, m3,
+        growth: state.growth,
+        seasonality: state.seasonality,
+        capacity: state.capacity,
+        workingDays: state.workingDays,
+        roundingMode: state.roundingMode,
+        w1: state.w1,
+        w2: state.w2,
+        w3: state.w3,
+        pipelines: [...state.pipelines]
+      };
+
+      state.scenarios.push(newScenario);
+      nameInput.value = '';
+      
+      renderScenarios();
+    }
+
+    function loadScenario(id) {
+      const sc = state.scenarios.find(s => s.id === id);
+      if (!sc) return;
+
+      // Assign values back to UI Inputs
+      document.getElementById('input-m1').value = sc.m1;
+      document.getElementById('input-m2').value = sc.m2;
+      document.getElementById('input-m3').value = sc.m3;
+
+      state.growth = sc.growth;
+      state.seasonality = sc.seasonality;
+      state.capacity = sc.capacity;
+      state.workingDays = sc.workingDays;
+      state.roundingMode = sc.roundingMode || 'round';
+      state.w1 = sc.w1 !== undefined ? sc.w1 : 50;
+      state.w2 = sc.w2 !== undefined ? sc.w2 : 30;
+      state.w3 = sc.w3 !== undefined ? sc.w3 : 20;
+      state.pipelines = sc.pipelines !== undefined ? [...sc.pipelines] : [];
+
+      document.getElementById('range-growth').value = state.growth;
+      document.getElementById('num-growth').value = state.growth;
+      document.getElementById('range-seasonality').value = state.seasonality;
+      document.getElementById('range-capacity').value = state.capacity;
+      document.getElementById('range-working-days').value = state.workingDays;
+      document.getElementById('select-rounding').value = state.roundingMode;
+
+      document.getElementById('weight-w1').value = state.w1;
+      document.getElementById('weight-w2').value = state.w2;
+      document.getElementById('weight-w3').value = state.w3;
+
+      document.getElementById('label-w1').textContent = `${state.w1}%`;
+      document.getElementById('label-w2').textContent = `${state.w2}%`;
+      document.getElementById('label-w3').textContent = `${state.w3}%`;
+
+      updateAll();
+    }
+
+    function deleteScenario(id, e) {
+      e.stopPropagation();
+      state.scenarios = state.scenarios.filter(s => s.id !== id);
+      renderScenarios();
+    }
+
+    function handleInputChange() {
+      updateAll();
+    }
+
+    // --- ONLOAD INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      // Run first update pass
+      updateAll();
+      renderScenarios();
+    });
+  </script>
+</body>
+</html>
+
+```
