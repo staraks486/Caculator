@@ -1,0 +1,1408 @@
+html
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aurum - Premium Gold Suite & DigiGold Invoicing</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            50: '#fdfbf7',
+                            100: '#fbf7ed',
+                            200: '#f4e9cf',
+                            300: '#ebd5a3',
+                            400: '#dbb76c',
+                            500: '#cca152',
+                            600: '#b8893d',
+                            700: '#996c30',
+                            800: '#7a5226',
+                            900: '#644120',
+                            950: '#3a2210'
+                        },
+                        charcoal: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Touch friendly style adaptations */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        
+        /* Print Styles - Crucial for authentic invoice rendering */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .invoice-paper-sheet {
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                background: white !important;
+                color: black !important;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body class="bg-charcoal-950 text-slate-100 min-h-full flex flex-col font-sans selection:bg-gold-500 selection:text-charcoal-950">
+
+    <!-- Header Navigation (No Print) -->
+    <header class="no-print border-b border-gold-900/30 bg-charcoal-900/80 backdrop-blur sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center justify-between w-full sm:w-auto">
+                <div class="flex items-center gap-2">
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-gold-600 to-gold-400 flex items-center justify-center shadow-lg shadow-gold-500/10">
+                        <svg class="w-5 h-5 text-charcoal-950" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.364l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-black tracking-wide bg-gradient-to-r from-gold-200 via-gold-400 to-gold-300 bg-clip-text text-transparent">AURUM</h1>
+                        <p id="location-suite-title" class="text-[10px] text-gold-500/70 uppercase tracking-widest font-semibold leading-none">Patiala Gold Suite</p>
+                    </div>
+                </div>
+                
+                <!-- Small screen location pin indicator -->
+                <div class="flex sm:hidden items-center gap-1.5 bg-charcoal-900 px-2.5 py-1.5 rounded-xl border border-slate-800">
+                    <svg class="w-3.5 h-3.5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <select onchange="changeLocation(this.value)" class="select-location bg-transparent text-gold-300 text-xs font-bold focus:outline-none cursor-pointer">
+                        <option class="bg-charcoal-900 text-slate-100" value="Patiala" selected>Patiala, PB</option>
+                        <option class="bg-charcoal-900 text-slate-100" value="Delhi">Delhi, NCR</option>
+                        <option class="bg-charcoal-900 text-slate-100" value="Mumbai">Mumbai, MH</option>
+                        <option class="bg-charcoal-900 text-slate-100" value="Chennai">Chennai, TN</option>
+                        <option class="bg-charcoal-900 text-slate-100" value="Kolkata">Kolkata, WB</option>
+                        <option class="bg-charcoal-900 text-slate-100" value="Bengaluru">Bengaluru, KA</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto border-t border-slate-900 sm:border-0 pt-2 sm:pt-0">
+                <!-- Location Selector for Large Screens -->
+                <div class="hidden sm:flex items-center gap-1.5 bg-charcoal-950 px-3 py-1.5 rounded-xl border border-slate-800">
+                    <svg class="w-4 h-4 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <select onchange="changeLocation(this.value)" class="select-location bg-transparent text-gold-300 text-xs font-bold focus:outline-none cursor-pointer">
+                        <option class="bg-charcoal-900 text-slate-100" value="Patiala" selected>Patiala, PB</option>
+                        <option class="bg-charcoal-900 text-slate-100" value="Delhi">Delhi, NCR</option>
+                        <option class="bg-charcoal-900 text-slate-100" value="Mumbai">Mumbai, MH</option>
+                        <option class="bg-charcoal-900 text-slate-100" value="Chennai">Chennai, TN</option>
+                        <option class="bg-charcoal-900 text-slate-100" value="Kolkata">Kolkata, WB</option>
+                        <option class="bg-charcoal-900 text-slate-100" value="Bengaluru">Bengaluru, KA</option>
+                    </select>
+                </div>
+                <div class="text-right flex items-center sm:block gap-2 sm:gap-0 justify-between w-full sm:w-auto">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-2xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full mr-1 animate-pulse"></span> Live Rates
+                    </span>
+                    <p id="live-time" class="text-3xs text-slate-400 mt-0.5 font-mono"></p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Master Mode Toggle: Calculator vs Invoice Generator (No Print) -->
+    <div class="no-print bg-charcoal-900/60 border-b border-slate-800 py-3 px-4">
+        <div class="max-w-6xl mx-auto flex gap-4">
+            <button id="view-mode-calc" onclick="switchViewMode('calculator')" class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-gold-600 text-charcoal-950 transition shadow-lg shadow-gold-500/10">
+                📊 Interactive Calculator
+            </button>
+            <button id="view-mode-invoice" onclick="switchViewMode('invoice')" class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:text-slate-100 hover:bg-slate-700 transition">
+                📄 Connected DigiGold Invoice
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN VIEW 1: INTERACTIVE CALCULATOR (No Print) -->
+    <div id="calculator-view-container" class="no-print flex-1 flex flex-col justify-between">
+        <main class="flex-1 max-w-6xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left Side: Interactive Controls (7 Columns) -->
+            <div class="lg:col-span-7 flex flex-col gap-6">
+                <!-- Quick Daily Purity Rates -->
+                <section class="bg-charcoal-900 border border-gold-900/20 rounded-2xl p-4 shadow-xl">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-gold-400">Market Price Benchmark (1g)</h3>
+                        <span class="text-3xs text-slate-400">Tap card to load rate</span>
+                    </div>
+                    <div id="benchmark-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <!-- Dynamic location benchmarks render here -->
+                    </div>
+                </section>
+
+                <!-- Dual-Calculation Dashboard Tab -->
+                <section class="bg-charcoal-900 border border-gold-900/20 rounded-3xl p-5 sm:p-6 shadow-2xl flex flex-col gap-5 relative overflow-hidden">
+                    <div class="absolute -top-40 -left-40 w-80 h-80 bg-gold-600/5 blur-[120px] rounded-full pointer-events-none"></div>
+
+                    <!-- Mode Selection Tab Bar -->
+                    <div class="flex bg-charcoal-950 p-1.5 rounded-2xl border border-slate-800 relative z-10">
+                        <button id="tab-weight" onclick="switchMode('weight')" class="flex-1 py-3 text-center rounded-xl font-bold text-sm transition-all duration-300 bg-gradient-to-r from-gold-600 to-gold-500 text-charcoal-950 shadow-md">
+                            ⚖️ Calculate by Weight
+                        </button>
+                        <button id="tab-budget" onclick="switchMode('budget')" class="flex-1 py-3 text-center rounded-xl font-bold text-sm transition-all duration-300 text-slate-400 hover:text-slate-100">
+                            💰 Calculate by Budget
+                        </button>
+                    </div>
+
+                    <!-- Centralized Interactive Fields -->
+                    <div class="space-y-4 relative z-10">
+                        <!-- Mode-Dependent Numeric Input Card -->
+                        <div class="bg-charcoal-950 border border-slate-800 rounded-2xl p-4">
+                            <div class="flex justify-between items-center mb-1">
+                                <label id="primary-input-label" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Desired Gold Weight</label>
+                                <span id="primary-input-unit" class="text-xs font-bold text-gold-400 uppercase">grams</span>
+                            </div>
+                            <div class="relative mt-2 flex items-center">
+                                <span id="primary-prefix" class="hidden text-2xl font-black text-gold-500 mr-2">₹</span>
+                                <input type="number" id="primary-input-val" value="10" step="any" oninput="calculate()" class="w-full bg-transparent text-3xl font-black text-slate-100 focus:outline-none focus:ring-0 placeholder-slate-700 font-mono">
+                            </div>
+                            <div id="quick-presets" class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-slate-900"></div>
+                        </div>
+
+                        <!-- Purity Customizer & Base Rate Card -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="bg-charcoal-950 border border-slate-800 rounded-2xl p-4">
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Gold Purity (Karat)</label>
+                                <select id="purity-select" onchange="onPurityChange()" class="w-full bg-charcoal-900 text-slate-200 border border-slate-800 p-2.5 rounded-xl focus:outline-none focus:border-gold-500 font-bold">
+                                    <option value="24K">24 Karat (99.9% Pure)</option>
+                                    <option value="22K" selected>22 Karat (91.6% Pure)</option>
+                                    <option value="18K">18 Karat (75.0% Pure)</option>
+                                    <option value="14K">14 Karat (58.5% Pure)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="bg-charcoal-950 border border-slate-800 rounded-2xl p-4">
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Gold Rate (₹ per Gram)</label>
+                                <div class="relative flex items-center">
+                                    <span class="absolute left-3 text-slate-500 font-bold">₹</span>
+                                    <input type="number" id="gold-rate-input" value="13260" oninput="calculate()" class="w-full bg-charcoal-900 text-slate-200 border border-slate-800 pl-8 pr-3 py-2 rounded-xl focus:outline-none focus:border-gold-500 font-bold font-mono">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Making Charges Segment -->
+                        <div class="bg-charcoal-950 border border-slate-800 rounded-2xl p-4">
+                            <div class="flex justify-between items-center mb-3">
+                                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Making Charges</label>
+                                <div class="inline-flex bg-charcoal-900 p-0.5 rounded-lg border border-slate-800 text-2xs">
+                                    <button id="mc-type-pct" onclick="setMCType('pct')" class="px-2 py-1 rounded-md font-bold transition-all bg-gold-600 text-charcoal-950 shadow-sm">Percentage (%)</button>
+                                    <button id="mc-type-fixed" onclick="setMCType('fixed')" class="px-2 py-1 rounded-md font-bold transition-all text-slate-400 hover:text-slate-100">Flat/Gram (₹)</button>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-4">
+                                <div class="w-2/3">
+                                    <input type="range" id="mc-range" min="1" max="25" value="5" step="0.5" oninput="onMCRangeInput()" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-gold-500">
+                                    <div class="flex justify-between text-4xs text-slate-500 mt-1 uppercase tracking-wider font-semibold">
+                                        <span id="mc-min-label">1% (Minimal)</span>
+                                        <span id="mc-max-label">25% (Premium)</span>
+                                    </div>
+                                </div>
+                                <div class="w-1/3 relative">
+                                    <input type="number" id="mc-value" value="5" oninput="onMCValueInput()" class="w-full bg-charcoal-900 text-slate-100 border border-slate-800 px-3 py-2 rounded-xl focus:outline-none focus:border-gold-500 text-center font-bold font-mono">
+                                    <span id="mc-symbol" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold font-mono">%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GST and stone charges -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="bg-charcoal-950 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Government GST</h4>
+                                    <p class="text-3xs text-slate-500 mt-0.5">3% tax added to total value</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="bg-gold-500/10 text-gold-400 border border-gold-500/20 px-3 py-1.5 rounded-lg text-sm font-bold font-mono">3.0%</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-charcoal-950 border border-slate-800 rounded-2xl p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Stone / Gems Value</h4>
+                                        <p class="text-3xs text-slate-500 mt-0.5">Separate addition before GST</p>
+                                    </div>
+                                    <div class="w-24 relative">
+                                        <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-2xs">₹</span>
+                                        <input type="number" id="stone-charge" value="0" oninput="calculate()" class="w-full bg-charcoal-900 text-slate-100 border border-slate-800 pl-5 pr-2 py-1.5 rounded-xl text-xs focus:outline-none text-right font-bold font-mono">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Side: Immersive Visual Results (5 Columns) -->
+            <div class="lg:col-span-5 flex flex-col gap-6">
+                <section class="bg-gradient-to-b from-charcoal-900 to-charcoal-950 border border-gold-500/30 rounded-3xl p-6 shadow-2xl relative overflow-hidden flex flex-col justify-between h-full min-h-[450px]">
+                    <div class="absolute -bottom-20 -right-20 w-60 h-60 border-2 border-gold-500/10 rounded-full pointer-events-none"></div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="text-xs font-extrabold uppercase tracking-widest text-gold-500">Invoice Estimate</span>
+                            <span id="purity-badge" class="bg-gold-600/20 text-gold-300 border border-gold-500/30 text-2xs font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider">22K (916) Gold</span>
+                        </div>
+
+                        <div class="text-center py-6 border-b border-slate-800 relative z-10">
+                            <p id="bill-primary-label" class="text-3xs text-slate-400 uppercase tracking-widest font-bold">Total Estimated Bill (Inc. Tax)</p>
+                            <h2 id="bill-primary-val" class="text-4xl sm:text-5xl font-black text-gold-300 mt-1 font-mono tracking-tight">₹1,43,407</h2>
+                            <div id="bill-secondary-box" class="mt-2 text-xs text-slate-400 font-medium">
+                                Target Gold Weight: <span id="bill-secondary-val" class="font-bold text-gold-400 font-mono">10.000g</span>
+                            </div>
+                        </div>
+
+                        <div class="py-5 space-y-3.5 text-xs">
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-400">Pure Gold Value:</span>
+                                <span id="breakdown-gold-val" class="font-bold font-mono text-slate-200">₹1,32,600</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-400">Making Charges:</span>
+                                <span id="breakdown-making-val" class="font-bold font-mono text-slate-200">₹6,630</span>
+                            </div>
+                            <div id="breakdown-stone-row" class="flex justify-between items-center hidden">
+                                <span class="text-slate-400">Stone/Gem Additions:</span>
+                                <span id="breakdown-stone-val" class="font-bold font-mono text-slate-200">₹0</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-2 border-t border-slate-900">
+                                <span class="text-slate-400">Taxable Subtotal:</span>
+                                <span id="breakdown-subtotal-val" class="font-bold font-mono text-slate-200">₹1,39,230</span>
+                            </div>
+                            
+                            <div class="bg-charcoal-950 p-3 rounded-xl border border-slate-900 space-y-1.5 mt-2">
+                                <div class="flex justify-between items-center text-3xs text-slate-500">
+                                    <span class="uppercase font-semibold">Central GST (CGST - 1.5%)</span>
+                                    <span id="breakdown-cgst-val" class="font-mono">₹2,088.45</span>
+                                </div>
+                                <div class="flex justify-between items-center text-3xs text-slate-500">
+                                    <span class="uppercase font-semibold">State GST (SGST - 1.5%)</span>
+                                    <span id="breakdown-sgst-val" class="font-mono">₹2,088.45</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bar Visualizer -->
+                        <div class="mt-4">
+                            <div class="h-2 w-full rounded-full bg-slate-800 flex overflow-hidden">
+                                <div id="bar-gold" class="bg-gold-500 h-full" style="width: 85%;"></div>
+                                <div id="bar-making" class="bg-gold-300 h-full" style="width: 10%;"></div>
+                                <div id="bar-stone" class="bg-indigo-400 h-full" style="width: 0%;"></div>
+                                <div id="bar-tax" class="bg-amber-600 h-full" style="width: 5%;"></div>
+                            </div>
+                            <div class="flex gap-4 mt-2 justify-center text-4xs">
+                                <span class="inline-flex items-center text-slate-400"><span class="w-1.5 h-1.5 bg-gold-500 rounded-full mr-1"></span>Gold</span>
+                                <span class="inline-flex items-center text-slate-400"><span class="w-1.5 h-1.5 bg-gold-300 rounded-full mr-1"></span>Making</span>
+                                <span id="legend-stone" class="inline-flex items-center text-slate-400 hidden"><span class="w-1.5 h-1.5 bg-indigo-400 rounded-full mr-1"></span>Stone</span>
+                                <span class="inline-flex items-center text-slate-400"><span class="w-1.5 h-1.5 bg-amber-600 rounded-full mr-1"></span>GST</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-5 border-t border-slate-800 flex flex-col gap-3 relative z-10">
+                        <button onclick="sendCalculatedValuesToInvoice()" class="w-full bg-gradient-to-r from-amber-500 to-yellow-600 text-charcoal-950 hover:brightness-110 py-3 px-4 rounded-xl font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition">
+                            🔗 Send Estimate to DigiGold Invoice
+                        </button>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="copyQuoteInvoice()" class="flex items-center justify-center gap-1.5 bg-slate-900 border border-slate-800 text-slate-300 hover:text-white py-2.5 px-3 rounded-xl font-bold text-2xs hover:bg-slate-800 active:scale-95 transition">
+                                Copy Invoice Text
+                            </button>
+                            <button onclick="triggerSaveQuote()" class="flex items-center justify-center gap-1.5 bg-slate-800 text-gold-400 border border-slate-700/60 py-2.5 px-3 rounded-xl font-extrabold text-2xs active:scale-95 transition">
+                                Save Quote
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Quote Vault Comparator -->
+        <section class="max-w-6xl w-full mx-auto px-4 pb-12 mt-6">
+            <div class="bg-charcoal-900 border border-gold-900/20 rounded-3xl p-6 shadow-xl">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
+                    <div>
+                        <h3 class="text-base font-bold text-gold-200">Quote Vault & Jeweler Comparator</h3>
+                        <p class="text-xs text-slate-400 mt-1 font-medium">Add estimates from different jewelers to verify purity metrics and locate the best deals.</p>
+                    </div>
+                    <div id="clear-comparisons-box" class="hidden">
+                        <button onclick="clearQuotes()" class="text-xs text-rose-400 font-bold hover:underline flex items-center gap-1">
+                            🗑️ Reset All Saved Quotes
+                        </button>
+                    </div>
+                </div>
+
+                <div id="vault-empty-view" class="py-8 text-center text-slate-500 border border-dashed border-slate-800 rounded-2xl">
+                    <p class="text-xs">No quotes saved yet. Set weight/budget above and tap "Save Quote" to start comparing.</p>
+                </div>
+
+                <div id="vault-table-wrapper" class="overflow-x-auto rounded-xl hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-3xs text-slate-400 uppercase tracking-widest">
+                                <th class="py-3 px-4">Jeweler / Label</th>
+                                <th class="py-3 px-4">Purity</th>
+                                <th class="py-3 px-4">Rate / Gram</th>
+                                <th class="py-3 px-4">Weight</th>
+                                <th class="py-3 px-4">Making Charge</th>
+                                <th class="py-3 px-4">Stone Fee</th>
+                                <th class="py-3 px-4 text-right">Total Payable</th>
+                                <th class="py-3 px-4 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vault-table-body" class="text-xs text-slate-300 divide-y divide-slate-800/50"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+
+    <!-- MAIN VIEW 2: DIGIGOLD TAX INVOICE GENERATOR -->
+    <div id="invoice-view-container" class="hidden flex-1 flex flex-col">
+        <div class="no-print max-w-6xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
+            
+            <!-- Left Side: Invoice Editor Panel (5 Columns) -->
+            <div class="lg:col-span-5 bg-charcoal-900 border border-gold-900/20 rounded-3xl p-5 shadow-2xl space-y-4 h-fit">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-gold-400">Invoice Customizer</h3>
+                    <span id="sync-status-badge" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-4xs font-black px-2 py-0.5 rounded uppercase tracking-wider">Synced</span>
+                </div>
+
+                <!-- Two-Way Live Connection Controller -->
+                <div class="bg-charcoal-950 border border-gold-900/10 p-3.5 rounded-2xl flex items-center justify-between shadow-inner">
+                    <div>
+                        <span class="block text-xs font-bold text-gold-300">Link with Calculator</span>
+                        <span class="text-[10px] text-slate-500">Live feed from active calculations</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="sync-switch" onchange="toggleSyncMode(this.checked)" class="sr-only peer" checked>
+                        <div class="w-10 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-300 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+                    </label>
+                </div>
+                
+                <div class="space-y-3 text-xs">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Customer Name</label>
+                        <input type="text" id="inv-cust-name" value="ARVIND KUMAR SHUKLA" oninput="updateInvoice()" class="w-full bg-charcoal-950 border border-slate-800 p-2.5 rounded-xl text-slate-100 focus:outline-none focus:border-gold-500 font-medium">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-slate-400 mb-1">Phone Number</label>
+                            <input type="text" id="inv-cust-phone" value="9616417485" oninput="updateInvoice()" class="w-full bg-charcoal-950 border border-slate-800 p-2.5 rounded-xl text-slate-100 focus:outline-none focus:border-gold-500 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">Email Address</label>
+                            <input type="email" id="inv-cust-email" value="star.aks486@gmail.com" oninput="updateInvoice()" class="w-full bg-charcoal-950 border border-slate-800 p-2.5 rounded-xl text-slate-100 focus:outline-none focus:border-gold-500">
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-800/60 pt-3">
+                        <label class="block text-slate-400 mb-1">Invoice Reference ID</label>
+                        <input type="text" id="inv-ref-id" value="GUC072716071296" oninput="updateInvoice()" class="w-full bg-charcoal-950 border border-slate-800 p-2.5 rounded-xl text-slate-100 focus:outline-none focus:border-gold-500 font-mono">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-slate-400 mb-1">Purchase Date</label>
+                            <input type="text" id="inv-date" value="19:14:33 01-07-2026" oninput="updateInvoice()" class="w-full bg-charcoal-950 border border-slate-800 p-2.5 rounded-xl text-slate-100 focus:outline-none focus:border-gold-500 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">Payment Method</label>
+                            <input type="text" id="inv-payment-mode" value="Uni Coins" oninput="updateInvoice()" class="w-full bg-charcoal-950 border border-slate-800 p-2.5 rounded-xl text-slate-100 focus:outline-none focus:border-gold-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-400 mb-1">Place of Supply Vault</label>
+                        <input type="text" id="inv-vault" value="Sequel's Vault in Mumbai, Maharashtra" oninput="updateInvoice()" class="w-full bg-charcoal-950 border border-slate-800 p-2.5 rounded-xl text-slate-100 focus:outline-none focus:border-gold-500">
+                    </div>
+
+                    <div class="border-t border-slate-800/60 pt-3 grid grid-cols-2 gap-3 relative">
+                        <div>
+                            <label class="block text-slate-400 mb-1">Gold Weight (mg)</label>
+                            <input type="number" id="inv-gold-weight-mg" value="0.3" step="any" oninput="updateInvoice()" class="w-full bg-charcoal-950 border border-slate-800 p-2.5 rounded-xl text-slate-100 focus:outline-none focus:border-gold-500 font-mono disabled:opacity-50 disabled:cursor-not-allowed">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">Rate per mg (INR)</label>
+                            <input type="number" id="inv-gold-rate-mg" value="14.76" step="any" oninput="updateInvoice()" class="w-full bg-charcoal-950 border border-slate-800 p-2.5 rounded-xl text-slate-100 focus:outline-none focus:border-gold-500 font-mono disabled:opacity-50 disabled:cursor-not-allowed">
+                        </div>
+                        <!-- Synced overlay alert -->
+                        <div id="sync-lock-overlay" class="absolute inset-0 bg-charcoal-900/60 backdrop-blur-[1px] rounded-xl flex items-center justify-center text-[10px] text-gold-400 font-bold tracking-wider uppercase pointer-events-none transition-opacity duration-300">
+                            🔒 Override Locked: Link Active
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-slate-400 mb-1">Redeemed Uni Coins</label>
+                            <input type="number" id="inv-coins-redeemed" value="500" step="any" oninput="updateInvoice()" class="w-full bg-charcoal-950 border border-slate-800 p-2.5 rounded-xl text-slate-100 focus:outline-none focus:border-gold-500 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">Uni Coins Value (₹)</label>
+                            <input type="number" id="inv-coins-val" value="5" step="any" oninput="updateInvoice()" class="w-full bg-charcoal-950 border border-slate-800 p-2.5 rounded-xl text-slate-100 focus:outline-none focus:border-gold-500 font-mono">
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex gap-3">
+                        <button onclick="window.print()" class="flex-1 bg-gradient-to-r from-gold-600 to-gold-500 text-charcoal-950 font-bold py-3 px-4 rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition text-center">
+                            🖨️ Print Custom Invoice
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Realtime DigiGold Document Sheet Preview (7 Columns) -->
+            <div class="lg:col-span-7 flex flex-col items-center">
+                <div class="text-center mb-4">
+                    <p class="text-xs text-slate-400">Below is a live rendering of the legal tax invoice. Tapping **Print Invoice** generates a standard physical print layout.</p>
+                </div>
+                
+                <!-- Printable Sheet Frame -->
+                <div class="w-full max-w-[800px] bg-white text-black p-8 rounded-lg shadow-2xl overflow-y-auto min-h-[1100px] invoice-paper-sheet flex flex-col justify-between" id="inv-printable-page-1">
+                    <div>
+                        <!-- Brand Header Block -->
+                        <div class="flex justify-between items-start border-b border-gray-300 pb-4">
+                            <div>
+                                <h1 class="text-lg font-bold tracking-tight text-gray-900">UNI</h1>
+                                <p class="text-3xs text-gray-500 uppercase tracking-widest font-semibold">Digital Assets Partner</p>
+                            </div>
+                            <div class="text-right">
+                                <h2 class="text-base font-extrabold text-gray-800 tracking-wide uppercase">DigiGold Tax Invoice</h2>
+                                <p class="text-xs text-gray-600 font-semibold font-mono mt-0.5">Invoice: <span id="lbl-inv-id" class="text-gray-900 font-bold">GUC072716071296</span></p>
+                            </div>
+                        </div>
+
+                        <!-- Purchase Specifications metadata -->
+                        <div class="grid grid-cols-3 gap-4 py-3 border-b border-gray-200 text-3xs text-gray-700">
+                            <div>
+                                <span class="block text-gray-500 uppercase font-semibold">Purchased on</span>
+                                <strong id="lbl-inv-purchased-on" class="text-gray-900 font-mono">19:14:33 01-07-2026</strong>
+                            </div>
+                            <div>
+                                <span class="block text-gray-500 uppercase font-semibold">Payment Mode</span>
+                                <strong id="lbl-inv-pay-mode" class="text-gray-900">Uni Coins</strong>
+                            </div>
+                            <div>
+                                <span class="block text-gray-500 uppercase font-semibold">Place of Supply</span>
+                                <strong id="lbl-inv-pos" class="text-gray-900">Sequel's Vault in Mumbai, Maharashtra</strong>
+                            </div>
+                        </div>
+
+                        <!-- Customer vs Seller segment -->
+                        <div class="grid grid-cols-2 gap-8 py-5 text-3xs border-b border-gray-200">
+                            <!-- Customer Details -->
+                            <div class="space-y-1">
+                                <h4 class="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">Customer Details</h4>
+                                <p class="text-sm font-black text-gray-900" id="lbl-cust-name">ARVIND KUMAR SHUKLA</p>
+                                <p class="text-gray-700 font-mono">Phone: <span id="lbl-cust-phone" class="font-bold">9616417485</span></p>
+                                <p class="text-gray-700">Email: <span id="lbl-cust-email" class="font-medium">star.aks486@gmail.com</span></p>
+                            </div>
+
+                            <!-- Seller Details -->
+                            <div class="space-y-1 text-right">
+                                <h4 class="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1 text-right">Seller Details</h4>
+                                <p class="text-[11px] font-extrabold text-gray-900 leading-tight">Augmont Goldtech Private Limited</p>
+                                <p class="text-gray-500 text-3xs leading-relaxed max-w-[280px] ml-auto">
+                                    1st Floor, Unit No. 1A, A-Trade Garden, Kamala Mills Compound, Senapati Bapat Marg, Near Delisle Road, Lower Parel, Mumbai, Maharashtra, 400013.
+                                </p>
+                                <p class="text-gray-900 font-bold font-mono text-3xs mt-1">GSTIN: <span class="text-gray-900">27AATCA3030A1Z3</span></p>
+                            </div>
+                        </div>
+
+                        <!-- Table Listing of Items purchased -->
+                        <div class="py-5">
+                            <table class="w-full text-left border-collapse text-3xs">
+                                <thead>
+                                    <tr class="border-b border-gray-300 text-gray-500 uppercase font-semibold">
+                                        <th class="py-2">Description</th>
+                                        <th class="py-2 text-center">HSN Code</th>
+                                        <th class="py-2 text-right">Weight (mg)</th>
+                                        <th class="py-2 text-right">Rate/mg (INR)</th>
+                                        <th class="py-2 text-right">Amount (INR)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lbl-invoice-table-body" class="text-gray-800 divide-y divide-gray-100 font-medium font-mono">
+                                    <!-- Populated dynamically to reflect calculator outputs -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Special Loyalty note -->
+                        <div class="bg-gray-50 p-4 rounded-xl text-3xs text-gray-700 leading-relaxed border border-gray-100">
+                            <span id="lbl-redemption-msg">Customer has redeemed 500 Uni Coins worth 5 for this purchase</span>
+                        </div>
+                    </div>
+
+                    <!-- Page Footer Signature segment -->
+                    <div class="mt-12 pt-6 border-t border-gray-100 flex justify-between items-end text-4xs text-gray-400">
+                        <div>
+                            <p class="font-bold text-gray-700 uppercase">Authorised Signatory</p>
+                            <p class="mt-1">GSTIN: 27AATCA3030A1Z3</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-gray-500">Page 1 of 2</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Page Break Divider for Screen display -->
+                <div class="no-print w-full max-w-[800px] my-6 border-b-2 border-dashed border-slate-700"></div>
+
+                <!-- Terms and Conditions Printable Sheet Frame -->
+                <div class="w-full max-w-[800px] bg-white text-black p-8 rounded-lg shadow-2xl overflow-y-auto min-h-[1100px] invoice-paper-sheet flex flex-col justify-between page-break" id="inv-printable-page-2">
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-800 border-b border-gray-200 pb-2 mb-4">Terms &amp; Conditions</h3>
+                        
+                        <ol class="list-decimal pl-4 text-3xs text-gray-600 space-y-3 font-medium">
+                            <li>Goods once sold are not eligible for a refund or replacement.</li>
+                            <li>Any disputes arising out of this transaction shall be subject to the exclusive jurisdiction of the courts in Mumbai, Maharashtra.</li>
+                            <li>Uni operates solely as a marketplace facilitating the transaction between the Customer and the Seller. Any goods related issues, weight issues, or pricing disputes must be raised directly with the Seller (Augmont Goldtech Private Limited) or through Uni as an intermediary.</li>
+                            <li>Gold purchased under this scheme is safely stored in dedicated physical vaults (e.g. Sequel's Secure Vaults) backed by appropriate insurance cover.</li>
+                        </ol>
+                    </div>
+
+                    <div class="pt-6 border-t border-gray-100 flex justify-between items-end text-4xs text-gray-400 mt-auto">
+                        <div>
+                            <p>This is a computer generated invoice. For any queries, reach out directly to care@uni.club</p>
+                        </div>
+                        <div class="text-right font-bold text-gray-500">
+                            <p>Page 2 of 2</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Dialog Overlay (No Print) -->
+    <div id="dialog-overlay" class="no-print fixed inset-0 bg-charcoal-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-charcoal-900 border border-gold-500/40 rounded-2xl max-w-sm w-full p-6 shadow-2xl relative transform scale-95 transition-transform duration-300">
+            <h4 id="dialog-title" class="text-lg font-bold text-gold-200 mb-2">Save This Quote</h4>
+            <div id="dialog-body" class="text-xs text-slate-400 space-y-3">
+                <p>Provide a label or jeweler name to recognize this purchase estimate:</p>
+                <input type="text" id="quote-name-input" placeholder="e.g., Kalyan Jewellers Ring" class="w-full bg-charcoal-950 border border-slate-800 p-3 rounded-xl text-slate-100 focus:outline-none focus:border-gold-500 font-bold">
+            </div>
+            <div class="mt-6 flex justify-end gap-3 text-xs font-bold">
+                <button onclick="closeDialog()" class="px-4 py-2 rounded-xl text-slate-400 hover:text-white">Cancel</button>
+                <button id="dialog-confirm-btn" class="bg-gradient-to-r from-gold-600 to-gold-500 text-charcoal-950 px-5 py-2.5 rounded-xl hover:brightness-110">Save to Vault</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Banner Toast (No Print) -->
+    <div id="toast" class="no-print fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-gold-600 text-charcoal-950 font-bold px-4 py-3 rounded-xl shadow-2xl text-xs flex items-center gap-2 pointer-events-none">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+        </svg>
+        <span id="toast-message">Success message</span>
+    </div>
+
+    <!-- Pure Javascript Engine -->
+    <script>
+        // Set dynamic date
+        document.getElementById('live-time').innerText = new Date().toLocaleString('en-US', {
+            weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+        });
+        setInterval(() => {
+            document.getElementById('live-time').innerText = new Date().toLocaleString('en-US', {
+                weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+            });
+        }, 1000);
+
+        // Core State variables
+        let activeMode = 'weight'; 
+        let makingChargeType = 'pct'; 
+        let currentKarat = '22K';
+        let currentLocation = 'Patiala';
+        let activeViewMode = 'calculator'; 
+        let liveCalcOutputs = {}; // Cached calculator calculation output to map to invoice
+        let isSyncMode = true; // Auto sync calculator values with DigiGold invoice
+        let savedQuotes = [];
+
+        // Realistic Benchmark Gold Rates
+        const LOCATION_RATES = {
+            'Patiala': { '24K': 14300, '22K': 13260, '18K': 10850, '14K': 8440 },
+            'Delhi': { '24K': 14330, '22K': 13290, '18K': 10870, '14K': 8460 },
+            'Mumbai': { '24K': 14280, '22K': 13240, '18K': 10830, '14K': 8425 },
+            'Chennai': { '24K': 14310, '22K': 13270, '18K': 10860, '14K': 8450 },
+            'Kolkata': { '24K': 14290, '22K': 13250, '18K': 10840, '14K': 8430 },
+            'Bengaluru': { '24K': 14300, '22K': 13260, '18K': 10850, '14K': 8440 }
+        };
+
+        const PRESETS = {
+            weight: [
+                { label: 'Ring (4g)', val: 4 },
+                { label: 'Chain (10g)', val: 10 },
+                { label: 'Bangles (20g)', val: 20 },
+                { label: 'Tola (11.66g)', val: 11.663 },
+                { label: 'Coin (50g)', val: 50 }
+            ],
+            budget: [
+                { label: '₹25,000', val: 25000 },
+                { label: '₹50,000', val: 50000 },
+                { label: '₹1 Lakh', val: 100000 },
+                { label: '₹2.5 Lakhs', val: 250000 },
+                { label: '₹5 Lakhs', val: 500000 }
+            ]
+        };
+
+        // Initialize App
+        window.onload = function() {
+            renderPresets();
+            renderBenchmarks();
+            calculate();
+            loadQuotesFromStorage();
+            updateInvoice();
+        }
+
+        // Switch Workspace Tab
+        function switchViewMode(mode) {
+            activeViewMode = mode;
+            const btnCalc = document.getElementById('view-mode-calc');
+            const btnInv = document.getElementById('view-mode-invoice');
+            
+            const boxCalc = document.getElementById('calculator-view-container');
+            const boxInv = document.getElementById('invoice-view-container');
+
+            if (mode === 'calculator') {
+                btnCalc.className = 'flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-gold-600 text-charcoal-950 transition shadow-lg shadow-gold-500/10';
+                btnInv.className = 'flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:text-slate-100 hover:bg-slate-700 transition';
+                boxCalc.classList.remove('hidden');
+                boxInv.classList.add('hidden');
+            } else {
+                btnInv.className = 'flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-gold-600 text-charcoal-950 transition shadow-lg shadow-gold-500/10';
+                btnCalc.className = 'flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:text-slate-100 hover:bg-slate-700 transition';
+                boxInv.classList.remove('hidden');
+                boxCalc.classList.add('hidden');
+                updateInvoice();
+            }
+        }
+
+        // Swapping Modes (Weight / Budget Amount)
+        function switchMode(mode) {
+            activeMode = mode;
+            
+            const btnWeight = document.getElementById('tab-weight');
+            const btnBudget = document.getElementById('tab-budget');
+            const inputLabel = document.getElementById('primary-input-label');
+            const inputUnit = document.getElementById('primary-input-unit');
+            const inputPrefix = document.getElementById('primary-prefix');
+            const inputEl = document.getElementById('primary-input-val');
+            
+            if (mode === 'weight') {
+                btnWeight.className = 'flex-1 py-3 text-center rounded-xl font-bold text-sm transition-all duration-300 bg-gradient-to-r from-gold-600 to-gold-500 text-charcoal-950 shadow-md';
+                btnBudget.className = 'flex-1 py-3 text-center rounded-xl font-bold text-sm transition-all duration-300 text-slate-400 hover:text-slate-100';
+                inputLabel.innerText = "Desired Gold Weight";
+                inputUnit.innerText = "grams";
+                inputPrefix.classList.add('hidden');
+                inputEl.value = "10";
+            } else {
+                btnBudget.className = 'flex-1 py-3 text-center rounded-xl font-bold text-sm transition-all duration-300 bg-gradient-to-r from-gold-600 to-gold-500 text-charcoal-950 shadow-md';
+                btnWeight.className = 'flex-1 py-3 text-center rounded-xl font-bold text-sm transition-all duration-300 text-slate-400 hover:text-slate-100';
+                inputLabel.innerText = "Your Total Budget Limit";
+                inputUnit.innerText = "INR (₹)";
+                inputPrefix.classList.remove('hidden');
+                inputEl.value = "100000";
+            }
+
+            renderPresets();
+            calculate();
+        }
+
+        // Dynamic Benchmark Card Renderer
+        function renderBenchmarks() {
+            const rates = LOCATION_RATES[currentLocation];
+            const container = document.getElementById('benchmark-grid');
+            container.innerHTML = `
+                <button onclick="setGlobalRate(${rates['24K']}, '24K')" class="p-3 rounded-xl bg-charcoal-950 border ${currentKarat === '24K' ? 'border-gold-500/60 shadow-lg shadow-gold-500/5' : 'border-gold-900/10'} hover:border-gold-500/40 text-left transition group">
+                    <div class="text-3xs font-semibold text-slate-400 group-hover:text-gold-400">24K Pure (999)</div>
+                    <div class="text-sm font-bold text-gold-300 mt-1 font-mono">₹${rates['24K'].toLocaleString('en-IN')}</div>
+                </button>
+                <button onclick="setGlobalRate(${rates['22K']}, '22K')" class="p-3 rounded-xl bg-charcoal-950 border ${currentKarat === '22K' ? 'border-gold-500/60 shadow-lg shadow-gold-500/5' : 'border-gold-900/10'} hover:border-gold-500/70 text-left transition relative group">
+                    <span class="absolute -top-1.5 -right-1.5 bg-gold-600 text-charcoal-950 text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase scale-90">Popular</span>
+                    <div class="text-3xs font-semibold text-gold-400">22K Jewelry (916)</div>
+                    <div class="text-sm font-bold text-gold-200 mt-1 font-mono">₹${rates['22K'].toLocaleString('en-IN')}</div>
+                </button>
+                <button onclick="setGlobalRate(${rates['18K']}, '18K')" class="p-3 rounded-xl bg-charcoal-950 border ${currentKarat === '18K' ? 'border-gold-500/60 shadow-lg shadow-gold-500/5' : 'border-gold-900/10'} hover:border-gold-500/40 text-left transition group">
+                    <div class="text-3xs font-semibold text-slate-400 group-hover:text-gold-400">18K Custom (750)</div>
+                    <div class="text-sm font-bold text-gold-300 mt-1 font-mono">₹${rates['18K'].toLocaleString('en-IN')}</div>
+                </button>
+                <button onclick="setGlobalRate(${rates['14K']}, '14K')" class="p-3 rounded-xl bg-charcoal-950 border ${currentKarat === '14K' ? 'border-gold-500/60 shadow-lg shadow-gold-500/5' : 'border-gold-900/10'} hover:border-gold-500/40 text-left transition group">
+                    <div class="text-3xs font-semibold text-slate-400 group-hover:text-gold-400">14K Light (585)</div>
+                    <div class="text-sm font-bold text-gold-300 mt-1 font-mono">₹${rates['14K'].toLocaleString('en-IN')}</div>
+                </button>
+            `;
+        }
+
+        function changeLocation(val) {
+            currentLocation = val;
+            const selects = document.querySelectorAll('.select-location');
+            selects.forEach(select => { select.value = val; });
+
+            document.getElementById('location-suite-title').innerText = `${val} Gold Suite`;
+            renderBenchmarks();
+
+            const rates = LOCATION_RATES[val];
+            const targetRate = rates[currentKarat];
+            document.getElementById('gold-rate-input').value = targetRate;
+
+            calculate();
+            showToast(`Location set to ${val}. Local rates synchronized.`);
+        }
+
+        // Display dynamic quick tabs
+        function renderPresets() {
+            const container = document.getElementById('quick-presets');
+            container.innerHTML = '';
+            
+            PRESETS[activeMode].forEach(preset => {
+                const btn = document.createElement('button');
+                btn.className = 'px-3 py-1.5 rounded-lg bg-charcoal-900 border border-slate-800 hover:border-gold-500/30 text-[11px] font-bold text-slate-400 hover:text-gold-300 transition active:scale-95';
+                btn.innerText = preset.label;
+                btn.onclick = () => {
+                    document.getElementById('primary-input-val').value = preset.val;
+                    calculate();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function setGlobalRate(rate, purity) {
+            document.getElementById('gold-rate-input').value = rate;
+            document.getElementById('purity-select').value = purity;
+            currentKarat = purity;
+            document.getElementById('purity-badge').innerText = `${purity} (${purity === '24K' ? '99.9' : purity === '22K' ? '91.6' : purity === '18K' ? '75.0' : '58.5'}%) Gold`;
+            
+            renderBenchmarks();
+            calculate();
+            showToast(`Loaded ${purity} Gold Rate: ₹${rate}/g`);
+        }
+
+        function onPurityChange() {
+            const selectVal = document.getElementById('purity-select').value;
+            currentKarat = selectVal;
+            document.getElementById('purity-badge').innerText = `${selectVal} (${selectVal === '24K' ? '99.9' : selectVal === '22K' ? '91.6' : selectVal === '18K' ? '75.0' : '58.5'}%) Gold`;
+            
+            const rates = LOCATION_RATES[currentLocation];
+            const targetRate = rates[selectVal];
+
+            document.getElementById('gold-rate-input').value = targetRate;
+            renderBenchmarks();
+            calculate();
+        }
+
+        // Making Charge Modes
+        function setMCType(type) {
+            makingChargeType = type;
+            const btnPct = document.getElementById('mc-type-pct');
+            const btnFixed = document.getElementById('mc-type-fixed');
+            const mcSymbol = document.getElementById('mc-symbol');
+            const mcRange = document.getElementById('mc-range');
+            const mcVal = document.getElementById('mc-value');
+            
+            if (type === 'pct') {
+                btnPct.className = 'px-2 py-1 rounded-md font-bold transition-all bg-gold-600 text-charcoal-950 shadow-sm';
+                btnFixed.className = 'px-2 py-1 rounded-md font-bold transition-all text-slate-400 hover:text-slate-100';
+                mcSymbol.innerText = '%';
+                
+                mcRange.min = "1";
+                mcRange.max = "25";
+                mcRange.step = "0.5";
+                mcRange.value = "5";
+                mcVal.value = "5";
+                
+                document.getElementById('mc-min-label').innerText = "1% (Minimal)";
+                document.getElementById('mc-max-label').innerText = "25% (Premium)";
+            } else {
+                btnFixed.className = 'px-2 py-1 rounded-md font-bold transition-all bg-gold-600 text-charcoal-950 shadow-sm';
+                btnPct.className = 'px-2 py-1 rounded-md font-bold transition-all text-slate-400 hover:text-slate-100';
+                mcSymbol.innerText = '/g';
+                
+                mcRange.min = "100";
+                mcRange.max = "2000";
+                mcRange.step = "50";
+                mcRange.value = "500";
+                mcVal.value = "500";
+                
+                document.getElementById('mc-min-label').innerText = "₹100/g";
+                document.getElementById('mc-max-label').innerText = "₹2,000/g";
+            }
+            calculate();
+        }
+
+        function onMCRangeInput() {
+            document.getElementById('mc-value').value = document.getElementById('mc-range').value;
+            calculate();
+        }
+
+        function onMCValueInput() {
+            document.getElementById('mc-range').value = document.getElementById('mc-value').value;
+            calculate();
+        }
+
+        // Base Calculator Calculation Core Algorithm
+        function calculate() {
+            const inputVal = parseFloat(document.getElementById('primary-input-val').value) || 0;
+            const rate = parseFloat(document.getElementById('gold-rate-input').value) || 0;
+            const mcVal = parseFloat(document.getElementById('mc-value').value) || 0;
+            const stoneCharge = parseFloat(document.getElementById('stone-charge').value) || 0;
+            const taxRate = 0.03; 
+
+            let computedWeight = 0;
+            let goldValue = 0;
+            let makingCharges = 0;
+            let subtotal = 0;
+            let tax = 0;
+            let total = 0;
+
+            if (activeMode === 'weight') {
+                computedWeight = inputVal;
+                goldValue = computedWeight * rate;
+                
+                if (makingChargeType === 'pct') {
+                    makingCharges = goldValue * (mcVal / 100);
+                } else {
+                    makingCharges = computedWeight * mcVal;
+                }
+
+                subtotal = goldValue + makingCharges + stoneCharge;
+                tax = subtotal * taxRate;
+                total = subtotal + tax;
+
+                document.getElementById('bill-primary-label').innerText = "Total Estimated Bill (Inc. Tax)";
+                document.getElementById('bill-primary-val').innerText = '₹' + Math.round(total).toLocaleString('en-IN');
+                document.getElementById('bill-secondary-box').classList.remove('hidden');
+                document.getElementById('bill-secondary-val').innerText = computedWeight.toFixed(3) + " g";
+            } 
+            else {
+                total = inputVal;
+                const budgetMinusStone = total - (stoneCharge * (1 + taxRate)); 
+                
+                if (budgetMinusStone > 0) {
+                    if (makingChargeType === 'pct') {
+                        computedWeight = (total / (1 + taxRate) - stoneCharge) / (rate * (1 + (mcVal / 100)));
+                        goldValue = computedWeight * rate;
+                        makingCharges = goldValue * (mcVal / 100);
+                    } else {
+                        computedWeight = (total / (1 + taxRate) - stoneCharge) / (rate + mcVal);
+                        goldValue = computedWeight * rate;
+                        makingCharges = computedWeight * mcVal;
+                    }
+                } else {
+                    computedWeight = 0;
+                    goldValue = 0;
+                    makingCharges = 0;
+                }
+
+                subtotal = goldValue + makingCharges + stoneCharge;
+                tax = subtotal * taxRate;
+
+                document.getElementById('bill-primary-label').innerText = "Acquirable Gold Weight";
+                document.getElementById('bill-primary-val').innerText = (computedWeight > 0 ? computedWeight.toFixed(3) : "0.000") + " g";
+                document.getElementById('bill-secondary-box').classList.remove('hidden');
+                document.getElementById('bill-secondary-val').innerText = '₹' + Math.round(total).toLocaleString('en-IN') + ' Budget';
+            }
+
+            // Cache live outputs to allow live syncing with invoice
+            liveCalcOutputs = {
+                weight: computedWeight,
+                goldRate: rate,
+                goldValue: goldValue,
+                makingCharges: makingCharges,
+                stoneCharges: stoneCharge,
+                subtotal: subtotal,
+                tax: tax,
+                total: total,
+                purity: currentKarat
+            };
+
+            document.getElementById('breakdown-gold-val').innerText = '₹' + Math.round(goldValue).toLocaleString('en-IN');
+            document.getElementById('breakdown-making-val').innerText = '₹' + Math.round(makingCharges).toLocaleString('en-IN');
+            
+            if (stoneCharge > 0) {
+                document.getElementById('breakdown-stone-row').classList.remove('hidden');
+                document.getElementById('legend-stone').classList.remove('hidden');
+                document.getElementById('breakdown-stone-val').innerText = '₹' + Math.round(stoneCharge).toLocaleString('en-IN');
+            } else {
+                document.getElementById('breakdown-stone-row').classList.add('hidden');
+                document.getElementById('legend-stone').classList.add('hidden');
+            }
+
+            document.getElementById('breakdown-subtotal-val').innerText = '₹' + Math.round(subtotal).toLocaleString('en-IN');
+            
+            const halfTax = tax / 2;
+            document.getElementById('breakdown-cgst-val').innerText = '₹' + halfTax.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('breakdown-sgst-val').innerText = '₹' + halfTax.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+            if (total > 0) {
+                const goldPct = (goldValue / total) * 100;
+                const makingPct = (makingCharges / total) * 100;
+                const stonePct = (stoneCharge / total) * 100;
+                const taxPct = (tax / total) * 100;
+
+                document.getElementById('bar-gold').style.width = `${goldPct}%`;
+                document.getElementById('bar-making').style.width = `${makingPct}%`;
+                document.getElementById('bar-stone').style.width = `${stonePct}%`;
+                document.getElementById('bar-tax').style.width = `${taxPct}%`;
+            } else {
+                document.getElementById('bar-gold').style.width = `0%`;
+                document.getElementById('bar-making').style.width = `0%`;
+                document.getElementById('bar-stone').style.width = `0%`;
+                document.getElementById('bar-tax').style.width = `0%`;
+            }
+
+            // Trigger reactive sync if invoice is linked
+            if (isSyncMode) {
+                updateInvoice();
+            }
+        }
+
+        // Bridge: Export calculated values to invoice
+        function sendCalculatedValuesToInvoice() {
+            // Lock sync mode
+            isSyncMode = true;
+            document.getElementById('sync-switch').checked = true;
+            toggleSyncMode(true);
+
+            // Update & show invoice view
+            updateInvoice();
+            switchViewMode('invoice');
+            showToast("Linked! Calculator Estimate injected into DigiGold Invoice.");
+        }
+
+        // Handle Active Linking Toggle
+        function toggleSyncMode(checked) {
+            isSyncMode = checked;
+            const statusBadge = document.getElementById('sync-status-badge');
+            const lockOverlay = document.getElementById('sync-lock-overlay');
+            const weightInput = document.getElementById('inv-gold-weight-mg');
+            const rateInput = document.getElementById('inv-gold-rate-mg');
+
+            if (checked) {
+                statusBadge.innerText = "Synced";
+                statusBadge.className = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-4xs font-black px-2 py-0.5 rounded uppercase tracking-wider";
+                lockOverlay.classList.remove('opacity-0', 'pointer-events-none');
+                weightInput.disabled = true;
+                rateInput.disabled = true;
+                updateInvoice();
+            } else {
+                statusBadge.innerText = "Custom Override";
+                statusBadge.className = "bg-amber-500/10 text-amber-400 border border-amber-500/20 text-4xs font-black px-2 py-0.5 rounded uppercase tracking-wider";
+                lockOverlay.classList.add('opacity-0', 'pointer-events-none');
+                weightInput.disabled = false;
+                rateInput.disabled = false;
+                
+                // Fallback to initial values from the exact PDF upload structure to allow custom testing
+                document.getElementById('inv-gold-weight-mg').value = 0.3;
+                document.getElementById('inv-gold-rate-mg').value = 14.76;
+                document.getElementById('inv-coins-redeemed').value = 500;
+                document.getElementById('inv-coins-val').value = 5;
+                updateInvoice();
+            }
+        }
+
+        // Custom Connected Invoice Sync Engine
+        function updateInvoice() {
+            // Retrieve Input Values from customizer metadata
+            const name = document.getElementById('inv-cust-name').value;
+            const phone = document.getElementById('inv-cust-phone').value;
+            const email = document.getElementById('inv-cust-email').value;
+            const invoiceId = document.getElementById('inv-ref-id').value;
+            const date = document.getElementById('inv-date').value;
+            const payMode = document.getElementById('inv-payment-mode').value;
+            const vault = document.getElementById('inv-vault').value;
+            
+            const coinsRedeemed = parseFloat(document.getElementById('inv-coins-redeemed').value) || 0;
+            const coinsVal = parseFloat(document.getElementById('inv-coins-val').value) || 0;
+
+            let goldAmount = 0;
+            let cgst = 0;
+            let sgst = 0;
+            let netPayable = 0;
+            let tableHTML = "";
+
+            if (isSyncMode && liveCalcOutputs && Object.keys(liveCalcOutputs).length > 0) {
+                // Read from calculator variables
+                const purityName = liveCalcOutputs.purity;
+                const purityPct = purityName === '24K' ? '99.9%' : purityName === '22K' ? '91.6%' : purityName === '18K' ? '75.0%' : '58.5%';
+                
+                // Conversions: grams to milligrams (mg) for DigiGold invoice standard
+                const weightInMg = liveCalcOutputs.weight * 1000;
+                const ratePerMg = liveCalcOutputs.goldRate / 1000;
+                goldAmount = liveCalcOutputs.goldValue;
+                
+                // Ingest synchronized outputs into text inputs as locked preview values
+                document.getElementById('inv-gold-weight-mg').value = weightInMg.toFixed(1);
+                document.getElementById('inv-gold-rate-mg').value = ratePerMg.toFixed(4);
+
+                // Row 1: Gold Item Row
+                tableHTML += `
+                    <tr>
+                        <td class="py-3 font-sans text-xs font-bold text-gray-900">Gold ${purityName} ${purityPct}</td>
+                        <td class="py-3 text-center">711419</td>
+                        <td class="py-3 text-right text-gray-900">${weightInMg.toLocaleString('en-IN', {maximumFractionDigits: 1})}mg</td>
+                        <td class="py-3 text-right">₹${ratePerMg.toFixed(4)}/mg</td>
+                        <td class="py-3 text-right text-gray-900">₹${goldAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    </tr>
+                `;
+
+                // Row 2: Making Charges (Injected only if calculated > 0)
+                if (liveCalcOutputs.makingCharges > 0) {
+                    tableHTML += `
+                        <tr>
+                            <td class="py-3 font-sans text-xs font-bold text-gray-900">Making Charges</td>
+                            <td class="py-3 text-center">9988</td>
+                            <td class="py-3 text-right text-gray-500">-</td>
+                            <td class="py-3 text-right">-</td>
+                            <td class="py-3 text-right text-gray-900">₹${liveCalcOutputs.makingCharges.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        </tr>
+                    `;
+                }
+
+                // Row 3: Stone Charges (Injected only if calculated > 0)
+                if (liveCalcOutputs.stoneCharges > 0) {
+                    tableHTML += `
+                        <tr>
+                            <td class="py-3 font-sans text-xs font-bold text-gray-900">Stone & Gems Additions</td>
+                            <td class="py-3 text-center">711620</td>
+                            <td class="py-3 text-right text-gray-500">-</td>
+                            <td class="py-3 text-right">-</td>
+                            <td class="py-3 text-right text-gray-900">₹${liveCalcOutputs.stoneCharges.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        </tr>
+                    `;
+                }
+
+                cgst = liveCalcOutputs.subtotal * 0.015;
+                sgst = liveCalcOutputs.subtotal * 0.015;
+                netPayable = liveCalcOutputs.total;
+
+            } else {
+                // Read purely from customized manual input fields (Fallback / Manual Mode)
+                const weightMg = parseFloat(document.getElementById('inv-gold-weight-mg').value) || 0;
+                const rateMg = parseFloat(document.getElementById('inv-gold-rate-mg').value) || 0;
+                goldAmount = weightMg * rateMg;
+
+                tableHTML += `
+                    <tr>
+                        <td class="py-3 font-sans text-xs font-bold text-gray-900">Gold 24K 99.9%</td>
+                        <td class="py-3 text-center">711419</td>
+                        <td class="py-3 text-right text-gray-900">${weightMg}mg</td>
+                        <td class="py-3 text-right">₹${rateMg.toFixed(2)}/mg</td>
+                        <td class="py-3 text-right text-gray-900">₹${goldAmount.toFixed(2)}</td>
+                    </tr>
+                `;
+
+                cgst = goldAmount * 0.015;
+                sgst = goldAmount * 0.015;
+                netPayable = goldAmount + cgst + sgst;
+            }
+
+            // Append standard Tax CGST SGST and Total Net rows
+            tableHTML += `
+                <tr>
+                    <td class="py-2 font-sans text-gray-500">CGST</td>
+                    <td class="py-2 text-center">-</td>
+                    <td class="py-2 text-right text-gray-400">-</td>
+                    <td class="py-2 text-right text-gray-500">1.5%</td>
+                    <td class="py-2 text-right text-gray-900">₹${cgst.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                </tr>
+                <tr>
+                    <td class="py-2 font-sans text-gray-500">SGST</td>
+                    <td class="py-2 text-center">-</td>
+                    <td class="py-2 text-right text-gray-400">-</td>
+                    <td class="py-2 text-right text-gray-500">1.5%</td>
+                    <td class="py-2 text-right text-gray-900">₹${sgst.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                </tr>
+                <tr>
+                    <td class="py-2 font-sans text-gray-500">IGST</td>
+                    <td class="py-2 text-center">-</td>
+                    <td class="py-2 text-right text-gray-400">-</td>
+                    <td class="py-2 text-right text-gray-500">0.0%</td>
+                    <td class="py-2 text-right text-gray-900">₹0.00</td>
+                </tr>
+                <tr class="border-t border-gray-300 font-bold text-xs">
+                    <td colspan="4" class="py-3 font-sans text-gray-900 uppercase">Total Net Payable</td>
+                    <td class="py-3 text-right text-gray-900 text-sm font-black">₹${Math.round(netPayable).toLocaleString('en-IN')}</td>
+                </tr>
+            `;
+
+            // Render output inside invoice elements
+            document.getElementById('lbl-invoice-table-body').innerHTML = tableHTML;
+            document.getElementById('lbl-inv-id').innerText = invoiceId;
+            document.getElementById('lbl-inv-purchased-on').innerText = date;
+            document.getElementById('lbl-inv-pay-mode').innerText = payMode;
+            document.getElementById('lbl-inv-pos').innerText = vault;
+
+            document.getElementById('lbl-cust-name').innerText = name.toUpperCase();
+            document.getElementById('lbl-cust-phone').innerText = phone;
+            document.getElementById('lbl-cust-email').innerText = email;
+
+            document.getElementById('lbl-redemption-msg').innerText = `Customer has redeemed ${coinsRedeemed.toLocaleString('en-IN')} Uni Coins worth ₹${coinsVal.toLocaleString('en-IN')} for this purchase`;
+        }
+
+        // Copy complete invoice summary text to clipboard
+        function copyQuoteInvoice() {
+            const inputVal = parseFloat(document.getElementById('primary-input-val').value) || 0;
+            const rate = parseFloat(document.getElementById('gold-rate-input').value) || 0;
+            const mcVal = parseFloat(document.getElementById('mc-value').value) || 0;
+            const stoneCharge = parseFloat(document.getElementById('stone-charge').value) || 0;
+            
+            let weight = 0;
+            let total = 0;
+            let goldValue = 0;
+            let making = 0;
+
+            if (activeMode === 'weight') {
+                weight = inputVal;
+                goldValue = weight * rate;
+                making = makingChargeType === 'pct' ? goldValue * (mcVal/100) : weight * mcVal;
+                total = (goldValue + making + stoneCharge) * 1.03;
+            } else {
+                total = inputVal;
+                weight = (total / 1.03 - stoneCharge) / (rate * (1 + (mcVal/100)));
+                goldValue = weight * rate;
+                making = makingChargeType === 'pct' ? goldValue * (mcVal/100) : weight * mcVal;
+            }
+
+            const subtotal = goldValue + making + stoneCharge;
+            const tax = subtotal * 0.03;
+
+            const textSummary = `AURUM JEWELRY ESTIMATE (${currentLocation.toUpperCase()}, INDIA)
+--------------------------------------
+Purity Level: ${currentKarat}
+Base Price per Gram: ₹${rate.toLocaleString('en-IN')}
+Gold Weight: ${weight.toFixed(3)} grams
+Pure Gold Value: ₹${Math.round(goldValue).toLocaleString('en-IN')}
+Making Charges: ₹${Math.round(making).toLocaleString('en-IN')} (${makingChargeType === 'pct' ? mcVal + '%' : '₹' + mcVal + '/g'})
+Stone / Gems Charges: ₹${Math.round(stoneCharge).toLocaleString('en-IN')}
+--------------------------------------
+Subtotal: ₹${Math.round(subtotal).toLocaleString('en-IN')}
+GST (3.0% - split 1.5% CGST / 1.5% SGST): ₹${Math.round(tax).toLocaleString('en-IN')}
+--------------------------------------
+NET PAYABLE ESTIMATE: ₹${Math.round(total).toLocaleString('en-IN')}
+*Generated via AURUM on ${new Date().toLocaleString()}*`;
+
+            const el = document.createElement('textarea');
+            el.value = textSummary;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            showToast("Invoice Summary Copied!");
+        }
+
+        // Handle saving estimates/quotes locally
+        function triggerSaveQuote() {
+            const overlay = document.getElementById('dialog-overlay');
+            const inputField = document.getElementById('quote-name-input');
+            inputField.value = "";
+            
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                overlay.querySelector('div').classList.remove('scale-95');
+            }, 50);
+
+            document.getElementById('dialog-confirm-btn').onclick = function() {
+                const label = inputField.value.trim() || `Jeweler Quote #${savedQuotes.length + 1}`;
+                saveQuoteToVault(label);
+                closeDialog();
+            };
+        }
+
+        function closeDialog() {
+            const overlay = document.getElementById('dialog-overlay');
+            overlay.classList.add('opacity-0');
+            overlay.querySelector('div').classList.add('scale-95');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+            }, 300);
+        }
+
+        function saveQuoteToVault(label) {
+            const inputVal = parseFloat(document.getElementById('primary-input-val').value) || 0;
+            const rate = parseFloat(document.getElementById('gold-rate-input').value) || 0;
+            const mcVal = parseFloat(document.getElementById('mc-value').value) || 0;
+            const stoneCharge = parseFloat(document.getElementById('stone-charge').value) || 0;
+            
+            let weight = 0;
+            let total = 0;
+            let goldValue = 0;
+            let making = 0;
+
+            if (activeMode === 'weight') {
+                weight = inputVal;
+                goldValue = weight * rate;
+                making = makingChargeType === 'pct' ? goldValue * (mcVal/100) : weight * mcVal;
+                total = (goldValue + making + stoneCharge) * 1.03;
+            } else {
+                total = inputVal;
+                weight = (total / 1.03 - stoneCharge) / (rate * (1 + (mcVal/100)));
+                goldValue = weight * rate;
+                making = makingChargeType === 'pct' ? goldValue * (mcVal/100) : weight * mcVal;
+            }
+
+            const quote = {
+                id: Date.now(),
+                label: label,
+                location: currentLocation,
+                karat: currentKarat,
+                rate: rate,
+                weight: weight,
+                makingText: makingChargeType === 'pct' ? `${mcVal}%` : `₹${mcVal}/g`,
+                stone: stoneCharge,
+                total: total
+            };
+
+            savedQuotes.push(quote);
+            saveToLocalStorage();
+            renderVault();
+            showToast("Saved Estimate to Vault");
+        }
+
+        function deleteQuote(id) {
+            savedQuotes = savedQuotes.filter(item => item.id !== id);
+            saveToLocalStorage();
+            renderVault();
+            showToast("Quote Removed");
+        }
+
+        function clearQuotes() {
+            savedQuotes = [];
+            saveToLocalStorage();
+            renderVault();
+            showToast("Quote Vault cleared");
+        }
+
+        function renderVault() {
+            const emptyView = document.getElementById('vault-empty-view');
+            const tableWrapper = document.getElementById('vault-table-wrapper');
+            const tableBody = document.getElementById('vault-table-body');
+            const clearBox = document.getElementById('clear-comparisons-box');
+
+            if (savedQuotes.length === 0) {
+                emptyView.classList.remove('hidden');
+                tableWrapper.classList.add('hidden');
+                clearBox.classList.add('hidden');
+            } else {
+                emptyView.classList.add('hidden');
+                tableWrapper.classList.remove('hidden');
+                clearBox.classList.remove('hidden');
+                
+                tableBody.innerHTML = '';
+                savedQuotes.forEach(quote => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'border-b border-slate-800/40 hover:bg-slate-800/20';
+                    tr.innerHTML = `
+                        <td class="py-3 px-4 font-bold text-slate-100">
+                            <div>${escapeHTML(quote.label)}</div>
+                            <div class="text-[10px] text-slate-500 font-semibold flex items-center gap-1 mt-0.5 uppercase tracking-wider">
+                                <svg class="w-3 h-3 text-gold-500/70" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                ${escapeHTML(quote.location || 'Patiala')}
+                            </div>
+                        </td>
+                        <td class="py-3 px-4"><span class="bg-gold-500/10 text-gold-400 px-2 py-0.5 rounded text-2xs font-extrabold uppercase">${quote.karat}</span></td>
+                        <td class="py-3 px-4 font-mono">₹${quote.rate.toLocaleString('en-IN')}</td>
+                        <td class="py-3 px-4 font-mono font-bold text-gold-300">${quote.weight.toFixed(3)}g</td>
+                        <td class="py-3 px-4 font-mono text-slate-400">${quote.makingText}</td>
+                        <td class="py-3 px-4 font-mono text-slate-400">₹${quote.stone.toLocaleString('en-IN')}</td>
+                        <td class="py-3 px-4 text-right font-bold font-mono text-gold-300">₹${Math.round(quote.total).toLocaleString('en-IN')}</td>
+                        <td class="py-3 px-4 text-center">
+                            <button onclick="deleteQuote(${quote.id})" class="text-rose-400 hover:text-rose-300 font-bold px-2 py-1 rounded transition active:scale-95 text-2xs">Remove</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }
+        }
+
+        // Local Storage Utilities
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('aurum_saved_estimates', JSON.stringify(savedQuotes));
+            } catch(e) {
+                console.error("Local storage error:", e);
+            }
+        }
+
+        function loadQuotesFromStorage() {
+            try {
+                const stored = localStorage.getItem('aurum_saved_estimates');
+                if (stored) {
+                    savedQuotes = JSON.parse(stored);
+                    renderVault();
+                }
+            } catch(e) {
+                console.error("Local storage read error:", e);
+            }
+        }
+
+        // Custom Notification Engine
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = msg;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+    </script>
+</body>
+</html>
+
+```
