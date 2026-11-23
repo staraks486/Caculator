@@ -1,0 +1,1344 @@
+html
+<!DOCTYPE html>
+<html lang="en" class="theme-indigo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>ArvindOmniCalc Pro - Next-Gen Computational Utility</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- HTML2Canvas CDN for Counter Report Printing/Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- HTML2PDF CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;600;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            background: #090d16;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        .font-outfit {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Smooth glass cards */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        /* Tactile buttons */
+        .calc-btn {
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .calc-btn:active {
+            transform: scale(0.92);
+        }
+
+        /* Smooth transitions for slide-out scientific drawer */
+        .scientific-drawer {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Smooth pane reveal transition */
+        #calc-pane, #suite-pane {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Toast animation */
+        @keyframes slideInUp {
+            from { transform: translate(-50%, 20px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        .animate-toast {
+            animation: slideInUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+        }
+
+        /* Voice pulse animation */
+        .voice-pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6); }
+            70% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+
+        /* Input Container Glow on Focus */
+        .input-container {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+        .input-container:focus-within {
+            border-color: var(--primary-accent);
+            background: rgba(var(--primary-rgb), 0.05);
+        }
+
+        /* Multi-Theme CSS Variable Mappings */
+        .theme-indigo {
+            --primary-rgb: 99, 102, 241;
+            --primary-accent: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.15);
+        }
+        .theme-rose {
+            --primary-rgb: 244, 63, 94;
+            --primary-accent: #f43f5e;
+            --primary-hover: #e11d48;
+            --primary-glow: rgba(244, 63, 94, 0.15);
+        }
+        .theme-emerald {
+            --primary-rgb: 16, 185, 129;
+            --primary-accent: #10b981;
+            --primary-hover: #059669;
+            --primary-glow: rgba(16, 185, 129, 0.15);
+        }
+        .theme-amber {
+            --primary-rgb: 245, 158, 11;
+            --primary-accent: #f59e0b;
+            --primary-hover: #d97706;
+            --primary-glow: rgba(245, 158, 11, 0.15);
+        }
+        .theme-cyan {
+            --primary-rgb: 6, 182, 212;
+            --primary-accent: #06b6d4;
+            --primary-hover: #0891b2;
+            --primary-glow: rgba(6, 182, 212, 0.15);
+        }
+
+        .dynamic-text-accent { color: var(--primary-accent); }
+        .dynamic-bg-accent { background-color: var(--primary-accent); }
+        .dynamic-bg-hover:hover { background-color: var(--primary-hover); }
+        .dynamic-bg-glow { background-color: var(--primary-glow); }
+        .dynamic-border-accent { border-color: var(--primary-accent); }
+        .dynamic-border-glow { border-color: var(--primary-glow); }
+
+        /* Colorful Output Readouts */
+        .output-readout-glow {
+            color: var(--primary-accent);
+            text-shadow: 0 0 24px rgba(var(--primary-rgb), 0.45);
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+        .output-card-tint {
+            background: radial-gradient(circle at top right, rgba(var(--primary-rgb), 0.14), rgba(2, 6, 23, 0.92) 70%);
+            border-color: rgba(var(--primary-rgb), 0.3) !important;
+            box-shadow: inset 0 1px 0 0 rgba(var(--primary-rgb), 0.2), 0 10px 30px -10px rgba(var(--primary-rgb), 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: fadeIn 0.35s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Counter Pro Max Additional Styles */
+        .counter-card { transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.05); background: rgba(15, 23, 42, 0.6); border-radius: 1.25rem; }
+        .active-group { border-color: var(--primary-accent) !important; background: rgba(var(--primary-rgb), 0.05); }
+        .counter-chip-adv { display: inline-flex; align-items: center; background: rgba(15,23,42,0.8); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; margin: 2px; border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; }
+        .small-btn { padding: 5px 10px; font-size: 10px; border-radius: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; transition: transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .small-btn:active { transform: scale(0.95); }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500/30">
+
+    <!-- Audio Player for Ambient Background Music -->
+    <audio id="bgMusic" loop preload="none" crossorigin="anonymous">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- CUSTOM REUSABLE MODAL -->
+    <div id="custom-modal" class="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] p-6 w-full max-w-sm shadow-2xl space-y-4">
+            <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-2">
+                <i data-lucide="alert-triangle" class="w-6 h-6 text-red-400"></i>
+            </div>
+            <h3 id="modal-title" class="text-lg font-black text-white leading-none">Confirm Action</h3>
+            <p id="modal-desc" class="text-xs text-slate-400 font-semibold leading-relaxed">Are you sure you wish to proceed?</p>
+            <div class="flex gap-3 pt-2">
+                <button onclick="closeOmniModal()" class="flex-1 py-3 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs font-bold uppercase transition-all text-slate-300">Cancel</button>
+                <button id="modal-confirm-btn" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold uppercase transition-all shadow-lg shadow-red-600/10">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Toast Overlay -->
+    <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] animate-toast">
+        <div class="bg-slate-900/95 text-slate-100 border border-slate-700/50 backdrop-blur-md px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
+            <div id="toast-icon-wrapper" class="p-1 rounded-lg dynamic-bg-glow dynamic-text-accent">
+                <i data-lucide="info" class="w-4 h-4" id="toast-icon"></i>
+            </div>
+            <span id="toast-msg" class="text-xs font-semibold tracking-wide">Notification activated</span>
+        </div>
+    </div>
+
+    <!-- Calculations History Sidebar Modal -->
+    <div id="history-modal" class="fixed inset-0 z-[80] hidden">
+        <div onclick="toggleHistory(false)" class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-slate-900 border-l border-slate-800 p-6 flex flex-col justify-between shadow-2xl">
+            <div>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="history" class="w-5 h-5 dynamic-text-accent"></i>
+                        <h3 class="text-lg font-black text-white">Calculation Audit Logs</h3>
+                    </div>
+                    <button onclick="toggleHistory(false)" class="p-2 hover:bg-slate-800 rounded-xl transition-all">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div id="history-logs" class="space-y-3 overflow-y-auto max-h-[70vh] pr-2 no-scrollbar">
+                    <p id="empty-history" class="text-xs text-slate-500 font-medium text-center py-8">No calculations registered in session.</p>
+                </div>
+            </div>
+            <div class="border-t border-slate-800/80 pt-4 flex gap-3">
+                <button onclick="clearHistoryLogs()" class="flex-1 py-3 bg-slate-950 hover:bg-slate-800 border border-slate-800/80 text-slate-400 text-xs font-bold rounded-xl transition-all uppercase tracking-wider">
+                    Clear Logs
+                </button>
+                <button onclick="toggleHistory(false)" class="flex-1 py-3 dynamic-bg-accent dynamic-bg-hover text-white text-xs font-bold rounded-xl transition-all uppercase tracking-wider">
+                    Close Panel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row gap-3 justify-between md:items-center">
+            
+            <div class="flex items-center gap-3 justify-between sm:justify-start w-full md:w-auto">
+                <div class="flex items-center gap-3">
+                    <div class="dynamic-bg-accent p-2.5 rounded-2xl text-white shadow-lg transition-colors duration-300">
+                        <i data-lucide="calculator" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-black tracking-tight text-white leading-none">OmniCalc <span class="dynamic-text-accent transition-colors duration-300">Pro</span></h1>
+                        <span class="text-[10px] text-slate-400 font-bold tracking-widest uppercase">Widget Integration Platform</span>
+                    </div>
+                </div>
+                
+                <!-- Theme Customizer for host matching -->
+                <div class="flex flex-wrap items-center gap-1.5 bg-slate-900/90 border border-slate-800/80 p-1.5 rounded-xl ml-1 sm:ml-4">
+                    <span class="text-[9px] text-slate-500 uppercase font-black px-1 tracking-wider hidden md:inline">Theme:</span>
+                    <button onclick="changeTheme('indigo')" class="w-4 h-4 rounded-full bg-indigo-500 border border-white/20 transition-transform hover:scale-110" title="Indigo Theme"></button>
+                    <button onclick="changeTheme('rose')" class="w-4 h-4 rounded-full bg-rose-500 border border-white/20 transition-transform hover:scale-110" title="Rose Theme"></button>
+                    <button onclick="changeTheme('emerald')" class="w-4 h-4 rounded-full bg-emerald-500 border border-white/20 transition-transform hover:scale-110" title="Emerald Theme"></button>
+                    <button onclick="changeTheme('amber')" class="w-4 h-4 rounded-full bg-amber-500 border border-white/20 transition-transform hover:scale-110" title="Amber Theme"></button>
+                    <button onclick="changeTheme('cyan')" class="w-4 h-4 rounded-full bg-cyan-500 border border-white/20 transition-transform hover:scale-110" title="Cyan Theme"></button>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-2.5 border-t border-slate-800/60 pt-3 md:border-0 md:pt-0 w-full md:w-auto">
+                
+                <!-- Show/Hide Calculator Pill + Position + Auto-Hide Toggle -->
+                <div class="flex items-center bg-slate-900 border border-slate-800 rounded-xl p-0.5 gap-0.5">
+                    <button onclick="toggleCalculatorVisibility()" id="calc-visibility-btn" class="px-2.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all dynamic-bg-accent text-white shadow-sm" title="Show or Hide Calculator">
+                        <i data-lucide="calculator" class="w-3.5 h-3.5"></i>
+                        <span id="calc-vis-label">Calc</span>
+                    </button>
+                    <button onclick="toggleCalculatorPosition()" id="calc-pos-btn" class="px-2 py-1.5 rounded-lg text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1 transition-all text-slate-300 hover:bg-slate-800/70" title="Switch Calculator Side (Left / Right)">
+                        <i data-lucide="arrow-left-right" class="w-3 h-3 dynamic-text-accent"></i>
+                        <span id="calc-pos-label">Left</span>
+                    </button>
+                    <button onclick="toggleAutoHideSetting()" id="auto-hide-btn" class="px-2 py-1.5 rounded-lg text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-1 transition-all text-emerald-400 hover:bg-slate-800/70" title="Auto-hide Calculator when switching Suite tools">
+                        <i data-lucide="eye-off" id="auto-hide-icon" class="w-3 h-3"></i>
+                        <span id="auto-hide-label">Auto: ON</span>
+                    </button>
+                </div>
+
+                <!-- Music Toggle Indicator -->
+                <div class="relative">
+                    <button onclick="toggleMusicMenu()" id="music-toggle-btn" class="p-2 sm:p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl transition-colors relative" title="Toggle Ambient Music">
+                        <i data-lucide="music" class="w-4 h-4 text-slate-300"></i>
+                        <div id="music-playing-dot" class="hidden absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-slate-900 animate-pulse"></div>
+                    </button>
+                    <!-- Enhanced Music Dropdown -->
+                    <div id="music-menu" class="hidden absolute left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-auto sm:right-0 top-full mt-3 w-[260px] max-w-[90vw] bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-2xl p-4 z-50">
+                        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800/80">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Audio Focus</span>
+                            <button onclick="togglePlayPause()" id="music-play-btn" class="p-2 dynamic-bg-accent rounded-xl text-white hover:scale-105 transition-transform shadow-lg shadow-indigo-500/20">
+                                <i data-lucide="play" class="w-3.5 h-3.5" id="music-play-icon"></i>
+                            </button>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 block">Track Selection</label>
+                                <select id="music-track-select" onchange="changeMusicTrack()" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-xs font-bold text-slate-300 focus:border-indigo-500 outline-none appearance-none">
+                                    <option value="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3">Chill Lofi Beats</option>
+                                    <option value="https://cdn.pixabay.com/download/audio/2022/11/22/audio_febc508520.mp3">Deep Ambient Focus</option>
+                                    <option value="https://cdn.pixabay.com/download/audio/2021/11/25/audio_91b3cb005e.mp3">Tech House Focus</option>
+                                    <option value="https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7443c.mp3">Smooth Jazz Vibes</option>
+                                    <option value="https://cdn.pixabay.com/download/audio/2022/02/07/audio_d0fa561fca.mp3">Acoustic Breeze</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Volume</label>
+                                    <span id="music-vol-label" class="text-[9px] font-black dynamic-text-accent">40%</span>
+                                </div>
+                                <input type="range" id="music-volume" min="0" max="100" value="40" oninput="changeVolume()" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Offline Status Indicator -->
+                <div id="offline-indicator" class="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                    <i data-lucide="wifi" class="w-3.5 h-3.5 text-emerald-400"></i>
+                    <span class="text-[9px] font-extrabold text-emerald-400 uppercase tracking-widest hidden sm:inline">Online</span>
+                </div>
+                <!-- Save Offline trigger -->
+                <button onclick="downloadSelfForOffline()" class="p-2 sm:p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl transition-colors text-slate-300 flex items-center gap-1.5" title="Download for 100% Offline Use">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    <span class="text-xs font-bold hidden xl:inline">Offline</span>
+                </button>
+                <!-- Microphone indicator -->
+                <div id="mic-status" class="hidden flex items-center gap-2 px-3 py-1 bg-rose-500/10 rounded-full border border-rose-500/20">
+                    <div class="w-2 h-2 bg-rose-500 rounded-full"></div>
+                    <span class="text-[10px] font-extrabold text-rose-400 uppercase tracking-widest hidden sm:inline-block">Listening</span>
+                </div>
+                <!-- History toggler -->
+                <button onclick="toggleHistory(true)" class="p-2 sm:p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl transition-colors relative" title="View Logs">
+                    <i data-lucide="history" class="w-4 h-4 text-slate-300"></i>
+                    <div id="history-dot" class="hidden absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-indigo-500 rounded-full border-2 border-slate-900"></div>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile View-Switcher Bar (Only visible on mobile portrait screens) -->
+    <div class="lg:hidden bg-slate-950 border-b border-slate-800 p-2.5 flex gap-2.5 sticky top-[98px] sm:top-[69px] z-40">
+        <button id="view-toggle-calc" onclick="switchMobileView('calc')" class="flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider text-center transition-all bg-indigo-600 dynamic-bg-accent text-white shadow-lg">
+            Standard Calc
+        </button>
+        <button id="view-toggle-suite" onclick="switchMobileView('suite')" class="flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-wider text-center transition-all bg-slate-900 text-slate-400">
+            Specialty Suite
+        </button>
+    </div>
+
+    <!-- Main Workspace Container -->
+    <main class="max-w-6xl w-full mx-auto px-4 py-6 md:py-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- LEFT/RIGHT COLUMN: Calculator Module (Interactive pane) -->
+        <div id="calc-pane" class="lg:col-span-5 lg:order-1 space-y-4">
+            <div class="glass-panel p-5 rounded-[2rem] shadow-2xl relative overflow-hidden">
+                <!-- Calculator Top Mini Bar -->
+                <div class="flex items-center justify-between mb-3 px-1">
+                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full dynamic-bg-accent"></span>
+                        Standard & Scientific Engine
+                    </span>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="toggleCalculatorPosition()" class="text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-white flex items-center gap-1 bg-slate-900/80 hover:bg-slate-800 px-2 py-1 rounded-lg border border-slate-800 transition-colors" title="Move Calculator Left or Right">
+                            <i data-lucide="arrow-left-right" class="w-3 h-3 dynamic-text-accent"></i>
+                            <span id="calc-card-pos-label">Move Right</span>
+                        </button>
+                        <button onclick="setCalculatorVisible(false, true)" class="text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-white flex items-center gap-1 bg-slate-900/80 hover:bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-800 transition-colors" title="Hide Calculator">
+                            <i data-lucide="panel-left-close" id="calc-hide-icon" class="w-3 h-3"></i> Hide
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Calculator display -->
+                <div class="output-card-tint border rounded-2xl p-5 mb-5 shadow-inner relative">
+                    <div class="absolute top-3.5 left-3.5 flex items-center gap-1.5">
+                        <button onclick="startOmniVoice('calc')" class="h-8 w-8 rounded-full flex items-center justify-center bg-slate-800/80 hover:bg-indigo-500 border border-slate-700 transition-colors group" title="Voice Math">
+                            <i data-lucide="mic" class="w-3.5 h-3.5 text-slate-400 group-hover:text-white"></i>
+                        </button>
+                        <button onclick="copyCalcResult()" class="h-8 px-2.5 rounded-full flex items-center gap-1 bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-[10px] font-bold text-slate-300 hover:text-white transition-colors" title="Copy Result">
+                            <i data-lucide="copy" class="w-3 h-3"></i>
+                            <span>Copy</span>
+                        </button>
+                    </div>
+                    <div id="calc-buffer" class="text-slate-400 font-mono text-xs md:text-sm h-5 text-right tracking-wide truncate transition-colors duration-300 pl-24"></div>
+                    <div id="calc-display" onclick="copyCalcResult()" title="Tap to copy result" class="cursor-pointer output-readout-glow text-4xl md:text-5xl font-extrabold text-right tracking-tight font-mono truncate mt-1">0</div>
+                </div>
+
+                <div class="flex gap-2">
+                    <!-- Standard grid layout -->
+                    <div class="grid grid-cols-4 gap-2.5 flex-1">
+                        <button onclick="handleClear()" class="calc-btn h-14 rounded-2xl font-bold bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 text-sm border border-rose-500/20">AC</button>
+                        <button onclick="handleBackspace()" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800/70 hover:bg-slate-800 text-slate-300 text-sm border border-slate-700/30 flex items-center justify-center" title="Backspace">
+                            <i data-lucide="delete" class="w-5 h-5"></i>
+                        </button>
+                        <button onclick="handleOp('/')" class="calc-btn h-14 rounded-2xl font-black dynamic-bg-glow text-slate-200 hover:bg-white/5 text-lg border dynamic-border-glow transition-colors duration-300">÷</button>
+                        <button onclick="handleOp('*')" class="calc-btn h-14 rounded-2xl font-black dynamic-bg-glow text-slate-200 hover:bg-white/5 text-lg border dynamic-border-glow transition-colors duration-300">×</button>
+                        
+                        <button onclick="handleNum('7')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">7</button>
+                        <button onclick="handleNum('8')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">8</button>
+                        <button onclick="handleNum('9')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">9</button>
+                        <button onclick="handleOp('-')" class="calc-btn h-14 rounded-2xl font-black dynamic-bg-glow text-slate-200 hover:bg-white/5 text-lg border dynamic-border-glow transition-colors duration-300">−</button>
+                        
+                        <button onclick="handleNum('4')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">4</button>
+                        <button onclick="handleNum('5')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">5</button>
+                        <button onclick="handleNum('6')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">6</button>
+                        <button onclick="handleOp('+')" class="calc-btn h-14 rounded-2xl font-black dynamic-bg-glow text-slate-200 hover:bg-white/5 text-lg border dynamic-border-glow transition-colors duration-300">+</button>
+                        
+                        <button onclick="handleNum('1')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">1</button>
+                        <button onclick="handleNum('2')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">2</button>
+                        <button onclick="handleNum('3')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">3</button>
+                        <button onclick="handleEqual()" class="calc-btn h-30 rounded-2xl font-black dynamic-bg-accent hover:opacity-90 text-white shadow-lg row-span-2 flex items-center justify-center border border-white/10 transition-all duration-300">
+                            <i data-lucide="equal" class="w-6 h-6"></i>
+                        </button>
+                        
+                        <button onclick="handleNum('0')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg col-span-2">0</button>
+                        <button onclick="handleNum('.')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-lg">.</button>
+                    </div>
+
+                    <!-- Slide-out Scientific Mode Drawer -->
+                    <div id="sci-panel" class="scientific-drawer w-0 overflow-hidden flex flex-col gap-2.5">
+                        <button onclick="handleSciOp('sin')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700/40 text-xs px-2">SIN</button>
+                        <button onclick="handleSciOp('cos')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700/40 text-xs px-2">COS</button>
+                        <button onclick="handleSciOp('tan')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700/40 text-xs px-2">TAN</button>
+                        <button onclick="handleSciOp('sqrt')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700/40 text-xs px-2">√</button>
+                        <button onclick="handleSciOp('pow')" class="calc-btn h-14 rounded-2xl font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700/40 text-xs px-2">x²</button>
+                    </div>
+                </div>
+
+                <!-- Expander bar for scientific keys -->
+                <button onclick="toggleScientificMode()" class="w-full mt-4 py-2 border-t border-slate-800/80 text-xs text-slate-400 font-extrabold tracking-widest flex items-center justify-center gap-1.5 hover:text-slate-300 transition-colors uppercase">
+                    <span id="sci-toggle-text">Scientific Drawer</span>
+                    <i data-lucide="chevron-right" id="sci-toggle-arrow" class="w-3.5 h-3.5 transition-transform duration-300"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- RIGHT/LEFT COLUMN: Multi-Engine Dashboard (Specialty Suite) -->
+        <div id="suite-pane" class="hidden lg:col-span-7 lg:order-2 space-y-6 lg:block">
+            
+            <div class="flex overflow-x-auto no-scrollbar sm:flex-wrap p-1.5 bg-slate-900 border border-slate-800 rounded-2xl shadow-inner gap-1.5">
+                <button onclick="switchTab('finance')" id="tab-finance" class="tab-btn flex-shrink-0 sm:flex-1 min-w-[105px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm bg-slate-800 text-white shadow-md">
+                    <i data-lucide="shopping-cart" class="w-4 h-4"></i> Finance
+                </button>
+                <button onclick="switchTab('health')" id="tab-health" class="tab-btn flex-shrink-0 sm:flex-1 min-w-[105px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-400 hover:text-slate-200">
+                    <i data-lucide="heart-pulse" class="w-4 h-4"></i> Health
+                </button>
+                <button onclick="switchTab('unit')" id="tab-unit" class="tab-btn flex-shrink-0 sm:flex-1 min-w-[105px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-400 hover:text-slate-200">
+                    <i data-lucide="arrow-right-left" class="w-4 h-4"></i> Convert
+                </button>
+                <button onclick="switchTab('footwear')" id="tab-footwear" class="tab-btn flex-shrink-0 sm:flex-1 min-w-[105px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-400 hover:text-slate-200">
+                    <i data-lucide="footprints" class="w-4 h-4"></i> Step Fit
+                </button>
+                <button onclick="switchTab('counter')" id="tab-counter" class="tab-btn flex-shrink-0 sm:flex-1 min-w-[105px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-400 hover:text-slate-200">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Counter
+                </button>
+                <button onclick="switchTab('utility')" id="tab-utility" class="tab-btn flex-shrink-0 sm:flex-1 min-w-[105px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap font-bold text-sm text-slate-400 hover:text-slate-200">
+                    <i data-lucide="briefcase" class="w-4 h-4"></i> Utility
+                </button>
+            </div>
+
+            <!-- Modular content wrappers -->
+            <div id="tab-content-container" class="space-y-6">
+
+                <!-- 1. Finance & Shopping Tab -->
+                <div id="panel-finance" class="tab-panel active space-y-6">
+                    <div class="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
+                        <div class="p-6 md:p-8 border-b border-slate-800/80 flex justify-between items-center bg-slate-950/40">
+                            <div>
+                                <h2 class="text-xl md:text-2xl font-black tracking-tight text-white">Discount Engine</h2>
+                                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mt-0.5">Shopping Analysis Profile</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="resetShop()" class="h-10 px-3 rounded-xl flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 border border-slate-700/40 transition-all" title="Reset Discount Fields">
+                                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                                    <span class="hidden sm:inline">Reset</span>
+                                </button>
+                                <button onclick="startOmniVoice('shop')" id="mic-trigger" class="h-10 w-10 rounded-xl flex items-center justify-center transition-all shadow-lg border border-slate-700/40 bg-slate-800 hover:bg-slate-700" title="Voice Input">
+                                    <i data-lucide="mic" class="w-4 h-4 dynamic-text-accent" id="mic-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-6 md:p-8 space-y-6">
+                            <!-- Visual Output Badge -->
+                            <div class="output-card-tint border rounded-3xl p-8 text-center shadow-inner relative">
+                                <p id="shop-label" class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Estimated Final Price</p>
+                                <div class="text-5xl md:text-6xl font-extrabold output-readout-glow mb-2 flex items-center justify-center gap-1">
+                                    <span id="shop-currency" class="text-2xl text-slate-400 mt-1 font-light">₹</span>
+                                    <span id="shop-res-main" class="tabular-nums">0</span>
+                                </div>
+                                <span id="shop-res-sub" class="inline-block px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full font-bold text-xs">Ready for parameters</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div class="flex bg-slate-950 p-1 rounded-2xl sm:col-span-2 border border-slate-800">
+                                    <button onclick="setShopMode('price')" id="btn-mode-price" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all bg-indigo-600 dynamic-bg-accent text-white shadow-md">FIND FINAL PRICE</button>
+                                    <button onclick="setShopMode('percent')" id="btn-mode-percent" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white">FIND DISCOUNT %</button>
+                                </div>
+                                <div class="space-y-2">
+                                    <label id="shop-orig-label" class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Market Price (₹)</label>
+                                    <input type="number" id="shop-orig" oninput="updateShop()" class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:bg-slate-900 p-4 rounded-2xl text-lg font-bold transition-all outline-none text-white" placeholder="0">
+                                </div>
+                                <div class="space-y-2">
+                                    <label id="shop-input-label" class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Discount (%)</label>
+                                    <div class="relative">
+                                        <input type="number" id="shop-value" oninput="updateShop()" class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:bg-slate-900 p-4 rounded-2xl text-lg font-bold transition-all outline-none text-white" placeholder="0">
+                                        <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">
+                                            <i data-lucide="percent" class="w-4 h-4" id="shop-icon-input"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Multi-Item POS Engine -->
+                    <div class="glass-panel rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2.5 dynamic-bg-glow dynamic-text-accent rounded-2xl border dynamic-border-glow">
+                                    <i data-lucide="layers" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-black text-white leading-none">Multi-Item POS Engine</h3>
+                                    <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Batch Checkout & Discounts</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="resetPOS()" class="h-10 px-3 rounded-xl flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 border border-slate-700/40 transition-all" title="Clear All POS Items">
+                                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                                    <span class="hidden sm:inline">Clear</span>
+                                </button>
+                                <button onclick="startOmniVoice('pos')" class="h-10 w-10 rounded-xl flex items-center justify-center transition-all shadow-lg border border-slate-700/40 bg-slate-800 hover:bg-slate-700" title="Voice Input">
+                                    <i data-lucide="mic" class="w-4 h-4 dynamic-text-accent"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="pos-container" class="space-y-3"></div>
+
+                        <button onclick="addPOSItem()" class="w-full py-3 border border-dashed border-slate-700 hover:border-indigo-500 bg-slate-900/30 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-colors">
+                            + Add New Item
+                        </button>
+
+                        <div class="output-card-tint border pt-4 flex justify-between items-center p-4 rounded-2xl mt-4">
+                            <span class="text-sm font-bold text-slate-300 uppercase tracking-wider">Grand Total</span>
+                            <div class="text-3xl font-black output-readout-glow tabular-nums flex items-end gap-1">
+                                <span class="text-xl text-slate-400 font-light pb-0.5">₹</span>
+                                <span id="pos-grand-total">0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Compound Interest & Wealth Calculator -->
+                    <div class="glass-panel rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-6">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2.5 dynamic-bg-glow dynamic-text-accent rounded-2xl border dynamic-border-glow">
+                                <i data-lucide="trending-up" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-black text-white leading-none">Compound Wealth Engine</h3>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Growth & Wealth Projections</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase">Principal (₹)</label>
+                                <input type="number" id="wealth-principal" oninput="calculateWealth()" value="10000" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-base font-bold text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase">Annual Rate (%)</label>
+                                <input type="number" id="wealth-rate" oninput="calculateWealth()" value="8" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-base font-bold text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase">Tenure (Years)</label>
+                                <input type="number" id="wealth-years" oninput="calculateWealth()" value="5" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-base font-bold text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                        </div>
+
+                        <!-- Graphical Asset Chart -->
+                        <div class="bg-slate-950/60 border border-slate-850 p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div class="w-full md:w-1/2 space-y-2">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Total Invested:</span>
+                                    <span id="wealth-invested-lbl" class="font-extrabold text-white">₹10,000.00</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Total Interest earned:</span>
+                                    <span id="wealth-interest-lbl" class="font-extrabold dynamic-text-accent">₹4,693.28</span>
+                                </div>
+                                <div class="border-t border-slate-800 pt-2 flex justify-between text-sm">
+                                    <span class="font-bold text-slate-300">Future Value:</span>
+                                    <span id="wealth-total-lbl" class="font-black text-white">₹14,693.28</span>
+                                </div>
+                            </div>
+                            <!-- Bar Graphic -->
+                            <div class="w-full md:w-1/2 h-24 flex items-end gap-3 justify-center border-b border-slate-800 pb-1">
+                                <div class="w-10 bg-slate-700/80 rounded-t flex flex-col justify-end items-center text-[9px] font-bold text-slate-300 pb-1 transition-all duration-500" id="chart-bar-principal" style="height: 68%;" title="Principal">P</div>
+                                <div class="w-10 dynamic-bg-accent rounded-t shadow-[0_0_10px_var(--primary-glow)] flex flex-col justify-end items-center text-[9px] font-bold text-white pb-1 transition-all duration-500" id="chart-bar-interest" style="height: 32%;" title="Interest">I</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stock Average Calculator -->
+                    <div class="glass-panel rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2.5 dynamic-bg-glow dynamic-text-accent rounded-2xl border dynamic-border-glow">
+                                    <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-black text-white leading-none">Stock Average Engine</h3>
+                                    <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Investment Averaging Down</p>
+                                </div>
+                            </div>
+                            <button onclick="resetStockAvg()" class="h-9 px-3 rounded-xl flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 border border-slate-700/40 transition-all" title="Reset Stock Fields">
+                                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                                <span class="hidden sm:inline">Reset</span>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-800/80">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-3">Current Holding</p>
+                                    <div class="flex gap-3">
+                                        <input type="number" id="stk-qty1" oninput="calcStockAvg()" placeholder="Qty" class="w-1/2 bg-slate-950 border border-slate-800 p-3 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                                        <input type="number" id="stk-prc1" oninput="calcStockAvg()" placeholder="Price (₹)" class="w-1/2 bg-slate-950 border border-slate-800 p-3 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                                    </div>
+                                </div>
+                                <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-800/80">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-3">New Purchase</p>
+                                    <div class="flex gap-3">
+                                        <input type="number" id="stk-qty2" oninput="calcStockAvg()" placeholder="Qty" class="w-1/2 bg-slate-950 border border-slate-800 p-3 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                                        <input type="number" id="stk-prc2" oninput="calcStockAvg()" placeholder="Price (₹)" class="w-1/2 bg-slate-950 border border-slate-800 p-3 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="output-card-tint border rounded-3xl p-6 flex flex-col justify-center relative overflow-hidden">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 text-center">New Average Price</p>
+                                <div class="text-4xl font-extrabold output-readout-glow mb-4 text-center tabular-nums">
+                                    <span class="text-xl text-slate-400 font-light">₹</span><span id="stk-res-avg">0.00</span>
+                                </div>
+                                <div class="space-y-2 border-t border-slate-800 pt-4">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-slate-400">Total Quantity:</span>
+                                        <span id="stk-res-qty" class="font-extrabold text-white">0</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-slate-400">Total Investment:</span>
+                                        <span id="stk-res-inv" class="font-extrabold dynamic-text-accent">₹0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Health & BMI Tab -->
+                <div id="panel-health" class="tab-panel space-y-6">
+                    <div class="glass-panel p-6 md:p-8 rounded-[2.5rem] shadow-2xl">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2.5 dynamic-bg-glow dynamic-text-accent rounded-2xl border dynamic-border-glow">
+                                    <i data-lucide="activity" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-black text-white leading-none">Body Mass Index (BMI)</h3>
+                                    <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Health Metric Analyzer</p>
+                                </div>
+                            </div>
+                            <button onclick="startOmniVoice('bmi')" class="h-10 w-10 rounded-xl flex items-center justify-center transition-all shadow-lg border border-slate-700/40 bg-slate-800 hover:bg-slate-700" title="Voice Input">
+                                <i data-lucide="mic" class="w-4 h-4 dynamic-text-accent"></i>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase">Height (Centimeters)</label>
+                                    <input type="number" id="bmi-height" oninput="calculateBMI()" value="175" class="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-lg font-bold text-white focus:outline-none focus:border-indigo-500">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase">Weight (Kilograms)</label>
+                                    <input type="number" id="bmi-weight" oninput="calculateBMI()" value="70" class="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-lg font-bold text-white focus:outline-none focus:border-indigo-500">
+                                </div>
+                                <button onclick="calculateBMI()" class="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider transition-all dynamic-bg-accent text-white shadow-lg">Calculate Metric</button>
+                            </div>
+                            <div class="output-card-tint border rounded-3xl p-6 flex flex-col items-center justify-center text-center">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Your BMI Score</p>
+                                <div id="bmi-result" class="text-6xl font-extrabold output-readout-glow mb-3">22.9</div>
+                                <span id="bmi-status" class="inline-block px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full font-bold text-sm">Normal Weight</span>
+                                <div class="w-full mt-6 bg-slate-900 h-2 rounded-full overflow-hidden">
+                                    <div id="bmi-bar" class="h-full bg-emerald-500 transition-all duration-500" style="width: 50%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Unit Converter Tab -->
+                <div id="panel-unit" class="tab-panel space-y-6">
+                    <div class="glass-panel p-6 md:p-8 rounded-[2.5rem] shadow-2xl">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2.5 dynamic-bg-glow dynamic-text-accent rounded-2xl border dynamic-border-glow">
+                                    <i data-lucide="scale" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-black text-white leading-none">Universal Converter</h3>
+                                    <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Multi-metric translation</p>
+                                </div>
+                            </div>
+                            <button onclick="startOmniVoice('unit')" class="h-10 w-10 rounded-xl flex items-center justify-center transition-all shadow-lg border border-slate-700/40 bg-slate-800 hover:bg-slate-700" title="Voice Input">
+                                <i data-lucide="mic" class="w-4 h-4 dynamic-text-accent"></i>
+                            </button>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase">Category</label>
+                                <select id="conv-category" onchange="setupConverter()" class="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-sm font-bold text-white focus:outline-none focus:border-indigo-500 appearance-none">
+                                    <option value="length">Length / Distance</option>
+                                    <option value="weight">Mass / Weight</option>
+                                    <option value="temp">Temperature</option>
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase">From</label>
+                                    <div class="flex bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden focus-within:border-indigo-500">
+                                        <input type="number" id="conv-input" oninput="doConvert()" value="1" class="w-full bg-transparent p-4 text-lg font-bold text-white focus:outline-none">
+                                        <select id="conv-from" onchange="doConvert()" class="bg-slate-900 text-slate-300 font-bold px-3 border-l border-slate-800 focus:outline-none"></select>
+                                    </div>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-bold dynamic-text-accent uppercase">To (Converted Output)</label>
+                                    <div class="flex output-card-tint border rounded-2xl overflow-hidden">
+                                        <input type="text" id="conv-output" readonly class="w-full bg-transparent p-4 text-lg font-extrabold output-readout-glow focus:outline-none">
+                                        <select id="conv-to" onchange="doConvert()" class="bg-slate-900/90 dynamic-text-accent font-bold px-3 border-l border-slate-800 focus:outline-none"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Step Fit Pro Tab -->
+                <div id="panel-footwear" class="tab-panel space-y-6">
+                    <div class="glass-panel p-6 md:p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2.5 dynamic-bg-glow dynamic-text-accent rounded-2xl border dynamic-border-glow">
+                                    <i data-lucide="footprints" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-black text-white leading-none">Step Fit Pro</h3>
+                                    <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Retail Standard Calculator</p>
+                                </div>
+                            </div>
+                            <button onclick="startOmniVoice('footwear')" id="mic-btn-footwear" class="h-10 w-10 rounded-xl flex items-center justify-center transition-all shadow-lg border border-slate-700/40 bg-slate-800 hover:bg-slate-700" title="Voice Input">
+                                <i data-lucide="mic" class="w-4 h-4 dynamic-text-accent"></i>
+                            </button>
+                        </div>
+
+                        <!-- Tabs -->
+                        <div class="flex p-1 bg-slate-900/80 rounded-xl mb-4 border border-slate-800">
+                            <button onclick="setFootwearType('men')" id="btn-fw-men" class="flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all dynamic-bg-accent text-white shadow-md">Men</button>
+                            <button onclick="setFootwearType('women')" id="btn-fw-women" class="flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all text-slate-500 hover:text-white">Women</button>
+                            <button onclick="setFootwearType('kids')" id="btn-fw-kids" class="flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all text-slate-500 hover:text-white">Kids</button>
+                        </div>
+
+                        <!-- Inputs -->
+                        <div class="grid grid-cols-1 gap-4">
+                            <!-- Master CM -->
+                            <div class="input-container rounded-2xl p-4 space-y-1">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[9px] font-bold dynamic-text-accent uppercase tracking-widest">Foot Length (CM)</span>
+                                    <span id="fw-range-hint" class="text-[8px] text-slate-500 font-bold">24.0-29.3</span>
+                                </div>
+                                <input type="number" step="0.1" id="fw-size-cm" placeholder="0.0"
+                                    class="w-full bg-transparent text-4xl font-extrabold outline-none text-white placeholder:text-slate-800"
+                                    oninput="lookupFootwear('cm', this.value)">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="input-container rounded-2xl p-3 space-y-1">
+                                    <span class="text-[9px] font-bold text-orange-400 uppercase tracking-widest">India / UK</span>
+                                    <input type="number" step="0.5" id="fw-size-in" placeholder="0"
+                                        class="w-full bg-transparent text-xl font-bold outline-none text-white placeholder:text-slate-800"
+                                        oninput="lookupFootwear('in', this.value)">
+                                </div>
+                                <div class="input-container rounded-2xl p-3 space-y-1">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">US / CA</span>
+                                    <input type="number" step="0.5" id="fw-size-us" placeholder="0"
+                                        class="w-full bg-transparent text-xl font-bold outline-none text-white placeholder:text-slate-800"
+                                        oninput="lookupFootwear('us', this.value)">
+                                </div>
+                            </div>
+
+                            <div class="input-container rounded-2xl p-3 space-y-1">
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Europe (EU)</span>
+                                <input type="number" step="1" id="fw-size-eu" placeholder="0"
+                                    class="w-full bg-transparent text-xl font-bold outline-none text-white placeholder:text-slate-800"
+                                    oninput="lookupFootwear('eu', this.value)">
+                            </div>
+                        </div>
+
+                        <!-- Clear Action -->
+                        <button onclick="clearFootwearAll()" class="w-full mt-4 py-3 rounded-xl bg-slate-800/40 border border-slate-700/50 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white hover:bg-red-500/20 transition-all">
+                            Reset Sizes
+                        </button>
+                        
+                        <!-- Dynamic Reference (Collapsible) -->
+                        <div class="mt-6 space-y-3">
+                            <button onclick="toggleFwSection('fw-ref-table')" class="w-full flex items-center justify-between px-4 py-3 bg-slate-900/40 rounded-xl border border-slate-800 group hover:border-slate-700 transition-colors">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-white transition-colors">Retail Reference Chart</span>
+                                <i data-lucide="chevron-down" id="arrow-fw-ref" class="w-4 h-4 text-slate-500 transition-transform"></i>
+                            </button>
+                            <div id="fw-ref-table" class="hidden overflow-hidden transition-all duration-300">
+                                <div class="bg-slate-900/60 rounded-2xl border border-slate-800 p-4">
+                                    <div class="overflow-x-auto no-scrollbar">
+                                        <table class="w-full text-[10px] text-left">
+                                            <thead class="text-slate-500 border-b border-slate-800 uppercase">
+                                                <tr>
+                                                    <th class="pb-2">CM</th>
+                                                    <th class="pb-2">EU</th>
+                                                    <th class="pb-2">US</th>
+                                                    <th class="pb-2 text-orange-400">IN</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="fw-table-body" class="text-slate-400"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button onclick="toggleFwSection('fw-standards')" class="w-full flex items-center justify-between px-4 py-3 bg-slate-900/40 rounded-xl border border-slate-800 group hover:border-slate-700 transition-colors">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-white transition-colors">International Standards</span>
+                                <i data-lucide="chevron-down" id="arrow-fw-std" class="w-4 h-4 text-slate-500 transition-transform"></i>
+                            </button>
+                            <div id="fw-standards" class="hidden space-y-2">
+                                <div class="grid grid-cols-2 gap-2 text-[9px] uppercase tracking-tighter">
+                                    <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                                        <p class="dynamic-text-accent font-bold mb-1">MondoPoint</p>
+                                        <p class="text-slate-500 leading-tight">Metric length in CM/MM.</p>
+                                    </div>
+                                    <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                                        <p class="text-orange-400 font-bold mb-1">Barleycorn</p>
+                                        <p class="text-slate-500 leading-tight">UK/IN: 1 size = 1/3 inch.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 text-center border-t border-slate-800/80 pt-4">
+                            <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Powered by Step Fit Pro | Arvind Kumar Shukla</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Counter Pro Max Tab -->
+                <div id="panel-counter" class="tab-panel space-y-6">
+                    <!-- Integrated Counter Pro Max Sub-navigation -->
+                    <div class="flex p-1 bg-slate-900/80 rounded-xl mb-4 border border-slate-800 w-full max-w-xl mx-auto">
+                        <button onclick="switchCounterSubTab('board')" id="btn-c-board" class="flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all dynamic-bg-accent text-white shadow-md">Active Board</button>
+                        <button onclick="switchCounterSubTab('history')" id="btn-c-history" class="flex-1 py-2.5 rounded-lg text-xs font-bold uppercase transition-all text-slate-500 hover:text-white">Saved Sessions</button>
+                    </div>
+
+                    <!-- Sub-tab: Board -->
+                    <div id="c-sub-board" class="space-y-6 active">
+                        <div id="c-captureContent" class="glass-panel p-6 md:p-8 rounded-[2.5rem] shadow-2xl relative max-w-xl mx-auto transition-colors">
+                            <div class="flex justify-between items-center mb-8 border-b border-slate-800 pb-6">
+                                <div class="output-card-tint border px-4 py-2.5 rounded-2xl">
+                                    <p class="text-[9px] font-black dynamic-text-accent uppercase tracking-widest leading-none mb-1.5">Grand Total</p>
+                                    <div id="c-grandTotal" class="text-4xl font-black output-readout-glow leading-none tabular-nums">0</div>
+                                </div>
+                                <div class="flex flex-wrap justify-end gap-2 hide-on-capture">
+                                    <button id="c-voiceBtn" onclick="startOmniVoice('counter')" class="small-btn bg-slate-800 text-slate-300 hover:text-white border border-slate-700" title="Voice Input"><i data-lucide="mic" class="w-4 h-4"></i></button>
+                                    <button onclick="exportCounterPDF()" class="small-btn bg-rose-500/20 text-rose-400 border border-rose-500/30 hover:bg-rose-500/40 transition-colors" title="Export PDF"><i data-lucide="download" class="w-4 h-4"></i> PDF</button>
+                                    <button onclick="shareCounterAsImage()" class="small-btn bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/40 transition-colors" title="Export Image"><i data-lucide="image" class="w-4 h-4"></i></button>
+                                    <button onclick="shareCounterData()" class="small-btn bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/40 transition-colors" title="Export Text"><i data-lucide="file-text" class="w-4 h-4"></i></button>
+                                    <button onclick="addCounterGroup()" class="small-btn dynamic-bg-glow dynamic-text-accent border dynamic-border-glow hover:opacity-80 transition-colors" title="Add Group">+ Grp</button>
+                                </div>
+                            </div>
+
+                            <!-- Print Header (Hidden normally) -->
+                            <div class="hidden max-w-md mx-auto pt-4 pb-4 px-5 bg-slate-900 border border-slate-800 rounded-xl mb-6" id="c-printHeader">
+                                <div class="border-b border-slate-800 pb-3 mb-4">
+                                    <h2 class="text-lg font-black text-white uppercase tracking-widest text-center">Inventory Report</h2>
+                                    <p id="c-printDate" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2 text-center"></p>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-black dynamic-text-accent uppercase tracking-wider">Total Count</span>
+                                    <span id="c-printGrandTotal" class="text-2xl font-black text-white tabular-nums">0</span>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center mb-4 px-1 hide-on-capture">
+                                <div id="c-clock" class="text-[11px] font-bold text-slate-400 tabular-nums">00:00:00</div>
+                                <div id="c-date" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Loading...</div>
+                            </div>
+
+                            <div id="c-groupsList" class="space-y-4 mb-8 max-h-[50vh] overflow-y-auto no-scrollbar pr-1"></div>
+
+                            <div class="mt-8 space-y-6 hide-on-capture">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 focus-within:border-indigo-500 transition-colors">
+                                        <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Counted By</label>
+                                        <input id="c-countedBy" list="c-nameList" onchange="saveCounterPersonnel()" placeholder="Name" class="w-full text-xs font-bold outline-none bg-transparent text-white">
+                                    </div>
+                                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 focus-within:border-indigo-500 transition-colors">
+                                        <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Checked By</label>
+                                        <input id="c-checkedBy" list="c-nameList" onchange="saveCounterPersonnel()" placeholder="Name" class="w-full text-xs font-bold outline-none bg-transparent text-white">
+                                    </div>
+                                </div>
+                                <datalist id="c-nameList"></datalist>
+
+                                <button onclick="finishCounterSession()" class="w-full py-4 rounded-2xl dynamic-bg-accent text-white font-black uppercase tracking-widest text-xs shadow-lg shadow-indigo-500/20 active:scale-95 transition-all flex flex-col items-center justify-center gap-1">
+                                    <span>Save Session to History</span>
+                                    <span class="text-[9px] text-white/70 normal-case tracking-normal">Clear board and start fresh</span>
+                                </button>
+                                
+                                <!-- POSITIVE QUOTE -->
+                                <div class="p-6 bg-slate-900/60 rounded-[2rem] text-slate-300 text-center border border-slate-800 mt-6">
+                                    <p id="c-quoteBox" class="text-sm font-bold italic leading-relaxed">"Great things never come from comfort zones."</p>
+                                </div>
+
+                                <div class="text-center mt-6 border-t border-slate-800/80 pt-4">
+                                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Powered by Counter Pro Max | Arvind Kumar Shukla</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sub-tab: History -->
+                    <div id="c-sub-history" class="hidden space-y-6 max-w-xl mx-auto">
+                        <div class="glass-panel p-6 md:p-8 rounded-[2.5rem] shadow-2xl relative">
+                            <div class="mb-6 px-1 border-b border-slate-800 pb-4">
+                                <h2 class="text-lg font-black text-white uppercase tracking-widest">Session History</h2>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">Your past counting records</p>
+                            </div>
+                            
+                            <div id="c-historyList" class="space-y-4 max-h-[60vh] overflow-y-auto no-scrollbar pr-1"></div>
+                            
+                            <div id="c-emptyHistory" class="hidden text-center py-12 px-6 bg-slate-900/50 rounded-[2rem] border border-slate-800 mt-4">
+                                <div class="text-4xl mb-4 opacity-50">📭</div>
+                                <h3 class="text-sm font-black text-slate-300 uppercase tracking-widest mb-2">No History Yet</h3>
+                                <p class="text-xs font-semibold text-slate-500">Finish your current counting session to save it here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Utility Tab -->
+                <div id="panel-utility" class="tab-panel space-y-6">
+                    <!-- Date Calculator -->
+                    <div class="glass-panel rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2.5 dynamic-bg-glow dynamic-text-accent rounded-2xl border dynamic-border-glow">
+                                <i data-lucide="calendar" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-black text-white leading-none">Time & Date Engine</h3>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Chronological Computations</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Duration Between Dates -->
+                            <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-800/80 space-y-4">
+                                <p class="text-[10px] font-bold dynamic-text-accent uppercase">Duration Between Dates</p>
+                                <div class="flex gap-3">
+                                    <input type="date" id="util-date1" onchange="calcDateDiff()" class="w-1/2 bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs font-bold text-slate-300 focus:outline-none focus:border-indigo-500 transition-colors [color-scheme:dark]">
+                                    <input type="date" id="util-date2" onchange="calcDateDiff()" class="w-1/2 bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs font-bold text-slate-300 focus:outline-none focus:border-indigo-500 transition-colors [color-scheme:dark]">
+                                </div>
+                                <div class="flex justify-between items-end border-t border-slate-800/80 pt-3">
+                                    <span class="text-xs text-slate-400 font-bold">Difference:</span>
+                                    <span id="util-date-diff-res" class="text-lg font-black text-white">0 Days</span>
+                                </div>
+                            </div>
+
+                            <!-- Add/Subtract Days -->
+                            <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-800/80 space-y-4">
+                                <p class="text-[10px] font-bold dynamic-text-accent uppercase">Shift Date</p>
+                                <div class="flex gap-3">
+                                    <input type="date" id="util-date-base" onchange="calcDateOffset()" class="w-1/2 bg-slate-950 border border-slate-800 p-3 rounded-xl text-xs font-bold text-slate-300 focus:outline-none focus:border-indigo-500 transition-colors [color-scheme:dark]">
+                                    <input type="number" id="util-date-offset" oninput="calcDateOffset()" placeholder="+/- Days" value="30" class="w-1/2 bg-slate-950 border border-slate-800 p-3 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                                </div>
+                                <div class="flex justify-between items-end border-t border-slate-800/80 pt-3">
+                                    <span class="text-xs text-slate-400 font-bold">Target Date:</span>
+                                    <span id="util-date-shift-res" class="text-lg font-black text-white">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Text Transformer -->
+                    <div class="glass-panel rounded-[2.5rem] shadow-2xl p-6 md:p-8 space-y-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2.5 dynamic-bg-glow dynamic-text-accent rounded-2xl border dynamic-border-glow">
+                                <i data-lucide="type" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-black text-white leading-none">Text & Hash Tools</h3>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mt-1">String Manipulation & Encoding</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <textarea id="util-text-input" oninput="analyzeText()" placeholder="Enter your text here for analysis or transformation..." class="w-full h-32 bg-slate-900/80 border border-slate-800 focus:border-indigo-500 p-4 rounded-2xl text-sm text-slate-200 outline-none transition-all resize-none"></textarea>
+                            
+                            <div class="flex flex-wrap gap-2 justify-between items-center bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
+                                <div class="flex gap-4 px-2">
+                                    <div class="text-[10px] font-black uppercase text-slate-500"><span id="util-text-chars" class="text-white text-xs mr-1">0</span>Chars</div>
+                                    <div class="text-[10px] font-black uppercase text-slate-500"><span id="util-text-words" class="text-white text-xs mr-1">0</span>Words</div>
+                                    <div class="text-[10px] font-black uppercase text-slate-500"><span id="util-text-lines" class="text-white text-xs mr-1">0</span>Lines</div>
+                                </div>
+                                <button onclick="copyUtilText()" class="text-[10px] font-black text-slate-400 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-1 bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-700/50"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <button onclick="transformText('upper')" class="py-2 rounded-xl text-xs font-bold text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700/50 transition-colors">UPPERCASE</button>
+                                <button onclick="transformText('lower')" class="py-2 rounded-xl text-xs font-bold text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700/50 transition-colors">lowercase</button>
+                                <button onclick="transformText('enc')" class="py-2 rounded-xl text-xs font-bold text-white dynamic-bg-accent dynamic-bg-hover transition-colors shadow-md">Base64 Enc</button>
+                                <button onclick="transformText('dec')" class="py-2 rounded-xl text-xs font-bold text-white bg-slate-700 hover:bg-slate-600 transition-colors shadow-md border border-slate-600">Base64 Dec</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Quick-Show Calculator Pill (Appears when Calculator is Hidden) -->
+    <button onclick="setCalculatorVisible(true, true)" id="floating-calc-pill" class="hidden fixed bottom-6 right-6 z-40 dynamic-bg-accent dynamic-bg-hover text-white px-4 py-3 rounded-2xl shadow-2xl border border-white/15 flex items-center gap-2 font-black text-xs uppercase tracking-wider transition-all hover:scale-105 active:scale-95">
+        <i data-lucide="calculator" class="w-4 h-4"></i>
+        <span>Show Calc</span>
+    </button>
+
+    <!-- Hidden Export Template (Greeting Card Style) -->
+    <div id="export-container" class="absolute left-[-9999px] top-0 pointer-events-none">
+        <div id="export-card" class="bg-slate-900 p-12 w-[800px] border-[12px] border-double border-indigo-500 text-white shadow-2xl relative overflow-hidden">
+            <!-- Decorative Watermark -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[12rem] font-outfit font-black text-slate-800/40 pointer-events-none select-none transform -rotate-12">OMNI</div>
+            
+            <!-- Header -->
+            <div class="text-center border-b border-indigo-500/50 pb-8 mb-8 relative z-10">
+                <div class="mx-auto w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mb-4 border-2 border-indigo-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <h1 id="exp-title" class="text-4xl font-outfit font-black tracking-widest uppercase mb-2 text-white">Inventory Session</h1>
+                <p id="exp-date" class="text-indigo-300 font-bold tracking-widest text-sm uppercase"></p>
+            </div>
+            
+            <!-- Metadata Ribbon -->
+            <div class="flex justify-between items-center bg-slate-950 p-5 rounded-2xl mb-10 border border-indigo-500/50 relative z-10">
+                <div class="text-left w-1/3 pl-2">
+                    <p class="text-[10px] uppercase tracking-widest text-indigo-400 font-bold mb-2">Counted By</p>
+                    <p id="exp-counted" class="text-xl font-bold text-white font-outfit leading-relaxed break-words pb-1"></p>
+                </div>
+                <div class="text-center w-1/3 border-x border-indigo-500/50">
+                     <p class="text-[10px] uppercase tracking-widest text-indigo-400 font-bold mb-2">Grand Total</p>
+                     <p id="exp-total" class="text-5xl font-black text-indigo-400 tabular-nums font-outfit drop-shadow-lg leading-tight py-2">0</p>
+                </div>
+                <div class="text-right w-1/3 pr-2">
+                    <p class="text-[10px] uppercase tracking-widest text-indigo-400 font-bold mb-2">Checked By</p>
+                    <p id="exp-checked" class="text-xl font-bold text-white font-outfit leading-relaxed break-words pb-1"></p>
+                </div>
+            </div>
+
+            <!-- Categories Grid -->
+            <div id="exp-groups" class="grid grid-cols-2 gap-5 mb-10 relative z-10 min-h-[200px] content-start">
+                <!-- Groups injected dynamically -->
+            </div>
+
+            <!-- Footer / Quote -->
+            <div class="mt-auto pt-8 border-t border-indigo-500/50 text-center relative z-10">
+                <p id="exp-quote" class="text-lg italic text-indigo-200 font-medium leading-relaxed font-serif tracking-wide pb-1"></p>
+                <div class="mt-6 flex items-center justify-center gap-2 text-[9px] text-indigo-400 uppercase tracking-[0.2em] font-black">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    Generated by OmniCalc Pro Max
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Block for OmniCalc Logic Engine -->
+    <script>
+        // Initialize Icons safely
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+
+        // ---- STATE MANAGEMENT ----
+        let activeTheme = 'indigo';
+
+        // Auto-Hide & Calculator Position State
+        let isCalcVisible = true;
+        let autoHideCalc = true;
+        let calcPosition = 'left'; // 'left' or 'right'
+
+        // Calculator State
+        let calcVal = '0';
+        let calcBuffer = '';
+        let isNewInput = true;
+        let isScientificMode = false;
+        
+        // Settings State
+        let shopMode = 'price';
+        
+        // Music State
+        let isMusicPlaying = false;
+
+        // ---- CALCULATOR POSITION & AUTO-HIDE ENGINE ----
+        function applyLayoutOrder() {
+            const calcPane = document.getElementById('calc-pane');
+            const suitePane = document.getElementById('suite-pane');
+            const posLabel = document.getElementById('calc-pos-label');
+            const cardPosLabel = document.getElementById('calc-card-pos-label');
+            const hideIcon = document.getElementById('calc-hide-icon');
+
+            if (calcPosition === 'left') {
+                calcPane.classList.remove('lg:order-2');
+                calcPane.classList.add('lg:order-1');
+                suitePane.classList.remove('lg:order-1');
+                suitePane.classList.add('lg:order-2');
+                if (posLabel) posLabel.textContent = 'Left';
+                if (cardPosLabel) cardPosLabel.textContent = 'Move Right';
+                if (hideIcon) hideIcon.setAttribute('data-lucide', 'panel-left-close');
+            } else {
+                calcPane.classList.remove('lg:order-1');
+                calcPane.classList.add('lg:order-2');
+                suitePane.classList.remove('lg:order-2');
+                suitePane.classList.add('lg:order-1');
+                if (posLabel) posLabel.textContent = 'Right';
+                if (cardPosLabel) cardPosLabel.textContent = 'Move Left';
+                if (hideIcon) hideIcon.setAttribute('data-lucide', 'panel-right-close');
+            }
+            lucide.createIcons();
+        }
+
+        function toggleCalculatorPosition() {
+            calcPosition = calcPosition === 'left' ? 'right' : 'left';
+            localStorage.setItem('omni_calc_pos', calcPosition);
+            applyLayoutOrder();
+            if (!isCalcVisible) {
+                setCalculatorVisible(true, false);
+            }
+            showToast(`Calculator moved to ${calcPosition.toUpperCase()} side`, "arrow-left-right");
+        }
+
+        function setCalculatorVisible(visible, notify = false) {
+            isCalcVisible = visible;
+            const calcPane = document.getElementById('calc-pane');
+            const suitePane = document.getElementById('suite-pane');
+            const visBtn = document.getElementById('calc-visibility-btn');
+            const floatingPill = document.getElementById('floating-calc-pill');
+            const isDesktop = window.innerWidth >= 1024;
+
+            if (visible) {
+                calcPane.classList.remove('hidden');
+                calcPane.classList.add('lg:col-span-5');
+                
+                suitePane.classList.remove('lg:col-span-12', 'max-w-4xl', 'mx-auto', 'w-full');
+                suitePane.classList.add('lg:col-span-7');
+                if (!isDesktop) {
+                    suitePane.classList.add('hidden');
+                }
+
+                applyLayoutOrder();
+
+                visBtn.classList.add('dynamic-bg-accent', 'text-white', 'shadow-sm');
+                visBtn.classList.remove('text-slate-400', 'hover:text-white');
+                floatingPill.classList.add('hidden');
+
+                if (!isDesktop) updateMobileToggleStyles('calc');
+                if (notify) showToast("Calculator Shown", "calculator");
+            } else {
+                calcPane.classList.add('hidden');
+                calcPane.classList.remove('lg:col-span-5');
+
+                suitePane.classList.remove('hidden', 'lg:col-span-7');
+                suitePane.classList.add('lg:col-span-12', 'max-w-4xl', 'mx-auto', 'w-full');
+
+                visBtn.classList.remove('dynamic-bg-accent', 'text-white', 'shadow-sm');
+                visBtn.classList.add('text-slate-400', 'hover:text-white');
+                floatingPill.classList.remove('hidden');
+
+                if (!isDesktop) updateMobileToggleStyles('suite');
+                if (notify) showToast("Calculator Auto-Hidden", "eye-off");
+            }
+        }
+
+        function toggleCalculatorVisibility() {
+            setCalculatorVisible(!isCalcVisible, true);
+        }
+
+        function toggleAutoHideSetting() {
+            autoHideCalc = !autoHideCalc;
+            const btn = document.getElementById('auto-hide-btn');
+            const label = document.getElementById('auto-hide-label');
+            const icon = document.getElementById('auto-hide-icon');
+
+            if (autoHideCalc) {
+                btn.classList.remove('text-slate-500');
+                btn.classList.add('text-emerald-400');
+                label.textContent = 'Auto: ON';
+                icon.setAttribute('data-lucide', 'eye-off');
+                showToast("Auto-Hide Calculator Enabled", "eye-off");
+            } else {
+                btn.classList.remove('text-emerald-400');
+                btn.classList.add('text-slate-500');
+                label.textContent = 'Auto: OFF';
+                icon.setAttribute('data-lucide', 'eye');
+                showToast("Auto-Hide Calculator Disabled", "eye");
+            }
+            lucide.createIcons();
+        }
+
+        function updateMobileToggleStyles(activeMode) {
+            const btnCalc = document.getElementById('view-toggle-calc');
+            const btnSuite = document.getElementById('view-toggle-suite');
+            if (activeMode === 'calc') {
+                btnCalc.classList.add('dynamic-bg-accent', 'text-white', 'shadow-lg');
+                btnCalc.classList.remove('bg-slate-900', 'text-slate-400');
+                btnSuite.classList.remove('dynamic-bg-accent', 'text-white', 'shadow-lg');
+                btnSuite.classList.add('bg-slate-900', 'text-slate-400');
+            } else {
+                btnSuite.classList.add('dynamic-bg-accent', 'text-white', 'shadow-lg');
+                btnSuite.classList.remove('bg-slate-900', 'text-slate-400');
+                btnCalc.classList.remove('dynamic-bg-accent', 'text-white', 'shadow-lg');
+                btnCalc.classList.add('bg-slate-900', 'text-slate-400');
+            }
+        }
+
+        // ---- CUSTOM MODAL HELPERS ----
+        let modalConfirmCallback = null;
+        function showOmniModal(title, desc, onConfirm) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-desc').textContent = desc;
+            modalConfirmCallback = onConfirm;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+        function closeOmniModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+            modalConfirmCallback = null;
+        }
+        document.getElementById('modal-confirm-btn').addEventListener('click', () => {
+            if (typeof modalConfirmCallback === 'function') modalConfirmCallback();
+            closeOmniModal();
+        });
+
+        // ---- MUSIC ENGINE ----
+        function toggleMusicMenu() {
+            document.getElementById('music-menu').classList.toggle('hidden');
+        }
+
+        function playAudioSecurely(audio) {
+            let playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    isMusicPlaying = true;
+                    document.getElementById('music-playing-dot').classList.remove('hidden');
+                    document.getElementById('music-play-icon').setAttribute('data-lucide', 'pause');
+                    showToast("Playing Focus Music", "music");
+                    lucide.createIcons();
+                }).catch(error => {
+                    isMusicPlaying = false;
+                    document.getElementById('music-playing-dot').classList.add('hidden');
+                    document.getElementById('music-play-icon').setAttribute('data-lucide', 'play');
+                    lucide.createIcons();
+                    showToast("Audio playback blocked by browser.", "alert-circle");
+                });
+            }
+        }
+
+        function togglePlayPause() {
+            const audio = document.getElementById('bgMusic');
+            const dot = document.getElementById('music-playing-dot');
+            const icon = document.getElementById('music-play-icon');
+            
+            if (isMusicPlaying) {
+                audio.pause();
+                isMusicPlaying = false;
+                dot.classList.add('hidden');
+                icon.setAttribute('data-lucide', 'play');
+                showToast("Music Paused", "music");
+                lucide.createIcons();
+            } else {
+                audio.volume = document.getElementById('music-volume').value / 100;
+                playAudioSecurely(audio);
+            }
+        }
+
+        function changeMusicTrack() {
+            const audio = document.getElementById('bgMusic');
+            const select = document.getElementById('music-track-select');
+            const wasPlaying = isMusicPlaying;
+            audio.src = select.value;
+            audio.load();
+            if (wasPlaying) playAudioSecurely(audio);
+            else showToast("Track Ready. Press Play.", "check-circle");
+        }
+
+        function changeVolume() {
+            const audio = document.getElementById('bgMusic');
+            const slider = document.getElementById('music-volume');
+            const label = document.getElementById('music-vol-label');
+            audio.volume = slider.value / 100;
+            label.textContent = slider.value + '%';
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('music-toggle-btn');
+            const menu = document.getElementById('music-menu');
+            if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        // Converter State
+        const convUnits = {
+            length: { m: 1, km: 1000, cm: 0.01, mm: 0.001, mi: 1609.34, yd: 0.9144, ft: 0.3048, in: 0.0254 },
+            weight: { kg: 1, g: 0.001, mg: 0.000001, lb: 0.453592, oz: 0.0283495 },
+            temp: { c: 'C', f: 'F', k: 'K' }
+        };
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let omniVoiceRec = SpeechRecognition ? new SpeechRecognition() : null;
+
+        // Footwear State
+        let fwCurrentType = 'men';
+        const fwMasterData = {
+            men: [
+                {cm: 24.0, eu: 38, us: 5, in: 4}, {cm: 24.7, eu: 39, us: 6, in: 5},
+                {cm: 25.3, eu: 40, us: 7, in: 6}, {cm: 26.0, eu: 41, us: 8, in: 7},
+                {cm: 26.7, eu: 42, us: 9, in: 8}, {cm: 27.3, eu: 43, us: 10, in: 9},
+                {cm: 28.0, eu: 44, us: 11, in: 10}, {cm: 28.7, eu: 45, us: 12, in: 11},
+                {cm: 29.3, eu: 46, us: 13, in: 12}
+            ],
+            women: [
+                {cm: 22.0, eu: 35, us: 4, in: 2}, {cm: 22.7, eu: 36, us: 5, in: 3},
+                {cm: 23.3, eu: 37, us: 6, in: 4}, {cm: 24.0, eu: 38, us: 6, in: 5},
+                {cm: 24.7, eu: 39, us: 7, in: 6}, {cm: 25.3, eu: 40, us: 8, in: 7},
+                {cm: 26.0, eu: 41, us: 9, in: 8}, {cm: 26.7, eu: 42, us: 10, in: 9},
+                {cm: 27.3, eu: 43, us: 11, in: 10}
+            ],
+            kids: [
+                {cm: 14.0, eu: 23, us: 6, in: 5}, {cm: 14.7, eu: 24, us: 7, in: 6},
+                {cm: 15.3, eu: 25, us: 8, in: 7}, {cm: 16.0, eu: 26, us: 9, in: 8},
+                {cm: 16.7, eu: 27, us: 10, in: 9}, {cm: 17.3, eu: 28, us: 11, in: 10},
+ 
