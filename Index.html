@@ -1,10 +1,11 @@
-html
+```html
 <!DOCTYPE html>
 <html lang="en" class="theme-indigo">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#6366f1">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>ArvindOmniCalc Pro - Next-Gen Computational Utility</title>
     <!-- Tailwind CSS CDN -->
@@ -162,9 +163,9 @@ html
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500/30">
 
-    <!-- Audio Player for Ambient Background Music -->
+    <!-- Audio Player for Ambient Background Music (CORS-friendly CDN sources) -->
     <audio id="bgMusic" loop preload="none" crossorigin="anonymous">
-        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
+        <source src="https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg" type="audio/ogg">
     </audio>
 
     <!-- CUSTOM REUSABLE MODAL -->
@@ -231,7 +232,7 @@ html
                         <i data-lucide="calculator" class="w-5 h-5"></i>
                     </div>
                     <div>
-                        <h1 class="text-lg font-black tracking-tight text-white leading-none">OmniCalc <span class="dynamic-text-accent transition-colors duration-300">Pro</span></h1>
+                        <h1 class="text-lg font-black tracking-tight text-white leading-none">ArvindOmniCalc <span class="dynamic-text-accent transition-colors duration-300">Pro</span></h1>
                         <span class="text-[10px] text-slate-400 font-bold tracking-widest uppercase">Widget Integration Platform</span>
                     </div>
                 </div>
@@ -281,13 +282,12 @@ html
                         </div>
                         <div class="space-y-4">
                             <div>
-                                <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 block">Track Selection</label>
+                                <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 block">Ambient Soundscape</label>
                                 <select id="music-track-select" onchange="changeMusicTrack()" class="w-full bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-xs font-bold text-slate-300 focus:border-indigo-500 outline-none appearance-none">
-                                    <option value="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3">Chill Lofi Beats</option>
-                                    <option value="https://cdn.pixabay.com/download/audio/2022/11/22/audio_febc508520.mp3">Deep Ambient Focus</option>
-                                    <option value="https://cdn.pixabay.com/download/audio/2021/11/25/audio_91b3cb005e.mp3">Tech House Focus</option>
-                                    <option value="https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7443c.mp3">Smooth Jazz Vibes</option>
-                                    <option value="https://cdn.pixabay.com/download/audio/2022/02/07/audio_d0fa561fca.mp3">Acoustic Breeze</option>
+                                    <option value="https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg">Coffee Shop Ambience</option>
+                                    <option value="https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg">Gentle Rain Focus</option>
+                                    <option value="https://actions.google.com/sounds/v1/water/waves_crashing_on_rock_beach.ogg">Ocean Waves Calm</option>
+                                    <option value="https://actions.google.com/sounds/v1/ambiences/forest_morning.ogg">Forest Morning</option>
                                 </select>
                             </div>
                             <div>
@@ -303,13 +303,13 @@ html
 
                 <!-- Offline Status Indicator -->
                 <div id="offline-indicator" class="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
-                    <i data-lucide="wifi" class="w-3.5 h-3.5 text-emerald-400"></i>
-                    <span class="text-[9px] font-extrabold text-emerald-400 uppercase tracking-widest hidden sm:inline">Online</span>
+                    <i data-lucide="wifi" id="offline-icon" class="w-3.5 h-3.5 text-emerald-400"></i>
+                    <span id="offline-text" class="text-[9px] font-extrabold text-emerald-400 uppercase tracking-widest hidden sm:inline">Online</span>
                 </div>
                 <!-- Save Offline trigger -->
-                <button onclick="downloadSelfForOffline()" class="p-2 sm:p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl transition-colors text-slate-300 flex items-center gap-1.5" title="Download for 100% Offline Use">
+                <button onclick="downloadSelfForOffline()" class="p-2 sm:p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl transition-colors text-slate-300 flex items-center gap-1.5" title="Download index.html for GitHub / Offline">
                     <i data-lucide="download" class="w-4 h-4"></i>
-                    <span class="text-xs font-bold hidden xl:inline">Offline</span>
+                    <span class="text-xs font-bold hidden xl:inline">Download</span>
                 </button>
                 <!-- Microphone indicator -->
                 <div id="mic-status" class="hidden flex items-center gap-2 px-3 py-1 bg-rose-500/10 rounded-full border border-rose-500/20">
@@ -1070,7 +1070,7 @@ html
                 <p id="exp-quote" class="text-lg italic text-indigo-200 font-medium leading-relaxed font-serif tracking-wide pb-1"></p>
                 <div class="mt-6 flex items-center justify-center gap-2 text-[9px] text-indigo-400 uppercase tracking-[0.2em] font-black">
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                    Generated by OmniCalc Pro Max
+                    Generated by ArvindOmniCalc Pro
                 </div>
             </div>
         </div>
@@ -1078,7 +1078,6 @@ html
 
     <!-- Script Block for OmniCalc Logic Engine -->
     <script>
-        // Initialize Icons safely
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
@@ -1128,7 +1127,7 @@ html
                 if (cardPosLabel) cardPosLabel.textContent = 'Move Left';
                 if (hideIcon) hideIcon.setAttribute('data-lucide', 'panel-right-close');
             }
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         function toggleCalculatorPosition() {
@@ -1206,7 +1205,7 @@ html
                 icon.setAttribute('data-lucide', 'eye');
                 showToast("Auto-Hide Calculator Disabled", "eye");
             }
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         function updateMobileToggleStyles(activeMode) {
@@ -1254,14 +1253,14 @@ html
                     isMusicPlaying = true;
                     document.getElementById('music-playing-dot').classList.remove('hidden');
                     document.getElementById('music-play-icon').setAttribute('data-lucide', 'pause');
-                    showToast("Playing Focus Music", "music");
-                    lucide.createIcons();
-                }).catch(error => {
+                    showToast("Playing Focus Soundscape", "music");
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }).catch(() => {
                     isMusicPlaying = false;
                     document.getElementById('music-playing-dot').classList.add('hidden');
                     document.getElementById('music-play-icon').setAttribute('data-lucide', 'play');
-                    lucide.createIcons();
-                    showToast("Audio playback blocked by browser.", "alert-circle");
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                    showToast("Tap Play again to allow audio in browser.", "alert-circle");
                 });
             }
         }
@@ -1276,8 +1275,8 @@ html
                 isMusicPlaying = false;
                 dot.classList.add('hidden');
                 icon.setAttribute('data-lucide', 'play');
-                showToast("Music Paused", "music");
-                lucide.createIcons();
+                showToast("Audio Paused", "music");
+                if (typeof lucide !== 'undefined') lucide.createIcons();
             } else {
                 audio.volume = document.getElementById('music-volume').value / 100;
                 playAudioSecurely(audio);
@@ -1291,7 +1290,7 @@ html
             audio.src = select.value;
             audio.load();
             if (wasPlaying) playAudioSecurely(audio);
-            else showToast("Track Ready. Press Play.", "check-circle");
+            else showToast("Soundscape Ready. Press Play.", "check-circle");
         }
 
         function changeVolume() {
@@ -1310,35 +1309,30 @@ html
             }
         });
 
+        // Online/Offline Status Listener
+        function updateOnlineStatus() {
+            const badge = document.getElementById('offline-indicator');
+            const icon = document.getElementById('offline-icon');
+            const txt = document.getElementById('offline-text');
+            if (!badge) return;
+            if (navigator.onLine) {
+                badge.className = "flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-500/10 rounded-xl border border-emerald-500/20";
+                icon.setAttribute('data-lucide', 'wifi');
+                icon.className = "w-3.5 h-3.5 text-emerald-400";
+                txt.textContent = "Online";
+                txt.className = "text-[9px] font-extrabold text-emerald-400 uppercase tracking-widest hidden sm:inline";
+            } else {
+                badge.className = "flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-500/10 rounded-xl border border-amber-500/20";
+                icon.setAttribute('data-lucide', 'wifi-off');
+                icon.className = "w-3.5 h-3.5 text-amber-400";
+                txt.textContent = "Offline";
+                txt.className = "text-[9px] font-extrabold text-amber-400 uppercase tracking-widest hidden sm:inline";
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
         // Converter State
         const convUnits = {
-            length: { m: 1, km: 1000, cm: 0.01, mm: 0.001, mi: 1609.34, yd: 0.9144, ft: 0.3048, in: 0.0254 },
-            weight: { kg: 1, g: 0.001, mg: 0.000001, lb: 0.453592, oz: 0.0283495 },
-            temp: { c: 'C', f: 'F', k: 'K' }
-        };
-
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        let omniVoiceRec = SpeechRecognition ? new SpeechRecognition() : null;
-
-        // Footwear State
-        let fwCurrentType = 'men';
-        const fwMasterData = {
-            men: [
-                {cm: 24.0, eu: 38, us: 5, in: 4}, {cm: 24.7, eu: 39, us: 6, in: 5},
-                {cm: 25.3, eu: 40, us: 7, in: 6}, {cm: 26.0, eu: 41, us: 8, in: 7},
-                {cm: 26.7, eu: 42, us: 9, in: 8}, {cm: 27.3, eu: 43, us: 10, in: 9},
-                {cm: 28.0, eu: 44, us: 11, in: 10}, {cm: 28.7, eu: 45, us: 12, in: 11},
-                {cm: 29.3, eu: 46, us: 13, in: 12}
-            ],
-            women: [
-                {cm: 22.0, eu: 35, us: 4, in: 2}, {cm: 22.7, eu: 36, us: 5, in: 3},
-                {cm: 23.3, eu: 37, us: 6, in: 4}, {cm: 24.0, eu: 38, us: 6, in: 5},
-                {cm: 24.7, eu: 39, us: 7, in: 6}, {cm: 25.3, eu: 40, us: 8, in: 7},
-                {cm: 26.0, eu: 41, us: 9, in: 8}, {cm: 26.7, eu: 42, us: 10, in: 9},
-                {cm: 27.3, eu: 43, us: 11, in: 10}
-            ],
-            kids: [
-                {cm: 14.0, eu: 23, us: 6, in: 5}, {cm: 14.7, eu: 24, us: 7, in: 6},
-                {cm: 15.3, eu: 25, us: 8, in: 7}, {cm: 16.0, eu: 26, us: 9, in: 8},
-                {cm: 16.7, eu: 27, us: 10, in: 9}, {cm: 17.3, eu: 28, us: 11, in: 10},
- 
+            length: { m: 1, km: 1000, cm: 0.01, mm: 0.001, mi: 1609.34, yd
